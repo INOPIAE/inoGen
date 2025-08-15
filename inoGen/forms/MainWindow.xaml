@@ -1,0 +1,27 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         Title="inoGen" Height="600" Width="1000">
+
+
+    <DockPanel>
+        <!-- Menü -->
+        <Menu DockPanel.Dock="Top" >
+            <MenuItem Header="_Datei">
+                <MenuItem Header="_Beenden" Click="Quit_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Basisdaten">
+                <MenuItem Header="_Person" Click="Person_Click"/>
+                <MenuItem Header="_Familie" Click="Familie_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Definitionen">
+                <MenuItem Header="_Orte" Click="Orte_Click"/>
+                <MenuItem Header="_Kreise" Click="Kreise_Click"/>
+                <MenuItem Header="_Konfession" Click="Konfession_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Dynamischer Bereich -->
+        <ContentControl x:Name="MainContent"/>
+    </DockPanel>
+</Window>

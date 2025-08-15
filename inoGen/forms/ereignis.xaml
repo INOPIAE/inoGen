@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="ereignis"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:inoGen"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Ereignis:" Width="100" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cbEreignis"
+                          Width="200"
+                          DisplayMemberPath="EreignisArt"
+                          SelectedValuePath="tblEreignisArtID"
+                          SelectionChanged="cbEreignis_SelectionChanged"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Datum:" Width="100" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtDatum" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="bis Datum:" Width="100" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtBisDatum" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Ort:" Width="100" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cbOrt"
+                          Width="200"
+                          DisplayMemberPath="Ort"
+                          SelectedValuePath="tblOrtID"
+                          SelectionChanged="cbOrt_SelectionChanged"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Konfession:" Width="100" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cbKonfession"
+                      Width="200"
+                      DisplayMemberPath="Konfessionkurz"
+                      SelectedValuePath="tblKonfessionID"
+                      SelectionChanged="cbKonfession_SelectionChanged"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock x:Name="lblZusatz" Text="Zusatz:" Width="100" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtZusatz" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Referenz:" Width="100" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtReferenz" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Familysearch ID:" Width="100" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtFSID" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Info:" Width="100" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtInfo" Width="200"/>
+            </StackPanel>
+            
+            <Button x:Name="btnSave" Content="Speichern" Width="100" Margin="0 10 0 0" HorizontalAlignment="Center"/>
+            <Button x:Name="btnNew" Content="Neu" Width="100" Margin="0 10 0 0" Click="btnNew_Click"/>
+            
+        </StackPanel>
+    </Grid>
+</UserControl>

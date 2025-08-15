@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36327.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "inoGen", "inoGen\inoGen.vbproj", "{6CD4F08A-36AA-4D90-872E-7EA379FC2351}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "inoGenDLL", "inoGenDLL\inoGenDLL.vbproj", "{3A71ACF0-9870-48C3-8A7E-048277E7B7E2}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TestInoGen", "TestInoGen\TestInoGen.vbproj", "{08E23C33-88DC-4248-98E6-674F99CA72D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6CD4F08A-36AA-4D90-872E-7EA379FC2351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CD4F08A-36AA-4D90-872E-7EA379FC2351}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CD4F08A-36AA-4D90-872E-7EA379FC2351}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CD4F08A-36AA-4D90-872E-7EA379FC2351}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A71ACF0-9870-48C3-8A7E-048277E7B7E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A71ACF0-9870-48C3-8A7E-048277E7B7E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A71ACF0-9870-48C3-8A7E-048277E7B7E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A71ACF0-9870-48C3-8A7E-048277E7B7E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08E23C33-88DC-4248-98E6-674F99CA72D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08E23C33-88DC-4248-98E6-674F99CA72D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08E23C33-88DC-4248-98E6-674F99CA72D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08E23C33-88DC-4248-98E6-674F99CA72D2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {664D09C9-78C1-49A4-B408-A861F3642366}
+	EndGlobalSection
+EndGlobal
