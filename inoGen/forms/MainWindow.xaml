@@ -19,6 +19,9 @@
                 <MenuItem Header="_Kreise" Click="Kreise_Click"/>
                 <MenuItem Header="_Konfession" Click="Konfession_Click"/>
             </MenuItem>
+            <MenuItem Header="_Ausgabe">
+                <MenuItem Header="_Ahnentafel" Click="Ahnentafel_Click"/>
+            </MenuItem>
         </Menu>
 
         <!-- Dynamischer Bereich -->

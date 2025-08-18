@@ -1,9 +1,13 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
 Imports System.Security.Cryptography
+Imports inoGenDLL
 
 Public Class familien
-    Private connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
+    Private cGenDB As New ClsGenDB(My.Settings.DBPath)
+    Private connectionString As String =
+ String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
+    '"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""D:\Daten\programierung neu\inoGen\Daten\Drews.accdb"";Persist Security Info=False;"
 
     Private dt As New DataTable()
     Private dtE As New DataTable()
@@ -59,18 +63,18 @@ Public Class familien
                         insertCmd.ExecuteNonQuery()
 
 
-                            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
-                                ID = Convert.ToInt32(cmdId.ExecuteScalar())
-                            End Using
+                        Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
+                            ID = Convert.ToInt32(cmdId.ExecuteScalar())
+                        End Using
 
 
-                            MessageBox.Show("Neuer Datensatz gespeichert!")
-                        ElseIf ID.HasValue Then
-                            'rowView("Vorname") = txtVorname.Text
-                            'rowView("tblKonfessionID") = cbKonfession.SelectedValue
-                            'rowView("Sex") = CType(cbSex.SelectedItem, ComboBoxItem).Content.ToString()
-                            'rowView("Info") = txtInfo.Text
-                            Dim updateCmd As New OleDbCommand("UPDATE tblFamilie SET FS = ?, tblPersonIDV = ?, tblPersonIDM=  ? WHERE tblFamilieID = ?", conn)
+                        MessageBox.Show("Neuer Datensatz gespeichert!")
+                    ElseIf ID.HasValue Then
+                        'rowView("Vorname") = txtVorname.Text
+                        'rowView("tblKonfessionID") = cbKonfession.SelectedValue
+                        'rowView("Sex") = CType(cbSex.SelectedItem, ComboBoxItem).Content.ToString()
+                        'rowView("Info") = txtInfo.Text
+                        Dim updateCmd As New OleDbCommand("UPDATE tblFamilie SET FS = ?, tblPersonIDV = ?, tblPersonIDM=  ? WHERE tblFamilieID = ?", conn)
                         updateCmd.Parameters.AddWithValue("@FS", txtFS.Text.ToUpper)
                         If IsNothing(VID) Then
                             updateCmd.Parameters.AddWithValue("@tblPersonIDV", DBNull.Value)
@@ -162,11 +166,15 @@ Public Class familien
         Dim rowView As DataRowView = CType(dgFamilien.SelectedItem, DataRowView)
         If rowView IsNot Nothing Then
             ID = Convert.ToInt32(rowView("tblFamilieID"))
-            VID = Convert.ToInt32(rowView("tblPersonIDV"))
-            MID = Convert.ToInt32(rowView("tblPersonIDM"))
+            If Not IsDBNull(rowView("tblPersonIDV")) Then
+                VID = Convert.ToInt32(rowView("tblPersonIDv"))
+            End If
+            If Not IsDBNull(rowView("tblPersonIDM")) Then
+                MID = Convert.ToInt32(rowView("tblPersonIDM"))
+            End If
 
             LoadFamily()
-        End If
+            End If
     End Sub
 
     Private Sub LoadFamily()
@@ -175,13 +183,13 @@ Public Class familien
         LoadChildData()
         AdditionalContent.Content = Nothing
         If VID > 0 Then
-            txtVater.Text = PersonenDaten(VID)
+            txtVater.Text = cGenDB.PersonenDaten(VID)
             VT = txtVater.Text.Substring(0, 4)
         Else
             VT = "____"
         End If
         If MID > 0 Then
-            txtMutter.Text = PersonenDaten(MID)
+            txtMutter.Text = cGenDB.PersonenDaten(MID)
             MT = txtMutter.Text.Substring(0, 4)
         Else
             MT = "____"
@@ -324,7 +332,7 @@ Public Class familien
                                            MessageBox.Show("Ausgewählte ID: " & id)
                                            ' Hier kannst du direkt Felder befüllen
                                            VID = id
-                                           txtVater.Text = PersonenDaten(VID)
+                                           txtVater.Text = cGenDB.PersonenDaten(VID)
                                            VT = txtVater.Text.Substring(0, 4)
                                            txtFS.Text = (VT & MT & DaT).ToUpper
                                        End Sub
@@ -337,7 +345,7 @@ Public Class familien
         AddHandler win.PersonSelected, Sub(id)
 
                                            MID = id
-                                           txtMutter.Text = PersonenDaten(MID)
+                                           txtMutter.Text = cGenDB.PersonenDaten(MID)
                                            MT = txtMutter.Text.Substring(0, 4)
                                            txtFS.Text = (VT & MT & DaT).ToUpper
                                        End Sub
@@ -380,35 +388,6 @@ Public Class familien
 
         win.Show()
     End Sub
-
-    Private Function PersonenDaten(ID As Int16) As String
-        Dim strSQL As String = "SELECT
-                tblPerson.tblPersonID,
-                tblPerson.PS,
-                tblPerson.Vorname,
-                tblNachname.Nachname
-            FROM
-                tblPerson
-                LEFT JOIN tblNachname ON tblPerson.tblNachnameID = tblNachname.tblNachnameID
-            WHERE tblPersonID = ?"
-        Dim PNAme As String = ""
-        Using conn As New OleDbConnection(connectionString)
-            conn.Open()
-            Using cmd As New OleDbCommand(strSQL, conn)
-                cmd.Parameters.AddWithValue("@tblPersonID", ID)
-
-                Using reader As OleDbDataReader = cmd.ExecuteReader()
-                    If reader.Read() Then
-
-                        PNAme = If(IsDBNull(reader("PS")), "", reader("PS").ToString()) & " " &
-                        If(IsDBNull(reader("Vorname")), "", reader("Vorname").ToString()) & " " &
-                        If(IsDBNull(reader("Nachname")), "", reader("Nachname").ToString().ToUpper)
-                    End If
-                End Using
-            End Using
-        End Using
-        Return PNAme
-    End Function
 
     Private Sub LoadChildData()
         Dim strSQL As String = "SELECT

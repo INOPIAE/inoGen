@@ -56,4 +56,10 @@ Class MainWindow
     Public Sub ShowContent(ctrl As UserControl)
         MainContent.Content = ctrl
     End Sub
+
+    Private Sub Ahnentafel_Click(sender As Object, e As RoutedEventArgs)
+        Dim win As New AhnenTafel()
+
+        win.Show()
+    End Sub
 End Class
