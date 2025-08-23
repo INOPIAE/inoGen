@@ -5,9 +5,13 @@
 
 
     <DockPanel>
-        <!-- Menü -->
         <Menu DockPanel.Dock="Top" >
             <MenuItem Header="_Datei">
+                <MenuItem Header="_Neu" Click="New_Click"/>
+                <MenuItem Header="_Öffnen" Click="Open_Click"/>
+                <Separator/>
+                <MenuItem Header="Zuletzt geöffnet" x:Name="RecentFilesMenu"/>
+                <Separator/>
                 <MenuItem Header="_Beenden" Click="Quit_Click"/>
             </MenuItem>
             <MenuItem Header="_Basisdaten">
@@ -23,8 +27,18 @@
                 <MenuItem Header="_Ahnentafel" Click="Ahnentafel_Click"/>
             </MenuItem>
         </Menu>
-
-        <!-- Dynamischer Bereich -->
+        
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="DBText" Text="DB:" />
+            </StatusBarItem>   
+             <Separator/>
+            <StatusBarItem>
+                <TextBlock x:Name="StatusText" Text="Bereit" />
+            </StatusBarItem>
+        </StatusBar>
+        
         <ContentControl x:Name="MainContent"/>
+
     </DockPanel>
 </Window>

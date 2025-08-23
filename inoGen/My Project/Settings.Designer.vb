@@ -89,6 +89,17 @@ Namespace My
                 Me("LastFID") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property RecentFiles() As Global.System.Collections.Specialized.StringCollection
+            Get
+                Return CType(Me("RecentFiles"),Global.System.Collections.Specialized.StringCollection)
+            End Get
+            Set
+                Me("RecentFiles") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
