@@ -1,6 +1,7 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
 Imports System.Security.Cryptography
+Imports System.Text.RegularExpressions
 
 Public Class personen
     Private connectionString As String =
@@ -72,7 +73,7 @@ Public Class personen
                         Dim insertCmd As New OleDbCommand("INSERT INTO tblPerson (PS, Sex, FSID, tblFamilieID, tblNachnameID, tblKonfessionID, Vorname, Info) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", conn)
                         insertCmd.Parameters.AddWithValue("@PS", txtPS.Text.ToUpper)
                         insertCmd.Parameters.AddWithValue("@Sex", CType(cbSex.SelectedItem, ComboBoxItem).Content.ToString())
-                        insertCmd.Parameters.AddWithValue("@FSID", "")
+                        insertCmd.Parameters.AddWithValue("@FSID", txtFSID.Text)
                         insertCmd.Parameters.AddWithValue("@tblFamilieID", 0)
                         insertCmd.Parameters.AddWithValue("@tblNachnameID", NID)
                         insertCmd.Parameters.AddWithValue("@tblKonfessionID", cbKonfession.SelectedValue)
@@ -95,7 +96,7 @@ Public Class personen
                         Dim updateCmd As New OleDbCommand("UPDATE tblPerson SET PS = ?, Sex = ?, FSID=  ?, tblNachnameID = ?, tblKonfessionID = ?, Vorname = ?, Info = ? WHERE tblPersonID = ?", conn)
                         updateCmd.Parameters.AddWithValue("@PS", txtPS.Text)
                         updateCmd.Parameters.AddWithValue("@Sex", CType(cbSex.SelectedItem, ComboBoxItem).Content.ToString())
-                        updateCmd.Parameters.AddWithValue("@FSID", "")
+                        updateCmd.Parameters.AddWithValue("@FSID", txtFSID.Text)
                         updateCmd.Parameters.AddWithValue("@tblNachnameID", NID)
                         updateCmd.Parameters.AddWithValue("@tblKonfessionID", cbKonfession.SelectedValue)
                         updateCmd.Parameters.AddWithValue("@Vorname", txtVorname.Text)
@@ -274,9 +275,16 @@ Public Class personen
     End Function
 
     Private Function VornameAnlegen(Vornamen As String, PID As Int16?) As Int16
-        'TODO Bindestrich prüfen
+
         If Trim(Vornamen) = "" Then
             Return 0
+        End If
+
+        Dim forbidden As Boolean = Regex.IsMatch(Vornamen, "(?<!^)\s*-\s*(?!$)")
+
+        If forbidden Then
+            MessageBox.Show("Der Bindestrich darf nur ohne Leerzeichen vorkommen")
+            Return -1
         End If
 
         Dim Vorname() As String = Vornamen.Trim.Split(" "c)
@@ -285,12 +293,20 @@ Public Class personen
             Dim Zeichen As String = ""
             Dim VName As String = VN
             If Reihenfolge = 1 Then
-                VT = VName.Substring(0, 4)
+                If VName.Length < 4 Then
+                    VT = VName.PadRight(4, "_"c)
+                Else
+                    VT = VName.Substring(0, 4)
+                End If
             End If
             If VName.StartsWith("*") Then
                 Zeichen = "*"
                 VName = VName.Substring(1)
-                VT = VName.Substring(0, 4)
+                If VName.Length < 4 Then
+                    VT = VName.PadRight(4, "_"c)
+                Else
+                    VT = VName.Substring(0, 4)
+                End If
             End If
             Dim VID As Int16 = VornamenID(VName)
             If VID = -1 Then Return VID
@@ -356,6 +372,7 @@ Public Class personen
                 tblEreignis.Datum AS HDatum,
                 IIf([tblKreis]![Kreis]<>"""",[tblOrt]![Ort] & "" ("" & [tblKreis]![Kreis] & "")"",[tblOrt]![Ort]) AS Ort,
                 tblKonfession.Konfessionkurz AS Konfession,
+                tblEreignis.Zusatz,
                 tblEreignis.Referenz,
                 tblEreignis.FSID,
                 tblEreignis.Info
@@ -399,7 +416,7 @@ Public Class personen
             MessageBox.Show("Der Datensatz muss zuerst gespeichert werden, bevor ein Ereignis angelegt werden kann.")
             Exit Sub
         End If
-        Dim details = New ereignis()
+        Dim details = New ereignis(True)
         details.PersonId = ID
         details.FamilieId = 0
         AddHandler details.DataSaved, AddressOf OnDatenGespeichert
@@ -424,7 +441,7 @@ Public Class personen
         Dim rowView As DataRowView = CType(dgEreignis.SelectedItem, DataRowView)
         If rowView IsNot Nothing Then
 
-            Dim details = New ereignis()
+            Dim details = New ereignis(True)
             details.EintragId = Convert.ToInt32(rowView("tblEreignisID"))
             AddHandler details.DataSaved, AddressOf OnDatenGespeichert
             AdditionalContent.Content = details
@@ -507,6 +524,8 @@ Public Class personen
                         ' Werte auslesen und prüfen auf DBNull
                         If Not IsDBNull(reader("PS")) Then
                             txtPS.Text = reader("PS")
+                            NT = txtPS.Text.Substring(0, 4)
+                            VT = txtPS.Text.Substring(4, 4)
                         End If
 
                         If Not IsDBNull(reader("Vorname")) Then

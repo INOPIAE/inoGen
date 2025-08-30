@@ -143,6 +143,7 @@ Public Class familien
         txtVater.Clear()
         txtMutter.Clear()
         LoadEventData()
+        LoadChildData()
         AdditionalContent.Content = Nothing
     End Sub
 
@@ -172,9 +173,13 @@ Public Class familien
             If Not IsDBNull(rowView("tblPersonIDM")) Then
                 MID = Convert.ToInt32(rowView("tblPersonIDM"))
             End If
-
-            LoadFamily()
+            If Not IsDBNull(rowView("FS")) Then
+                txtFS.Text = rowView("FS")
             End If
+        End If
+
+        LoadFamily()
+
     End Sub
 
     Private Sub LoadFamily()
@@ -247,7 +252,7 @@ Public Class familien
             MessageBox.Show("Der Datensatz muss zuerst gespeichert werden, bevor ein Ereignis angelegt werden kann.")
             Exit Sub
         End If
-        Dim details = New ereignis()
+        Dim details = New ereignis(False)
         details.FamilieId = ID
         details.PersonId = 0
         AddHandler details.DataSaved, AddressOf OnDatenGespeichert
@@ -272,7 +277,7 @@ Public Class familien
         Dim rowView As DataRowView = CType(dgEreignis.SelectedItem, DataRowView)
         If rowView IsNot Nothing Then
 
-            Dim details = New ereignis()
+            Dim details = New ereignis(False)
             details.EintragId = Convert.ToInt32(rowView("tblEreignisID"))
             AddHandler details.DataSaved, AddressOf OnDatenGespeichert
             AdditionalContent.Content = details
@@ -354,6 +359,10 @@ Public Class familien
     End Sub
 
     Private Sub btnNewChild_Click(sender As Object, e As RoutedEventArgs)
+        If ID Is Nothing Then
+            MessageBox.Show("Der Datensatz muss zuerst gespeichert werden, bevor ein Kind zugeordnet werden kann.")
+            Exit Sub
+        End If
         Dim win As New SuchePerson()
         AddHandler win.PersonSelected, Sub(pid)
 
@@ -404,7 +413,7 @@ Public Class familien
             Using conn As New OleDbConnection(connectionString)
                 conn.Open()
                 Dim cmd As New OleDbCommand(strSQL, conn)
-                cmd.Parameters.AddWithValue("@FamilieID", IIf(ID Is Nothing, 0, ID))
+                cmd.Parameters.AddWithValue("@FamilieID", IIf(ID Is Nothing, -1, ID))
                 Dim adapter As New OleDbDataAdapter(cmd)
                 dtP.Clear()
                 adapter.Fill(dtP)
