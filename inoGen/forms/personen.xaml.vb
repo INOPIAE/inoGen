@@ -2,6 +2,8 @@
 Imports System.Data.OleDb
 Imports System.Security.Cryptography
 Imports System.Text.RegularExpressions
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement
+
 
 Public Class personen
     Private connectionString As String =
@@ -497,7 +499,7 @@ Public Class personen
     Private Sub btnFamile_Click(sender As Object, e As RoutedEventArgs)
         My.Settings.LastFID = FID
         My.Settings.Save()
-        Dim mw = TryCast(Window.GetWindow(Me), MainWindow)
+        Dim mw = TryCast(Application.Current.MainWindow, MainWindow)
         If mw IsNot Nothing Then
             mw.ShowContent(New familien())
         End If
@@ -607,4 +609,17 @@ Public Class personen
         btnNewEvent.IsEnabled = ID IsNot Nothing
     End Sub
 
+    Private Sub btnFS_Click(sender As Object, e As RoutedEventArgs)
+        If txtFSID.Text <> "" Then
+            Dim url As String = "https://www.familysearch.org/de/tree/person/details/" & txtFSID.Text
+
+            If MainWindow.fsWindow Is Nothing OrElse Not MainWindow.fsWindow.IsLoaded Then
+                MainWindow.fsWindow = New FamilySearchWeb(url)
+                MainWindow.fsWindow.Show()
+            Else
+                MainWindow.fsWindow.Focus()
+                MainWindow.fsWindow.NavigateTo(url)
+            End If
+        End If
+    End Sub
 End Class

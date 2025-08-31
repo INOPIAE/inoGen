@@ -8,6 +8,7 @@ Class MainWindow
     Public connectionString As String =
         String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "D:\Daten\programierung neu\inoGen\Daten\Drews.accdb")
 
+    Public shared fsWindow As FamilySearchWeb = Nothing
 
     Public Sub New()
 
@@ -43,6 +44,10 @@ Class MainWindow
     End Sub
 
     Private Sub Quit_Click(sender As Object, e As RoutedEventArgs)
+        ShutDown()
+    End Sub
+
+    Private Sub ShutDown()
         StatusText.Text = "Programm wird beendet..."
         Application.Current.Shutdown()
     End Sub
@@ -141,4 +146,7 @@ Class MainWindow
         End If
     End Sub
 
+    Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
+        ShutDown()
+    End Sub
 End Class

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="MdXaml" Version="1.27.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3405.78" />
     <PackageReference Include="System.Data.OleDb" Version="9.0.8" />
   </ItemGroup>
 
