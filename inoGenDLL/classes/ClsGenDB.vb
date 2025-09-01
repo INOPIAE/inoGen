@@ -37,6 +37,7 @@ Public Class ClsGenDB
                         PD.Konfession = If(IsDBNull(reader("Konfessionkurz")), "", reader("Konfessionkurz").ToString())
                         PD.FID = If(IsDBNull(reader("tblFamilieID")), 0, Convert.ToInt32(reader("tblFamilieID")))
                         PD.PS = If(IsDBNull(reader("PS")), "", reader("PS").ToString())
+                        PD.FSID = If(IsDBNull(reader("FSID")), "", reader("FSID").ToString())
                     End If
                 End Using
             End Using

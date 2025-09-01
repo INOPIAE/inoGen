@@ -41,6 +41,7 @@ Public Class clsAhnentafelDaten
         Public M As Long
         Public EP As Long
         Public EID As Integer 'Eigene Familie ID
+        Public FSID As String
     End Structure
 
     Public Persons As New List(Of PersonData)
@@ -132,7 +133,7 @@ Public Class clsAhnentafelDaten
                     Generation = p.Gen
                     writer.WriteLine("# " & ToRoman(Generation) & ". Generation")
                 End If
-                writer.WriteLine("# " & p.Pos & ". " & OutputVorname(p.Vorname) & " " & p.Nachname.ToUpper)
+                writer.WriteLine("# " & p.Pos & ". " & OutputVorname(p.Vorname) & " " & p.Nachname.ToUpper & " " & FamilySearchLinkPerson(p.FSID))
 
                 AusgabePersDetails(writer, p)
 
@@ -343,4 +344,13 @@ Public Class clsAhnentafelDaten
 
         Return result
     End Function
+
+    Public Function FamilySearchLinkPerson(FSID As String) As String
+        If IsNothing(FSID) Or FSID = "" Then
+            Return ""
+        Else
+            Return String.Format("[{0}](https://www.familysearch.org/tree/person/details/{0})", FSID)
+        End If
+    End Function
+
 End Class
