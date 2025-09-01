@@ -16,8 +16,11 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Margin="5">
             <TextBlock Text="Person:" Width="70" VerticalAlignment="Center" />
             <TextBox x:Name="txtPerson" Width="200" Margin="0,0,10,0"/>
+            <TextBlock Text="Komprimiert:" Width="70" VerticalAlignment="Center"/>
+            <CheckBox  x:Name="ckbCompress" Margin="0,10,10,0"/>
             <Button x:Name="btnSearch" Content="Suchen" Width="80" Margin="5" Click="btnSearch_Click"/>
             <Button x:Name="btnOK" Content="OK" Width="80" Margin="5" Click="btnOK_Click"/>
+            <Button x:Name="btnCSV" Content="CSV" Width="80" Margin="5" Click="btnCSV_Click"/>
             <Button x:Name="btnCancel" Content="Abbrechen" Width="80" Margin="5" IsCancel="True"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1"  Margin="5">

@@ -133,6 +133,7 @@ Public Class clsAhnentafelDaten
                     writer.WriteLine("# " & ToRoman(Generation) & ". Generation")
                 End If
                 writer.WriteLine("# " & p.Pos & ". " & OutputVorname(p.Vorname) & " " & p.Nachname.ToUpper)
+
                 AusgabePersDetails(writer, p)
 
                 If p.EID > 0 And Ehe.Contains(p.EID) = False Then
@@ -164,6 +165,30 @@ Public Class clsAhnentafelDaten
         End Using
     End Sub
 
+    Public Sub WriteCompTreeToFile(filePath As String)
+        Ehe.Clear()
+        Dim Generation As Integer = 0
+        Using writer As New StreamWriter(filePath, False, System.Text.Encoding.UTF8)
+            For Each p In Persons.OrderBy(Function(x) x.Pos)
+                If Generation <> p.Gen Then
+                    Generation = p.Gen
+                    writer.WriteLine("# " & ToRoman(Generation) & ". Generation")
+                End If
+                writer.WriteLine("# " & p.Pos & ". " & OutputVorname(p.Vorname) & " " & p.Nachname.ToUpper)
+                AusgabePersCompDetails(writer, p)
+
+                If p.EID > 0 And Ehe.Contains(p.EID) = False Then
+                    If IsNothing(p.Heiratdatum) = False Or IsNothing(p.Heiratort) = False Then
+                        writer.WriteLine("⚭ " & If(IsNothing(p.Heiratdatum), "    ", p.Heiratdatum) & " " & If(IsNothing(p.KHeiratort), "", p.KHeiratort) & vbCrLf)
+                    End If
+                    If IsNothing(p.KHeiratdatum) = False Or IsNothing(p.KHeiratort) = False Then
+                        writer.WriteLine("♁⚭ " & If(IsNothing(p.KHeiratdatum), "    ", p.KHeiratdatum) & " " & If(IsNothing(p.KHeiratort), "", p.KHeiratort) & vbCrLf)
+                    End If
+                End If
+            Next
+        End Using
+    End Sub
+
     Public Sub AusgabePersDetails(writer As StreamWriter, p As PersonData)
         If IsNothing(p.Geburtsdatum) = False Or IsNothing(p.Geburtsort) = False Then
             writer.WriteLine("∗ " & If(IsNothing(p.Geburtsdatum), "    ", p.Geburtsdatum) & " " & If(IsNothing(p.Geburtsort), "", p.Geburtsort) & vbCrLf) '★
@@ -179,6 +204,23 @@ Public Class clsAhnentafelDaten
         End If
     End Sub
 
+    Public Sub AusgabePersCompDetails(writer As StreamWriter, p As PersonData)
+        Dim birth As String = ""
+        Dim death As String = ""
+        If IsNothing(p.Geburtsdatum) = False Or IsNothing(p.Geburtsort) = False Then
+            birth = "∗ " & If(IsNothing(p.Geburtsdatum), "    ", p.Geburtsdatum) & " " & If(IsNothing(p.Geburtsort), "", p.Geburtsort)  '★
+        End If
+        If IsNothing(p.Taufdatum) = False Or IsNothing(p.Taufort) = False And birth = "" Then
+            birth = "~ " & If(IsNothing(p.Taufdatum), "    ", p.Taufdatum) & " " & If(IsNothing(p.Taufort), "", p.Taufort)
+        End If
+        If IsNothing(p.Sterbedatum) = False Or IsNothing(p.Sterbeort) = False Then
+            death = "† " & If(IsNothing(p.Sterbedatum), "    ", p.Sterbedatum) & " " & If(IsNothing(p.Sterbeort), "", p.Sterbeort)
+        End If
+        If IsNothing(p.Begräbnisdatum) = False Or IsNothing(p.Begräbnisort) = False And death = "" Then
+            death = "⚰ " & If(IsNothing(p.Begräbnisdatum), "    ", p.Begräbnisdatum) & " " & If(IsNothing(p.Begräbnisort), "", p.Begräbnisort)
+        End If
+        writer.WriteLine(birth & " " & death & vbCrLf)
+    End Sub
     Public Sub AddChildren(FID As Integer)
         Dim strSQL As String = "SELECT
                 tblPersonID,
@@ -269,4 +311,36 @@ Public Class clsAhnentafelDaten
         Return result.ToString()
     End Function
 
+
+    Public Sub WriteToCSV(filePath As String)
+        Ehe.Clear()
+        Dim Generation As Integer = 0
+        Using writer As New StreamWriter(filePath, False, System.Text.Encoding.UTF8)
+            Dim strTitel As String = "Nr;Vorname;Nachname;Gechlecht;Geburtsdatum;Geburtsort;GebKom;Taufe;Taufort;TaufKom;Konfession;Sterbedatum;Sterbeort;SterbeKom;Heirat;Heiratsort;HeiratKom;Heirat k;Heiratsort k;HeiratKom k;Beruf;Familysearch;VNr;MNr;EPNr"
+            writer.WriteLine(strTitel)
+            For Each p In Persons.OrderBy(Function(x) x.Pos)
+                Dim strLine As String = p.ID & ";" & p.Vorname & ";" & p.Nachname.ToUpper & ";" & p.Geschlecht & ";"
+                strLine &= AusgabePersDetailsCSV(p)
+
+                strLine &= If(IsNothing(p.Heiratdatum), "", p.Heiratdatum) & ";" & If(IsNothing(p.KHeiratort), "", p.KHeiratort) & ";;"
+
+                strLine &= If(IsNothing(p.KHeiratdatum), "", p.KHeiratdatum) & ";" & If(IsNothing(p.KHeiratort), "", p.KHeiratort) & ";;"
+
+                strLine &= ";;" & p.V & ";" & p.M & ";" & p.EP
+                writer.WriteLine(strLine)
+            Next
+        End Using
+    End Sub
+
+    Public Function AusgabePersDetailsCSV(p As PersonData) As String
+        Dim result As String = ""
+
+        result = If(IsNothing(p.Geburtsdatum), "", p.Geburtsdatum) & ";" & If(IsNothing(p.Geburtsort), "", p.Geburtsort) & ";;"
+
+        result &= If(IsNothing(p.Taufdatum), "", p.Taufdatum) & ";" & If(IsNothing(p.Taufort), "", p.Taufort) & ";;;"
+
+        result &= If(IsNothing(p.Sterbedatum), "", p.Sterbedatum) & ";" & If(IsNothing(p.Sterbeort), "", p.Sterbeort) & ";;"
+
+        Return result
+    End Function
 End Class

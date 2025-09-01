@@ -8,7 +8,12 @@ Public Class AhnenTafel
         Dim mdFilePath As String = IO.Path.Combine(Application.MyAppFolder, "Ahnenbericht.md")
         cAT.RootPersonID = PID
         cAT.NewList()
-        cAT.WriteTreeToFile(mdFilePath)
+        If ckbCompress.IsChecked Then
+            cAT.WriteCompTreeToFile(mdFilePath)
+        Else
+            cAT.WriteTreeToFile(mdFilePath)
+        End If
+
         Dim md As String = File.ReadAllText(mdFilePath)
         MdView.Markdown = md
     End Sub
@@ -22,5 +27,16 @@ Public Class AhnenTafel
                                        End Sub
 
         win.Show()
+    End Sub
+
+    Private Sub btnCSV_Click(sender As Object, e As RoutedEventArgs)
+        Dim mdFilePath As String = IO.Path.Combine(Application.MyAppFolder, "ahnentafel.csv")
+        cAT.RootPersonID = PID
+        cAT.NewList()
+
+        cAT.WriteToCSV(mdFilePath)
+        MessageBox.Show("abgeschlossen")
+
+
     End Sub
 End Class
