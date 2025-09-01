@@ -19,6 +19,30 @@ Public Class SuchePerson
         LoadData()
         blnStart = False
     End Sub
+
+    Public Sub New(VPart As String)
+        InitializeComponent()
+        LoadData()
+        txtNachname.Text = VPart
+        ckbKind.IsChecked = True
+
+        blnStart = False
+        FilterSetzen()
+    End Sub
+
+    Public Sub New(Sex As Boolean)
+        InitializeComponent()
+        LoadData()
+        If Sex = True Then
+            cbSex.Text = "m"
+        Else
+            cbSex.Text = "w"
+        End If
+
+
+        blnStart = False
+        FilterSetzen()
+    End Sub
     Private Sub LoadData()
         Dim strSQL As String = "SELECT 
                 tblPerson.tblPersonID, 

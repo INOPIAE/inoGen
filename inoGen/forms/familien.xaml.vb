@@ -70,10 +70,6 @@ Public Class familien
 
                         MessageBox.Show("Neuer Datensatz gespeichert!")
                     ElseIf ID.HasValue Then
-                        'rowView("Vorname") = txtVorname.Text
-                        'rowView("tblKonfessionID") = cbKonfession.SelectedValue
-                        'rowView("Sex") = CType(cbSex.SelectedItem, ComboBoxItem).Content.ToString()
-                        'rowView("Info") = txtInfo.Text
                         Dim updateCmd As New OleDbCommand("UPDATE tblFamilie SET FS = ?, tblPersonIDV = ?, tblPersonIDM=  ? WHERE tblFamilieID = ?", conn)
                         updateCmd.Parameters.AddWithValue("@FS", txtFS.Text.ToUpper)
                         If IsNothing(VID) Then
@@ -93,7 +89,7 @@ Public Class familien
                     End If
                 End Using
 
-                LoadData() ' DataGrid aktualisieren
+                LoadData()
             Catch ex As Exception
                 MessageBox.Show("Fehler beim Speichern: " & ex.Message)
             End Try
@@ -331,7 +327,7 @@ Public Class familien
     End Sub
 
     Private Sub btnV_Click(sender As Object, e As RoutedEventArgs)
-        Dim win As New SuchePerson()
+        Dim win As New SuchePerson(True)
         ' Event-Handler für Rückgabe setzen
         AddHandler win.PersonSelected, Sub(id)
                                            MessageBox.Show("Ausgewählte ID: " & id)
@@ -346,7 +342,7 @@ Public Class familien
     End Sub
 
     Private Sub btnM_Click(sender As Object, e As RoutedEventArgs)
-        Dim win As New SuchePerson()
+        Dim win As New SuchePerson(False)
         AddHandler win.PersonSelected, Sub(id)
 
                                            MID = id
@@ -363,7 +359,7 @@ Public Class familien
             MessageBox.Show("Der Datensatz muss zuerst gespeichert werden, bevor ein Kind zugeordnet werden kann.")
             Exit Sub
         End If
-        Dim win As New SuchePerson()
+        Dim win As New SuchePerson(VT)
         AddHandler win.PersonSelected, Sub(pid)
 
                                            Using conn As New OleDbConnection(connectionString)
