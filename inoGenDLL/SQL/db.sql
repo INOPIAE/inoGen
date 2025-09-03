@@ -146,6 +146,58 @@ CREATE TABLE tblZusatz(
 
 DROP TABLE tblPVorname;
 
+DROP TABLE tblVKH;
+
+CREATE TABLE tblVKH(
+    tblVKHID COUNTER,
+    BUCH_H	VARCHAR(255),
+    SEITE_H	INTEGER,
+    NR_H INTEGER,
+    HDatum DATE,
+    DimDatum DATE,
+    VN_BR VARCHAR(255),
+    FN_BR VARCHAR(255),
+    W_BR VARCHAR(255),
+    H_BR VARCHAR(255),
+    Z_BR VARCHAR(255),
+    VN_VBR VARCHAR(255),
+    FN_VBR VARCHAR(255),
+    Z_VBR VARCHAR(255),
+    VN_MBR VARCHAR(255),
+    FN_MBR VARCHAR(255),
+    Z_MBR VARCHAR(255),
+    W_EBR VARCHAR(255),
+    VN_BT VARCHAR(255),
+    FN_BT VARCHAR(255),
+    W_BT VARCHAR(255),
+    H_BT VARCHAR(255),
+    Z_BT VARCHAR(255),
+    VN_VBT VARCHAR(255),
+    FN_VBT VARCHAR(255),
+    Z_VBT VARCHAR(255),
+    VN_MBT VARCHAR(255),
+    FN_MBT VARCHAR(255),
+    Z_MBT VARCHAR(255),
+    W_EBT VARCHAR(255),
+    ANM_H VARCHAR(255),
+    VN_HZ1 VARCHAR(255),
+    FN_HZ1 VARCHAR(255),
+    G_HZ1 VARCHAR(255),
+    Z_HZ1 VARCHAR(255),
+    VN_HZ2 VARCHAR(255),
+    FN_HZ2 VARCHAR(255),
+    G_HZ2 VARCHAR(255),
+    Z_HZ2 VARCHAR(255),
+    VN_HZ3 VARCHAR(255),
+    FN_HZ3 VARCHAR(255),
+    G_HZ3 VARCHAR(255),
+    Z_HZ3 VARCHAR(255),
+    VN_HZ4 VARCHAR(255),
+    FN_HZ4 VARCHAR(255),
+    G_HZ4 VARCHAR(255),
+    Z_HZ4 VARCHAR(255),
+    CONSTRAINT PrimaryKey PRIMARY KEY (tblVKHID));
+
 DROP PROCEDURE qryPerson;
 
 CREATE PROCEDURE qryPerson AS
@@ -180,4 +232,4 @@ INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis)
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Taufpate');
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Trauzeuge');
 
- UPDATE tblVersion SET Version = 1;
+UPDATE tblVersion SET Version = 2;
