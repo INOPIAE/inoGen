@@ -92,8 +92,7 @@ Class MainWindow
 
         If saveDialog.ShowDialog() = True Then
             Dim filePath As String = saveDialog.FileName
-            My.Settings.DBPath = filePath
-            My.Settings.Save()
+            SaveSettingAfterFileChange(filePath)
             Start()
         End If
     End Sub
@@ -107,10 +106,17 @@ Class MainWindow
 
         If openDialog.ShowDialog() = True Then
             Dim filePath As String = openDialog.FileName
-            My.Settings.DBPath = filePath
-            My.Settings.Save()
+            SaveSettingAfterFileChange(filePath)
             Start()
         End If
+    End Sub
+
+    Private Shared Sub SaveSettingAfterFileChange(filePath As String)
+        My.Settings.DBPath = filePath
+        My.Settings.LastVKHID = 0
+        My.Settings.LastPID = 0
+        My.Settings.LastFID = 0
+        My.Settings.Save()
     End Sub
 
     Public Sub AddToRecentFiles(filePath As String)

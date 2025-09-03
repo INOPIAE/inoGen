@@ -27,10 +27,9 @@ Public Class vkHeirat
 
         LoadData()
 
-        If My.Settings.LastPID > 0 Then
-            'ID = My.Settings.LastPID
-            'FillPerson(ID)
-            btnNew_Click(Nothing, Nothing)
+        If My.Settings.LastVKHID > 0 Then
+            ID = My.Settings.LastVKHID
+            FillEntry(ID)
         Else
             btnNew_Click(Nothing, Nothing)
         End If
@@ -213,10 +212,19 @@ Public Class vkHeirat
                     cmd.Parameters.AddWithValue("tblVKHID", ID.Value)
                 End If
                 cmd.ExecuteNonQuery()
+
+                If isNewRecord Then
+                    Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
+                        ID = Convert.ToInt32(cmdId.ExecuteScalar())
+                    End Using
+                End If
+
                 conn.Close()
                 MessageBox.Show("Datensatz erfolgreich " & If(isNewRecord, "erstellt", "aktualisiert") & ".")
                 isNewRecord = False
                 LoadData()
+                My.Settings.LastVKHID = ID
+                My.Settings.Save()
             End Using
 
         Catch ex As Exception
@@ -226,7 +234,7 @@ Public Class vkHeirat
     End Sub
 
     Private Sub LoadData()
-        Dim strSQL As String = pSQL '& " ORDER BY PS"
+        Dim strSQL As String = pSQL & " ORDER BY BUCH_H, SEITE_H, NR_H"
 
 
         Try

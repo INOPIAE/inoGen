@@ -100,6 +100,18 @@ Namespace My
                 Me("RecentFiles") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property LastVKHID() As Integer
+            Get
+                Return CType(Me("LastVKHID"),Integer)
+            End Get
+            Set
+                Me("LastVKHID") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
