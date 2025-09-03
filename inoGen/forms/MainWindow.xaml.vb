@@ -33,10 +33,14 @@ Class MainWindow
 
     Private Sub Person_Click(sender As Object, e As RoutedEventArgs)
         MainContent.Content = New personen()
+        My.Settings.LastContent = "Person"
+        My.Settings.Save()
     End Sub
 
     Private Sub Familie_Click(sender As Object, e As RoutedEventArgs)
         MainContent.Content = New familien()
+        My.Settings.LastContent = "Familie"
+        My.Settings.Save()
     End Sub
 
     Private Sub Konfession_Click(sender As Object, e As RoutedEventArgs)
@@ -63,8 +67,17 @@ Class MainWindow
         cDB = New ClsDatabase(strDB)
         DbVersion = cDB.CheckDBVersion
 
-        'MainContent.Content = New vkHeirat()
-        VKH_Click(Nothing, Nothing)
+        If My.Settings.LastContent <> "" Then
+            Select Case My.Settings.LastContent
+                Case "Person"
+                    Person_Click(Nothing, Nothing)
+                Case "Familie"
+                    Familie_Click(Nothing, Nothing)
+                Case "VHK"
+                    VKH_Click(Nothing, Nothing)
+            End Select
+        End If
+
 
         AddToRecentFiles(strDB)
         RefreshRecentFilesMenu()
@@ -168,6 +181,8 @@ Class MainWindow
         AddHandler ctrl.RequestResizeMainWindow, AddressOf OnRequestResize
 
         MainContent.Content = ctrl
+        My.Settings.LastContent = "VHK"
+        My.Settings.Save()
     End Sub
 
     Private Sub OnRequestResize(newWidth As Double)

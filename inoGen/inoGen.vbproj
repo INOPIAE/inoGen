@@ -5,7 +5,12 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>inoGen</RootNamespace>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="favicon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <Import Include="System.Windows" />
