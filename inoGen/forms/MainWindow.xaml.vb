@@ -63,7 +63,8 @@ Class MainWindow
         cDB = New ClsDatabase(strDB)
         DbVersion = cDB.CheckDBVersion
 
-        MainContent.Content = New personen()
+        'MainContent.Content = New vkHeirat()
+        VKH_Click(Nothing, Nothing)
 
         AddToRecentFiles(strDB)
         RefreshRecentFilesMenu()
@@ -148,5 +149,20 @@ Class MainWindow
 
     Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
         ShutDown()
+    End Sub
+
+    Private Sub VKH_Click(sender As Object, e As RoutedEventArgs)
+
+        Dim ctrl As New vkHeirat()
+
+        AddHandler ctrl.RequestResizeMainWindow, AddressOf OnRequestResize
+
+        MainContent.Content = ctrl
+    End Sub
+
+    Private Sub OnRequestResize(newWidth As Double)
+        If Me.Width < newWidth Then
+            Me.Width = newWidth
+        End If
     End Sub
 End Class
