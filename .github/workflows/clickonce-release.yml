@@ -2,57 +2,107 @@ name: Build and Release WPF ClickOnce
 
 on:
   push:
-#    tags:
-#      - 'v*'  # Nur bei Tag-Pushes wie v1.0.0
     branches:
-      - github
+      - github          # nur im Branch "github"
+  workflow_dispatch:    # manueller Start möglich
 
 jobs:
   build-and-release:
     runs-on: windows-latest
 
     steps:
+      # 1. Repository auschecken
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # 2. Setup NuGet
       - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1
+        uses: NuGet/setup-nuget@v2
 
+      # 3. Setup MSBuild
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v2
 
+      # 4. NuGet Packages wiederherstellen
       - name: Restore NuGet packages
         run: nuget restore inoGen.sln
 
+      # 5. Projekt normal bauen (Release)
       - name: Build WPF Project (Release)
-        run: msbuild inoGen/inoGen.vbproj /p:Configuration=Release
+        run: msbuild "inoGen/inoGen.vbproj" /p:Configuration=Release /v:detailed /warnaserror:False
 
+      # 6. ClickOnce-Publish-Profil vorbereiten (ohne Leerzeichen)
+      - name: Prepare ClickOnce profile for CI
+        shell: pwsh
+        run: |
+          $sourceProfile = "inoGen/My Project/PublishProfiles/ClickOnceProfile.pubxml"
+          $destDir = "inoGen/PublishProfiles"
+          if (-not (Test-Path $sourceProfile)) {
+              Write-Error "ClickOnceProfile.pubxml nicht gefunden: $sourceProfile"
+              exit 1
+          }
+          if (-not (Test-Path $destDir)) {
+              New-Item -ItemType Directory -Path $destDir | Out-Null
+          }
+          Copy-Item $sourceProfile $destDir
+          Write-Host "Profil kopiert nach $destDir"
+
+      # 7. ClickOnce-Publish (Debug + robust)
       - name: Publish ClickOnce
-        run: msbuild inoGen/inoGen.vbproj /p:Configuration=Release /t:Publish /p:PublishProfile=FolderProfile
+        run: |
+          Write-Host "=== Start ClickOnce Publish ==="
+          $projectPath = "inoGen/inoGen.vbproj"
+          $publishProfile = "PublishProfiles\ClickOnceProfile"
+          msbuild $projectPath `
+            /p:Configuration=Release `
+            /t:Publish `
+            /p:PublishProfile="$publishProfile" `
+            /v:detailed
+          Write-Host "=== Publish Finished ==="
 
+      # 8. Publish-Ordner prüfen
+      - name: Check publish folder
+        shell: pwsh
+        run: |
+          $publishPath = "inoGen/bin/Release/net9.0-windows7.0/app.publish"
+          if (Test-Path $publishPath) {
+              Write-Host "Publish-Ordner existiert:"
+              Get-ChildItem $publishPath -Recurse | ForEach-Object { Write-Host $_.FullName }
+          } else {
+              Write-Error "Publish-Ordner '$publishPath' existiert nicht!"
+              exit 1
+          }
+
+      # 9. Zertifikat aus Secret decodieren
       - name: Decode PFX certificate
         shell: pwsh
         run: |
-            $certBase64 = "${{ secrets.CODE_SIGN_CERT }}"
-            $certBytes = [Convert]::FromBase64String($certBase64)
-            [System.IO.File]::WriteAllBytes("cert.pfx", $certBytes)
+          $certBase64 = "${{ secrets.CODE_SIGN_CERT }}"
+          $certBytes = [Convert]::FromBase64String($certBase64)
+          [System.IO.File]::WriteAllBytes("cert.pfx", $certBytes)
 
+      # 10. EXE-Dateien signieren
       - name: Sign ClickOnce executables
+        shell: pwsh
         run: |
-            $publishPath = "inoGen/bin/publish"
-            Get-ChildItem $publishPath -Filter *.exe | ForEach-Object {
-                & "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /f cert.pfx /p ${{ secrets.CODE_SIGN_PASSWORD }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 $_.FullName
-            }
+          $publishPath = "inoGen/bin/Release/net9.0-windows7.0/app.publish"
+          $exeFiles = Get-ChildItem $publishPath -Filter *.exe -Recurse
+          if ($exeFiles.Count -eq 0) {
+              Write-Warning "Keine EXE-Dateien zum Signieren gefunden!"
+          } else {
+              foreach ($file in $exeFiles) {
+                  & "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign `
+                    /f cert.pfx `
+                    /p "${{ secrets.CODE_SIGN_PASSWORD }}" `
+                    /tr http://timestamp.digicert.com `
+                    /td SHA256 `
+                    /fd SHA256 $file.FullName
+              }
+          }
 
-    #   - name: Create GitHub Release
-    #     uses: ncipollo/release-action@v1
-    #     with:
-    #       tag: ${{ github.ref_name }}
-    #       name: Release ${{ github.ref_name }}
-    #       files: |
-    #         inoGen/bin/Release/Publish/**/*
-
-      - uses: actions/upload-artifact@v4
+      # 11. Artefakte hochladen
+      - name: Upload ClickOnce package
+        uses: actions/upload-artifact@v4
         with:
           name: ClickOnce-Publish
-          path: inoGen/bin/publish/**
+          path: inoGen/bin/Release/net9.0-windows7.0/app.publish/**
