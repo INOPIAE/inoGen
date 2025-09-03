@@ -2,8 +2,10 @@ name: Build and Release WPF ClickOnce
 
 on:
   push:
-    tags:
-      - 'v*'  # Nur bei Tag-Pushes wie v1.0.0
+#    tags:
+#      - 'v*'  # Nur bei Tag-Pushes wie v1.0.0
+    branches:
+      - github
 
 jobs:
   build-and-release:
@@ -39,10 +41,15 @@ jobs:
             & "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /f cert.pfx /p ${{ secrets.CODE_SIGN_PASSWORD }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 $_.FullName
           }
 
-      - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
+    #   - name: Create GitHub Release
+    #     uses: ncipollo/release-action@v1
+    #     with:
+    #       tag: ${{ github.ref_name }}
+    #       name: Release ${{ github.ref_name }}
+    #       files: |
+    #         inoGen/bin/Release/Publish/**/*
+
+      - uses: actions/upload-artifact@v4
         with:
-          tag: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          files: |
-            inoGen/bin/Release/Publish/**/*
+          name: ClickOnce-Publish
+          path: inoGen/bin/Release/Publish/**
