@@ -42,7 +42,6 @@ Public Class personen
     Public Sub New()
         InitializeComponent()
 
-        LoadData()
         LoadKonfessionListe()
 
         If My.Settings.LastPID > 0 Then
@@ -51,6 +50,9 @@ Public Class personen
         Else
             btnNew_Click(Nothing, Nothing)
         End If
+
+        LoadData()
+
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As RoutedEventArgs) Handles btnSave.Click
@@ -140,6 +142,20 @@ Public Class personen
         Catch ex As Exception
             MessageBox.Show("Fehler: " & ex.Message)
         End Try
+
+        If ID.HasValue Then
+            For Each rowView As DataRowView In dgPersonen.Items
+                If CInt(rowView("tblPersonID")) = ID Then
+                    ' Selektion setzen
+                    dgPersonen.SelectedItem = rowView
+
+                    ' Sichtbar machen
+                    dgPersonen.ScrollIntoView(rowView)
+
+                    Exit For
+                End If
+            Next
+        End If
     End Sub
 
     Private Sub btnNew_Click(sender As Object, e As RoutedEventArgs) Handles btnNew.Click
