@@ -23,6 +23,7 @@
                 <MenuItem Header="_Orte" Click="Orte_Click"/>
                 <MenuItem Header="_Kreise" Click="Kreise_Click"/>
                 <MenuItem Header="_Konfession" Click="Konfession_Click"/>
+                <MenuItem Header="_Ereignisart" Click="Ereignisart_Click"/>
             </MenuItem>
             <MenuItem Header="_Ausgabe">
                 <MenuItem Header="_Ahnentafel" Click="Ahnentafel_Click"/>
