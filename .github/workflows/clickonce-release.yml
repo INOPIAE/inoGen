@@ -1,0 +1,48 @@
+name: Build and Release WPF ClickOnce
+
+on:
+  push:
+    tags:
+      - 'v*'  # Nur bei Tag-Pushes wie v1.0.0
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Restore NuGet packages
+        run: nuget restore inoGen.sln
+
+      - name: Build WPF Project (Release)
+        run: msbuild inoGen/inoGen.vbproj /p:Configuration=Release
+
+      - name: Publish ClickOnce
+        run: msbuild inoGen/inoGen.vbproj /p:Configuration=Release /t:Publish
+
+      - name: Decode PFX certificate
+        run: |
+          echo "${{ secrets.CODE_SIGN_CERT }}" | Out-File cert.pfx -Encoding Byte
+          
+      - name: Sign ClickOnce executables
+        run: |
+          $publishPath = "inoGen/bin/Release/Publish"
+          Get-ChildItem $publishPath -Filter *.exe | ForEach-Object {
+            & "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /f cert.pfx /p ${{ secrets.CODE_SIGN_PASSWORD }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 $_.FullName
+          }
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          files: |
+            inoGen/bin/Release/Publish/**/*
