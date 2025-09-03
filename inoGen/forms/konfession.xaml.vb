@@ -72,18 +72,23 @@ Public Class konfession
             End Using
 
             dgKonfession.ItemsSource = dt.DefaultView
-
-            'With dgKonfession
-            '    If .Columns.Count > 0 Then
-            '        .Columns(0).Visibility = Visibility.Collapsed ' ID ausblenden
-            '    End If
-            '    .IsReadOnly = True
-            '    .CanUserAddRows = False
-            '    .CanUserDeleteRows = False
-            'End With
         Catch ex As Exception
             MessageBox.Show("Fehler: " & ex.Message)
         End Try
+
+        If ID.HasValue Then
+            For Each rowView As DataRowView In dgKonfession.Items
+                If CInt(rowView("tblKonfessionID")) = ID Then
+                    ' Selektion setzen
+                    dgKonfession.SelectedItem = rowView
+
+                    ' Sichtbar machen
+                    dgKonfession.ScrollIntoView(rowView)
+
+                    Exit For
+                End If
+            Next
+        End If
     End Sub
 
     Private Sub btnNew_Click(sender As Object, e As RoutedEventArgs) Handles btnNew.Click

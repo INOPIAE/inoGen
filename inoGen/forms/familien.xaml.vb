@@ -25,13 +25,14 @@ Public Class familien
     Public Sub New()
         InitializeComponent()
 
-        LoadData()
         isNewRecord = True
         If My.Settings.LastFID > 0 Then
             ID = My.Settings.LastFID
             FindFamilieByID(ID)
             LoadFamily()
         End If
+
+        LoadData()
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As RoutedEventArgs) Handles btnSave.Click
@@ -124,6 +125,20 @@ Public Class familien
         Catch ex As Exception
             MessageBox.Show("Fehler: " & ex.Message)
         End Try
+
+        If ID.HasValue Then
+            For Each rowView As DataRowView In dgFamilien.Items
+                If CInt(rowView("tblFamilieID")) = ID Then
+                    ' Selektion setzen
+                    dgFamilien.SelectedItem = rowView
+
+                    ' Sichtbar machen
+                    dgFamilien.ScrollIntoView(rowView)
+
+                    Exit For
+                End If
+            Next
+        End If
     End Sub
 
     Private Sub btnNew_Click(sender As Object, e As RoutedEventArgs) Handles btnNew.Click

@@ -68,6 +68,20 @@ Public Class orte
         Catch ex As Exception
             MessageBox.Show("Fehler: " & ex.Message)
         End Try
+
+        If ID.HasValue Then
+            For Each rowView As DataRowView In dgOrte.Items
+                If CInt(rowView("tblOrtID")) = ID Then
+                    ' Selektion setzen
+                    dgOrte.SelectedItem = rowView
+
+                    ' Sichtbar machen
+                    dgOrte.ScrollIntoView(rowView)
+
+                    Exit For
+                End If
+            Next
+        End If
     End Sub
 
     Private Sub btnNew_Click(sender As Object, e As RoutedEventArgs) Handles btnNew.Click
