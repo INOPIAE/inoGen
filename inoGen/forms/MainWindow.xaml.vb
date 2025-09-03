@@ -96,6 +96,12 @@ Class MainWindow
         win.Show()
     End Sub
 
+    Private Sub Info_Click(sender As Object, e As RoutedEventArgs)
+        Dim win As New AboutWindow()
+
+        win.Show()
+    End Sub
+
     Private Sub Ereignisart_Click(sender As Object, e As RoutedEventArgs)
         MainContent.Content = New ereignisart()
     End Sub

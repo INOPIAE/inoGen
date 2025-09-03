@@ -43,11 +43,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="assets\LICENSE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\ms-icon-144x144.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="My Project\Settings.settings">
       <CustomToolNamespace>My</CustomToolNamespace>
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="assets\" />
   </ItemGroup>
 
 </Project>
