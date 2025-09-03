@@ -64,10 +64,10 @@ Public Class ClsDatabase
             FillDatabase(strSQLFile)
         Else
             Dim dbVersion As Long = ReadDBVersion()
-            'If dbVersion < 2 Then
-            '    strSQLFile = sqlPath & "from1.sql"
-            '    FillDatabase(strSQLFile)
-            'End If
+            If dbVersion < 2 Then
+                strSQLFile = sqlPath & "from_1.sql"
+                FillDatabase(strSQLFile)
+            End If
         End If
 
             Return ReadDBVersion()
