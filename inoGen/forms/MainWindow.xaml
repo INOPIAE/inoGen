@@ -17,6 +17,7 @@
             <MenuItem Header="_Basisdaten">
                 <MenuItem Header="_Person" Click="Person_Click"/>
                 <MenuItem Header="_Familie" Click="Familie_Click"/>
+                <MenuItem Header="_VK Heirat KB" Click="VKH_Click"/>
             </MenuItem>
             <MenuItem Header="_Definitionen">
                 <MenuItem Header="_Orte" Click="Orte_Click"/>
@@ -39,6 +40,6 @@
         </StatusBar>
         
         <ContentControl x:Name="MainContent"/>
-
+       
     </DockPanel>
 </Window>
