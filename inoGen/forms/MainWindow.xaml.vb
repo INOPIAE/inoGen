@@ -83,6 +83,10 @@ Class MainWindow
         win.Show()
     End Sub
 
+    Private Sub Ereignisart_Click(sender As Object, e As RoutedEventArgs)
+        MainContent.Content = New ereignisart()
+    End Sub
+
     Private Sub New_Click(sender As Object, e As RoutedEventArgs)
         Dim saveDialog As New SaveFileDialog()
         saveDialog.Title = "Neue Datenquelle anlegen"
