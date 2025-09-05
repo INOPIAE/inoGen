@@ -90,6 +90,12 @@ Class MainWindow
         MainContent.Content = ctrl
     End Sub
 
+    Private Sub FranzKalender_Click(sender As Object, e As RoutedEventArgs)
+        Dim win As New FranzKalender()
+
+        win.Show()
+    End Sub
+
     Private Sub Ahnentafel_Click(sender As Object, e As RoutedEventArgs)
         Dim win As New AhnenTafel()
 

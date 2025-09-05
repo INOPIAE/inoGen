@@ -28,6 +28,9 @@
             <MenuItem Header="_Ausgabe">
                 <MenuItem Header="_Ahnentafel" Click="Ahnentafel_Click"/>
             </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="_Franz Kalender" Click="FranzKalender_Click"/>
+            </MenuItem>
             <MenuItem Header="_?">
                 <MenuItem Header="_Info" Click="Info_Click"/>
             </MenuItem>
