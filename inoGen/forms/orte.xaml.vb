@@ -1,5 +1,6 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
+Imports inoGenDLL
 
 Public Class orte
     Private connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
@@ -9,7 +10,7 @@ Public Class orte
     Private isNewRecord As Boolean = False
     Private ID As Integer? = Nothing
 
-
+    Private cOSM As New ClsOSMKarte
     Public Sub New()
         InitializeComponent()
 
@@ -20,25 +21,26 @@ Public Class orte
     Private Sub btnSave_Click(sender As Object, e As RoutedEventArgs) Handles btnSave.Click
         Dim rowView As DataRowView = CType(dgOrte.SelectedItem, DataRowView)
         If rowView IsNot Nothing Or isNewRecord Then
-            ' Werte in DataRow ändern
 
-
-            ' Änderungen in Access speichern
             Try
                 Using conn As New OleDbConnection(connectionString)
                     conn.Open()
                     If isNewRecord Then
-                        Dim insertCmd As New OleDbCommand("INSERT INTO tblOrt (Ort, tblKreisID, Info) VALUES (?, ?, ?)", conn)
+                        Dim insertCmd As New OleDbCommand("INSERT INTO tblOrt (Ort, tblKreisID, Info, Breite, Laenge) VALUES (?, ?, ?, ?, ?)", conn)
                         insertCmd.Parameters.AddWithValue("@Ort", txtOrt.Text)
                         insertCmd.Parameters.AddWithValue("@Kreisid", cbKreis.SelectedValue)
                         insertCmd.Parameters.AddWithValue("@Info", txtInfo.Text)
+                        insertCmd.Parameters.AddWithValue("@Breite", If(String.IsNullOrWhiteSpace(txtLat.Text), DBNull.Value, CType(txtLat.Text, Double)))
+                        insertCmd.Parameters.AddWithValue("@Laenge", If(String.IsNullOrWhiteSpace(txtLon.Text), DBNull.Value, CType(txtLon.Text, Double)))
                         insertCmd.ExecuteNonQuery()
                         MessageBox.Show("Neuer Datensatz gespeichert!")
                     ElseIf ID.HasValue Then
-                        Dim updateCmd As New OleDbCommand("UPDATE tblOrt SET Ort = ?, tblKreisID = ?, Info = ? WHERE tblOrtID = ?", conn)
+                        Dim updateCmd As New OleDbCommand("UPDATE tblOrt SET Ort = ?, tblKreisID = ?, Info = ?, Breite = ?, Laenge = ? WHERE tblOrtID = ?", conn)
                         updateCmd.Parameters.AddWithValue("@Ort", txtOrt.Text)
                         updateCmd.Parameters.AddWithValue("@Kreisid", cbKreis.SelectedValue)
                         updateCmd.Parameters.AddWithValue("@Info", txtInfo.Text)
+                        updateCmd.Parameters.AddWithValue("@Breite", If(String.IsNullOrWhiteSpace(txtLat.Text), DBNull.Value, CType(txtLat.Text, Double)))
+                        updateCmd.Parameters.AddWithValue("@Laenge", If(String.IsNullOrWhiteSpace(txtLon.Text), DBNull.Value, CType(txtLon.Text, Double)))
                         updateCmd.Parameters.AddWithValue("@ID", ID.Value)
                         updateCmd.ExecuteNonQuery()
                         MessageBox.Show("Änderungen gespeichert!")
@@ -88,6 +90,8 @@ Public Class orte
         txtOrt.Clear()
         cbKreis.SelectedValue = 1
         txtInfo.Clear()
+        txtLat.Clear()
+        txtLon.Clear()
         ID = Nothing
         isNewRecord = True
         txtOrt.Focus()
@@ -115,6 +119,8 @@ Public Class orte
             txtOrt.Text = rowView("Ort").ToString()
             cbKreis.SelectedValue = Convert.ToInt32(rowView("tblKreisID"))
             txtInfo.Text = rowView("Info").ToString()
+            txtLat.Text = If(rowView("Breite") IsNot DBNull.Value, rowView("Breite").ToString(), "")
+            txtLon.Text = If(rowView("Laenge") IsNot DBNull.Value, rowView("Laenge").ToString(), "")
             isNewRecord = False
         End If
     End Sub
@@ -141,5 +147,24 @@ Public Class orte
         Catch ex As Exception
             MessageBox.Show("Fehler beim Laden der Kreise: " & ex.Message)
         End Try
+    End Sub
+
+    Private Sub btnGeo_Click(sender As Object, e As RoutedEventArgs) ' Handles btnGeo.Click
+        Dim results = cOSM.FindGeoCode(txtOrt.Text)
+        If results IsNot Nothing AndAlso results.Count > 0 Then
+            For Each r In results
+                Dim test As Integer = MessageBox.Show($"Ergebnis: {r.display_name} (lat: {r.lat}, lon: {r.lon}) Gefundene Einträge ({results.Count})", "Ort", MessageBoxButton.YesNoCancel)
+                If test = MessageBoxResult.Yes Then
+                    txtLat.Text = r.lat.Replace(".", ",")
+                    txtLon.Text = r.lon.Replace(".", ",")
+                    txtInfo.Text &= r.display_name
+                    Exit For
+                ElseIf test = MessageBoxResult.Cancel Then
+                    Exit For
+                End If
+            Next
+        Else
+            MessageBox.Show("Kein Ergebnis gefunden.")
+        End If
     End Sub
 End Class

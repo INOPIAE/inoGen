@@ -8,13 +8,13 @@ Public Class ClsDatabase
     Private connString As String
     Private dbFile As String
 
-    Private sqlPath As String = AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Debug\net8.0-windows\", "") & "\inoGenDLL\SQL\"
+    Private sqlPath As String = IIf(AppDomain.CurrentDomain.BaseDirectory.Contains("Release"), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Release\net9.0-windows7.0\", ""), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Debug\net9.0-windows7.0\", "")) & "\inoGenDLL\SQL\"
 
     Public Sub New(dbFileString As String)
         connString = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";Persist Security Info=True", dbFileString)
         dbFile = dbFileString
-        If AppDomain.CurrentDomain.BaseDirectory.Contains("TestInoCook") Then
-            sqlPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\TestInoCook\bin\Debug\net8.0\", "") & "\inoGenDLL\SQL\"
+        If AppDomain.CurrentDomain.BaseDirectory.Contains("TestInoGen") Then
+            sqlPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\TestInoGen\bin\Debug\net9.0-windows7.0\", "") & "\inoGenDLL\SQL\"
         End If
     End Sub
 
@@ -66,6 +66,10 @@ Public Class ClsDatabase
             Dim dbVersion As Long = ReadDBVersion()
             If dbVersion < 2 Then
                 strSQLFile = sqlPath & "from_1.sql"
+                FillDatabase(strSQLFile)
+            End If
+            If dbVersion < 3 Then
+                strSQLFile = sqlPath & "from_2.sql"
                 FillDatabase(strSQLFile)
             End If
         End If
