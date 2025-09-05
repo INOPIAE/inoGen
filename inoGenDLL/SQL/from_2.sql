@@ -1,0 +1,4 @@
+﻿ALTER TABLE tblOrt ADD COLUMN Breite DOUBLE;
+ALTER TABLE tblOrt ADD COLUMN Laenge DOUBLE;
+
+UPDATE tblVersion SET Version = 3;

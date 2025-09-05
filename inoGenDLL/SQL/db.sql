@@ -26,6 +26,8 @@ CREATE TABLE tblOrt(
     Ort VARCHAR(255),
     tblKreisID INTEGER,
     Info MEMO,
+    Breite DOUBLE,
+    Laenge DOUBLE,
 	CONSTRAINT PrimaryKey PRIMARY KEY (tblOrtID));
 
 DROP TABLE tblEreignisArt;
@@ -232,4 +234,4 @@ INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis)
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Taufpate');
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Trauzeuge');
 
-UPDATE tblVersion SET Version = 2;
+UPDATE tblVersion SET Version = 3;
