@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Windows.Forms
 
 Public Class AhnenTafel
     Private cAT As New inoGenDLL.clsAhnentafelDaten(My.Settings.DBPath)
@@ -9,6 +10,7 @@ Public Class AhnenTafel
         InitializeComponent()
         btnCSV.IsEnabled = False
         btnOK.IsEnabled = False
+        btnChart.IsEnabled = False
         btnMap.IsEnabled = False
     End Sub
     Private Sub btnOK_Click(sender As Object, e As RoutedEventArgs)
@@ -24,6 +26,7 @@ Public Class AhnenTafel
         Dim md As String = File.ReadAllText(mdFilePath)
         MdView.Markdown = md
         btnCSV.IsEnabled = True
+        btnChart.IsEnabled = True
         btnMap.IsEnabled = True
     End Sub
 
@@ -51,6 +54,25 @@ Public Class AhnenTafel
 
         Dim win As New OSMKarte(cAT.LocationList, cAT.Persons)
         win.Show()
+
+    End Sub
+
+    Private Sub btnChart_Click(sender As Object, e As RoutedEventArgs)
+        Dim saveFileDialog As New SaveFileDialog()
+        saveFileDialog.Filter = "PDF-Dateien (*.pdf)|*.pdf"
+        saveFileDialog.Title = "PDF speichern"
+        saveFileDialog.DefaultExt = "pdf"
+        saveFileDialog.AddExtension = True
+
+        ' Dialog anzeigen
+        If saveFileDialog.ShowDialog() = Forms.DialogResult.OK Then
+            Try
+                MdlPdfAhnentafel.AT(cAT.Persons, saveFileDialog.FileName)
+                MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Catch ex As Exception
+                MessageBox.Show("Fehler beim Speichern der PDF: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End If
 
     End Sub
 End Class
