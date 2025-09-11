@@ -2,6 +2,8 @@
 Imports System.Diagnostics.Eventing.Reader
 Imports System.IO
 Imports System.Reflection.Emit
+Imports System.Security.Cryptography
+Imports inoGenDLL.ClsOSMKarte
 
 Public Class clsAhnentafelDaten
 
@@ -9,6 +11,8 @@ Public Class clsAhnentafelDaten
     Public connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "")
 
     Public cGenDB As inoGenDLL.ClsGenDB
+    Public cOSM As New inoGenDLL.ClsOSMKarte
+
 
     Public Structure PersonData
         Public ID As Integer
@@ -47,6 +51,7 @@ Public Class clsAhnentafelDaten
     Public Persons As New List(Of PersonData)
     Public Kinder As New List(Of PersonData)
     Public Ehe As New List(Of Integer)
+    Public LocationList As New List(Of ClsOSMKarte.marker)
     Public Property RootPersonID As Integer = 0
 
     Public Sub New(dbFileString As String)
@@ -101,7 +106,11 @@ Public Class clsAhnentafelDaten
             End If
 
             index += 1
+            If index > 1000 Then
+                Exit While ' Sicherheitsabfrage, um endlose Schleifen zu vermeiden
+            End If
         End While
+        ErstelleLocationList()
     End Sub
 
     Public Function NewPerson(ID As Long, Pos As Long) As PersonData
@@ -109,7 +118,6 @@ Public Class clsAhnentafelDaten
         np.ID = ID
         np.Pos = Pos
         cGenDB.FillPersonData(np)
-
 
         Return np
     End Function
@@ -353,4 +361,101 @@ Public Class clsAhnentafelDaten
         End If
     End Function
 
+    Public Sub ErstelleLocationList()
+        LocationList = New List(Of ClsOSMKarte.marker)
+        Dim strSql As String = "SELECT
+            tblEreignis.tblPersonID,
+            tblEreignis.tblFamilieID,
+            tblEreignis.tblOrtID,
+            tblOrt.Ort,
+            tblOrt.Breite,
+            tblOrt.Laenge
+        FROM
+            tblEreignis
+            INNER JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID"
+        For Each p In Persons
+            Using conn As New OleDbConnection(connectionString)
+                conn.Open()
+
+                Using cmd As New OleDbCommand(strSql & " WHERE tblPersonID = ?", conn)
+                    cmd.Parameters.AddWithValue("?", p.ID) 'Parameter einsetzen
+
+                    Using rdr As OleDbDataReader = cmd.ExecuteReader()
+                        While rdr.Read()
+                            If rdr("Breite") Is DBNull.Value Or rdr("Laenge") Is DBNull.Value Then
+                                Continue While
+                            End If
+                            Dim marker As New ClsOSMKarte.marker
+                            marker.lat = Convert.ToDouble(rdr("Breite"))
+                            marker.lon = Convert.ToDouble(rdr("Laenge"))
+                            marker.title = rdr("Ort")
+                            marker.Count = 1
+                            AddMarkerIfNotExists(marker)
+                        End While
+                    End Using
+                End Using
+            End Using
+
+        Next
+    End Sub
+
+    Public Sub AddMarkerIfNotExists(newMarker As marker)
+        ' Prüfen ob Titel schon vorhanden
+        Dim exists = LocationList.Any(Function(m) m.title = newMarker.title)
+
+        If Not exists Then
+            LocationList.Add(newMarker)
+        Else
+            ' Optional: den vorhandenen Count erhöhen
+            Dim existing = LocationList.First(Function(m) m.title = newMarker.title)
+            Dim updated = existing
+            updated.Count += 1
+            ' alten ersetzen
+            Dim idx = LocationList.IndexOf(existing)
+            LocationList(idx) = updated
+        End If
+    End Sub
+
+    Public Function CalculateChild(person As PersonData) As Long
+        Dim childPos As Long = 1
+        Select Case person.Gen
+            Case 2, 5, 8, 11, 14
+                childPos = person.Pos \ 2
+            Case 3, 6, 9, 12, 15
+                childPos = person.Pos \ 4
+            Case 4, 7, 10, 13, 16
+                childPos = person.Pos \ 8
+        End Select
+        Return childPos
+    End Function
+
+    Public Function CalculateChildPosChart(person As PersonData) As Long
+        Dim childPos As Long = 1
+        Dim Versatz As Long = 0
+        Dim Start As Long = 0
+        Dim VersatzKorrektur As Long = 0
+        Select Case person.Gen
+            Case 4
+                Return 0
+
+            Case 5, 8, 11, 14
+                Start = 2 ^ (person.Gen - 1) - 1
+                Versatz = 2
+                VersatzKorrektur = 0
+            Case 6, 9, 12, 15
+                Start = 2 ^ (person.Gen - 1) - 3
+                Versatz = 4
+                VersatzKorrektur = 2
+            Case 7, 10, 13, 16
+                Start = 2 ^ (person.Gen - 1) - 7
+                Versatz = 8
+                VersatzKorrektur = 6
+        End Select
+        childPos = person.Pos - Start
+        Do Until childPos <= Versatz + VersatzKorrektur
+            childPos = childPos - Versatz
+
+        Loop
+        Return childPos
+    End Function
 End Class
