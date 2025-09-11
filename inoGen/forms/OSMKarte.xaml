@@ -1,0 +1,20 @@
+﻿<Window x:Class="OSMKarte"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mapsui="clr-namespace:Mapsui.UI.Wpf;assembly=Mapsui.UI.Wpf"
+        Title="Mapsui Beispiel" Height="800" Width="1000">
+
+    <DockPanel>
+
+        <!-- Obere Toolbar -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Background="LightGray" HorizontalAlignment="Left" Margin="5">
+            <Button Name="btnBild" Content="Bild" Margin="2"/>
+            <Button Name="btnPDF" Content="PDF" Margin="2"/>
+        </StackPanel>
+
+        <!-- MapControl füllt den Rest -->
+        <mapsui:MapControl Name="mapControl"/>
+
+    </DockPanel>
+
+</Window>
