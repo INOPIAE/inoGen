@@ -5,9 +5,8 @@ Imports inoGenDLL
 
 Public Class familien
     Private cGenDB As New ClsGenDB(My.Settings.DBPath)
-    Private connectionString As String =
- String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
-    '"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""D:\Daten\programierung neu\inoGen\Daten\Drews.accdb"";Persist Security Info=False;"
+    Private connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
+
 
     Private dt As New DataTable()
     Private dtE As New DataTable()
@@ -180,9 +179,13 @@ Public Class familien
             ID = Convert.ToInt32(rowView("tblFamilieID"))
             If Not IsDBNull(rowView("tblPersonIDV")) Then
                 VID = Convert.ToInt32(rowView("tblPersonIDv"))
+            Else
+                VID = Nothing
             End If
             If Not IsDBNull(rowView("tblPersonIDM")) Then
                 MID = Convert.ToInt32(rowView("tblPersonIDM"))
+            Else
+                MID = Nothing
             End If
             If Not IsDBNull(rowView("FS")) Then
                 txtFS.Text = rowView("FS")
@@ -203,11 +206,13 @@ Public Class familien
             VT = txtVater.Text.Substring(0, 4)
         Else
             VT = "____"
+            txtVater.Text = ""
         End If
         If MID > 0 Then
             txtMutter.Text = cGenDB.PersonenDaten(MID)
             MT = txtMutter.Text.Substring(0, 4)
         Else
+            txtMutter.Text = ""
             MT = "____"
         End If
     End Sub
@@ -376,6 +381,10 @@ Public Class familien
         End If
         Dim win As New SuchePerson(VT)
         AddHandler win.PersonSelected, Sub(pid)
+                                           If pid = VID Or pid = MID Then
+                                               MessageBox.Show("Die Person ist bereits als Vater oder Mutter zugeordnet.")
+                                               Exit Sub
+                                           End If
 
                                            Using conn As New OleDbConnection(connectionString)
                                                conn.Open()
