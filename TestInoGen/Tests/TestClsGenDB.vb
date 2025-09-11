@@ -132,5 +132,61 @@ Namespace TestInoGen
             Assert.That(pd.KHeiratort, NUnit.Framework.Is.EqualTo("Bonn"))
 
         End Sub
+
+        <Test>
+        Public Sub TestCalculateDatum()
+            Dim testDatum As String = "12.01.1900"
+            Dim result As Nullable(Of Date) = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(New Date(1900, 1, 12)))
+
+            testDatum = "< 12.01.1900"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(New Date(1900, 1, 12)))
+
+            testDatum = "> 12.01.1900"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(New Date(1900, 1, 12)))
+
+            testDatum = "um 12.01.1900"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(New Date(1900, 1, 12)))
+
+            testDatum = "um 02.1900"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(New Date(1900, 2, 1)))
+
+            testDatum = "02.1900"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(New Date(1900, 2, 1)))
+
+            testDatum = "um 1901"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(New Date(1901, 1, 1)))
+
+            testDatum = "1901"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(New Date(1901, 1, 1)))
+
+            testDatum = "nur text"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.Null)
+
+            testDatum = "1608/1609"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.Null)
+
+            testDatum = "1608 / 1609"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.Null)
+
+            testDatum = "1608 - 1609"
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.Null)
+
+            testDatum = ""
+            result = cGDB.CalculateDatum(testDatum)
+            Assert.That(result, NUnit.Framework.Is.Null)
+
+        End Sub
     End Class
 End Namespace
