@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="assets\PinRot.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="favicon.ico" />
   </ItemGroup>
 
@@ -25,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="itext" Version="9.3.0" />
+    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.3.0" />
+    <PackageReference Include="Mapsui.Wpf" Version="4.1.9" />
     <PackageReference Include="MdXaml" Version="1.27.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3405.78" />
     <PackageReference Include="System.Data.OleDb" Version="9.0.8" />
@@ -57,7 +64,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="assets\" />
+    <Content Include="assets\PinRot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
