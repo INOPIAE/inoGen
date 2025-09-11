@@ -1,5 +1,6 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
+Imports System.Text.RegularExpressions
 
 Public Class ClsGenDB
 
@@ -239,5 +240,42 @@ Public Class ClsGenDB
             End Using
         End Using
         Return PNAme
+    End Function
+
+    Public Function CalculateDatum(Datum As String) As Nullable(Of Date)
+        Dim d As Nullable(Of Date) = Nothing
+        Dim day As Integer
+        Dim month As Integer
+        Dim year As Integer
+        Dim parts As String()
+        If Datum IsNot Nothing Then
+            If IsDate(Datum) Then
+                d = CDate(Datum)
+            Else
+                Dim cleaned As String = Regex.Replace(Datum, "[^0-9. ]", "").Trim
+                If IsDate(cleaned) Then
+                    d = CDate(cleaned)
+                Else
+                    parts = cleaned.Split(New Char() {"."c, " "c}, StringSplitOptions.RemoveEmptyEntries)
+                    If parts.Length = 2 Then
+                        If parts(0).Length <= 2 AndAlso parts(1).Length > 2 Then
+                            If Integer.TryParse(parts(0), month) AndAlso Integer.TryParse(parts(1), year) Then
+                                If month >= 1 AndAlso month <= 12 AndAlso year >= 100 AndAlso year <= 9999 Then
+                                    d = New Date(year, month, 1)
+                                End If
+                            End If
+                        End If
+                    End If
+                    If parts.Length = 1 Then
+                        If Integer.TryParse(parts(0), year) Then
+                            If year >= 100 AndAlso year <= 9999 Then
+                                d = New Date(year, 1, 1)
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        End If
+        Return d
     End Function
 End Class
