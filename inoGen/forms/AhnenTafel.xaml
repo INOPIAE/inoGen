@@ -6,7 +6,7 @@
         xmlns:md="clr-namespace:MdXaml;assembly=MdXaml"
         xmlns:local="clr-namespace:inoGen"
         mc:Ignorable="d"
-        Title="AhnenTafel" Height="450" Width="800">
+        Title="AhnenTafel" Height="450" Width="1000">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -21,6 +21,7 @@
             <Button x:Name="btnSearch" Content="Suchen" Width="80" Margin="5" Click="btnSearch_Click"/>
             <Button x:Name="btnOK" Content="OK" Width="80" Margin="5" Click="btnOK_Click"/>
             <Button x:Name="btnCSV" Content="CSV" Width="80" Margin="5" Click="btnCSV_Click"/>
+            <Button x:Name="btnChart" Content="Ahnentafel" Width="80" Margin="5" Click="btnChart_Click"/>
             <Button x:Name="btnMap" Content="Karte" Width="80" Margin="5" Click="btnMap_Click"/>
             <Button x:Name="btnCancel" Content="Abbrechen" Width="80" Margin="5" IsCancel="True"/>
         </StackPanel>

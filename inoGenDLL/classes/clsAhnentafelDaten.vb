@@ -436,8 +436,7 @@ Public Class clsAhnentafelDaten
         Dim VersatzKorrektur As Long = 0
         Select Case person.Gen
             Case 4
-                Return 0
-
+                Return person.Pos - 1
             Case 5, 8, 11, 14
                 Start = 2 ^ (person.Gen - 1) - 1
                 Versatz = 2
@@ -450,6 +449,8 @@ Public Class clsAhnentafelDaten
                 Start = 2 ^ (person.Gen - 1) - 7
                 Versatz = 8
                 VersatzKorrektur = 6
+            Case Else
+                Return person.Pos - 1
         End Select
         childPos = person.Pos - Start
         Do Until childPos <= Versatz + VersatzKorrektur
