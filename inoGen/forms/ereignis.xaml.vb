@@ -17,6 +17,7 @@ Public Class ereignis
     Private isPers As Boolean = True
     Private EAID As Integer
 
+    Private cGenDB As New inoGenDLL.ClsGenDB(My.Settings.DBPath)
 
     Public Property PersonId As Integer
         Get
@@ -78,6 +79,11 @@ Public Class ereignis
             If ZID = -1 Then Exit Sub
         End If
 
+        If IsNothing(cbEreignis.SelectedValue) Then
+            MessageBox.Show("Bitte Ereignis auswählen.")
+            cbEreignis.Focus()
+            Exit Sub
+        End If
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
 
@@ -100,14 +106,16 @@ Public Class ereignis
                     cmdInsert.Parameters.AddWithValue("@tblEreignisArtID", cbEreignis.SelectedValue)
                     cmdInsert.Parameters.AddWithValue("@tblPersonID", PID)
                     cmdInsert.Parameters.AddWithValue("@tblFamilieID", FID)
-                    If IsDate(txtDatum.Text) Then
-                        cmdInsert.Parameters.AddWithValue("@Datum", CDate(txtDatum.Text))
+                    Dim testdate As Nullable(Of Date) = cGenDB.CalculateDatum(txtDatum.Text)
+                    If IsDate(testdate) Then
+                        cmdInsert.Parameters.AddWithValue("@Datum", testdate)
                     Else
                         cmdInsert.Parameters.AddWithValue("@Datum", DBNull.Value)
                     End If
                     cmdInsert.Parameters.AddWithValue("@DatumText", txtDatum.Text)
-                    If IsDate(txtBisDatum.Text) Then
-                        cmdInsert.Parameters.AddWithValue("@BDatum", CDate(txtBisDatum.Text))
+                    testdate = cGenDB.CalculateDatum(txtBisDatum.Text)
+                    If IsDate(testdate) Then
+                        cmdInsert.Parameters.AddWithValue("@BDatum", testdate)
                     Else
                         cmdInsert.Parameters.AddWithValue("@BDatum", DBNull.Value)
                     End If
@@ -129,14 +137,16 @@ Public Class ereignis
                     cmdUpdate.Parameters.AddWithValue("@tblEreignisArtID", cbEreignis.SelectedValue)
                     cmdUpdate.Parameters.AddWithValue("@tblPersonID", PID)
                     cmdUpdate.Parameters.AddWithValue("@tblFamilieID", FID)
-                    If IsDate(txtDatum.Text) Then
-                        cmdUpdate.Parameters.AddWithValue("@Datum", CDate(txtDatum.Text))
+                    Dim testdate As Nullable(Of Date) = cGenDB.CalculateDatum(txtDatum.Text)
+                    If IsDate(testdate) Then
+                        cmdUpdate.Parameters.AddWithValue("@Datum", testdate)
                     Else
                         cmdUpdate.Parameters.AddWithValue("@Datum", DBNull.Value)
                     End If
                     cmdUpdate.Parameters.AddWithValue("@DatumText", txtDatum.Text)
-                    If IsDate(txtBisDatum.Text) Then
-                        cmdUpdate.Parameters.AddWithValue("@BDatum", CDate(txtBisDatum.Text))
+                    testdate = cGenDB.CalculateDatum(txtBisDatum.Text)
+                    If IsDate(testdate) Then
+                        cmdUpdate.Parameters.AddWithValue("@BDatum", testdate)
                     Else
                         cmdUpdate.Parameters.AddWithValue("@BDatum", DBNull.Value)
                     End If
