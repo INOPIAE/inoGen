@@ -8,7 +8,7 @@ Public Class SuchePerson
 
     Public Property SelectedID As Integer? = Nothing
 
-    Public Event PersonSelected(id As Integer)
+    Public Event PersonSelected(id As Integer, persontext As String)
 
     Private blnStart As Boolean = True
     Private connectionString As String =
@@ -104,11 +104,10 @@ Public Class SuchePerson
         If dgPerson.SelectedItem IsNot Nothing Then
             Dim row As DataRowView = CType(dgPerson.SelectedItem, DataRowView)
             Dim selectedId As Integer = CInt(row("tblPersonID"))
+            Dim selectedText As String = String.Format("{0} {1} ({2})", row("Vorname"), row("Nachname"), row("PS"))
 
-            ' Event auslösen → Rückgabe an Hauptfenster
-            RaiseEvent PersonSelected(selectedId)
+            RaiseEvent PersonSelected(selectedId, selectedText)
 
-            ' Fenster schließen
             Me.Close()
         Else
             MessageBox.Show("Bitte einen Datensatz auswählen.")
@@ -143,7 +142,7 @@ Public Class SuchePerson
         For Each col In dgPerson.Columns
             If col.Header IsNot Nothing Then
                 Select Case col.Header.ToString()
-                    Case "tblPersonID" ', "tblFamilieID", "tblNachnameID", "tblKonfessionID"
+                    Case "tblPersonID"
                         col.Visibility = Visibility.Collapsed
                 End Select
             End If
@@ -153,15 +152,14 @@ Public Class SuchePerson
         dgPerson.CanUserAddRows = False
     End Sub
 
-    Private Sub dgPerson_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs) 'Handles dgPerson.MouseDoubleClick
+    Private Sub dgPerson_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs)
         If dgPerson.SelectedItem IsNot Nothing Then
             Dim row As DataRowView = CType(dgPerson.SelectedItem, DataRowView)
             Dim selectedId As Integer = CInt(row("tblPersonID"))
+            Dim selectedText As String = String.Format("{0} {1} {2}", row("PS"), row("Vorname"), row("Nachname"))
 
-            ' Event auslösen → Rückgabe an Hauptfenster
-            RaiseEvent PersonSelected(selectedId)
+            RaiseEvent PersonSelected(selectedId, selectedText)
 
-            ' Fenster schließen
             Me.Close()
         Else
             MessageBox.Show("Bitte einen Datensatz auswählen.")

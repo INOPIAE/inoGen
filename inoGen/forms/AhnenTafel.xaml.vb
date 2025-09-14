@@ -32,7 +32,7 @@ Public Class AhnenTafel
 
     Private Sub btnSearch_Click(sender As Object, e As RoutedEventArgs)
         Dim win As New SuchePerson()
-        AddHandler win.PersonSelected, Sub(id)
+        AddHandler win.PersonSelected, Sub(id, persontext)
 
                                            PID = id
                                            txtPerson.Text = cGenDB.PersonenDaten(id)

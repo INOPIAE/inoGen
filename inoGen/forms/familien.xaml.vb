@@ -349,8 +349,8 @@ Public Class familien
     Private Sub btnV_Click(sender As Object, e As RoutedEventArgs)
         Dim win As New SuchePerson(True)
         ' Event-Handler für Rückgabe setzen
-        AddHandler win.PersonSelected, Sub(id)
-                                           MessageBox.Show("Ausgewählte ID: " & id)
+        AddHandler win.PersonSelected, Sub(id, persontext)
+                                           MessageBox.Show("Ausgewählte Person: " & persontext)
                                            ' Hier kannst du direkt Felder befüllen
                                            VID = id
                                            txtVater.Text = cGenDB.PersonenDaten(VID)
@@ -363,7 +363,8 @@ Public Class familien
 
     Private Sub btnM_Click(sender As Object, e As RoutedEventArgs)
         Dim win As New SuchePerson(False)
-        AddHandler win.PersonSelected, Sub(id)
+        AddHandler win.PersonSelected, Sub(id, persontext)
+                                           MessageBox.Show("Ausgewählte Person: " & persontext)
 
                                            MID = id
                                            txtMutter.Text = cGenDB.PersonenDaten(MID)
@@ -380,7 +381,7 @@ Public Class familien
             Exit Sub
         End If
         Dim win As New SuchePerson(VT)
-        AddHandler win.PersonSelected, Sub(pid)
+        AddHandler win.PersonSelected, Sub(pid, persontext)
                                            If pid = VID Or pid = MID Then
                                                MessageBox.Show("Die Person ist bereits als Vater oder Mutter zugeordnet.")
                                                Exit Sub
@@ -389,7 +390,6 @@ Public Class familien
                                            Using conn As New OleDbConnection(connectionString)
                                                conn.Open()
 
-                                               ' 1. Abfrage ob schon eine Familie zugeordnet ist
                                                Dim sqlCheck As String = "SELECT tblFamilieID FROM tblPerson WHERE tblPersonID = ? AND tblFamilieID > 0 "
                                                Using cmdCheck As New OleDbCommand(sqlCheck, conn)
                                                    cmdCheck.Parameters.AddWithValue("@p1", pid)
@@ -397,10 +397,10 @@ Public Class familien
                                                    Dim result = cmdCheck.ExecuteScalar()
 
                                                    If result IsNot Nothing AndAlso Not IsDBNull(result) Then
-                                                       ' Es gibt bereits eine FamilieID
-                                                       MessageBox.Show("Diese Person ist bereits einer Familie zugeordnet (FamilieID=" & result.ToString() & ").")
+                                                       MessageBox.Show(String.Format("Diese Person '{0}' ist bereits einer Familie zugeordnet (FamilieID={1}}).", persontext, result.ToString()))
                                                    Else
-                                                       ' Keine FamilieID → Update durchführen
+
+                                                       MessageBox.Show("Ausgewählte Person: " & persontext)
                                                        Dim sqlUpdate As String = "UPDATE tblPerson SET tblFamilieID = ? WHERE tblPersonID = ?"
                                                        Using cmdUpdate As New OleDbCommand(sqlUpdate, conn)
                                                            cmdUpdate.Parameters.AddWithValue("@p1", ID)
@@ -450,7 +450,7 @@ Public Class familien
         For Each col In dgPersonen.Columns
             If col.Header IsNot Nothing Then
                 Select Case col.Header.ToString()
-                    Case "tblPersonID" ', "tblFamilieID", "tblNachnameID", "tblKonfessionID"
+                    Case "tblPersonID"
                         col.Visibility = Visibility.Collapsed
                 End Select
             End If
@@ -483,7 +483,6 @@ Public Class familien
 
                 Using reader As OleDbDataReader = cmd.ExecuteReader()
                     If reader.Read() Then
-                        ' Werte auslesen und prüfen auf DBNull
                         If Not IsDBNull(reader("FS")) Then
                             txtFS.Text = reader("FS")
                         End If
