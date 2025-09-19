@@ -4,17 +4,20 @@ Imports System.Windows.Forms
 Public Class AhnenTafel
     Private cAT As New inoGenDLL.clsAhnentafelDaten(My.Settings.DBPath)
     Private cGenDB As New inoGenDLL.ClsGenDB(My.Settings.DBPath)
-    Dim PID As Integer = 1
+    Private PID As Integer = 1
+
+    Private mdFilePath As String = IO.Path.Combine(Application.MyAppFolder, "Ahnenbericht.md")
+
     Public Sub New()
         ' Dieser Aufruf ist für den Designer erforderlich.
         InitializeComponent()
         btnCSV.IsEnabled = False
+        btnReport.IsEnabled = False
         btnOK.IsEnabled = False
         btnChart.IsEnabled = False
         btnMap.IsEnabled = False
     End Sub
     Private Sub btnOK_Click(sender As Object, e As RoutedEventArgs)
-        Dim mdFilePath As String = IO.Path.Combine(Application.MyAppFolder, "Ahnenbericht.md")
         cAT.RootPersonID = PID
         cAT.NewList()
         If ckbCompress.IsChecked Then
@@ -26,6 +29,7 @@ Public Class AhnenTafel
         Dim md As String = File.ReadAllText(mdFilePath)
         MdView.Markdown = md
         btnCSV.IsEnabled = True
+        btnReport.IsEnabled = True
         btnChart.IsEnabled = True
         btnMap.IsEnabled = True
     End Sub
@@ -74,5 +78,23 @@ Public Class AhnenTafel
             End Try
         End If
 
+    End Sub
+
+    Private Sub btnReport_Click(sender As Object, e As RoutedEventArgs)
+
+        Dim saveFileDialog As New SaveFileDialog()
+        saveFileDialog.Filter = "PDF-Dateien (*.pdf)|*.pdf"
+        saveFileDialog.Title = "PDF speichern"
+        saveFileDialog.DefaultExt = "pdf"
+        saveFileDialog.AddExtension = True
+
+        If saveFileDialog.ShowDialog() = Forms.DialogResult.OK Then
+            Try
+                MdlPdfAncestorReport.GenerateReport(mdFilePath, saveFileDialog.FileName)
+                MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Catch ex As Exception
+                MessageBox.Show("Fehler beim Speichern der PDF: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End If
     End Sub
 End Class
