@@ -1,7 +1,10 @@
-﻿Imports inoGenDLL
+﻿Imports System.Collections.Specialized
 Imports System.IO
+Imports System.Windows.Forms
+Imports inoGenDLL
 Imports Microsoft.Win32
-Imports System.Collections.Specialized
+Imports OpenFileDialog = System.Windows.Forms.OpenFileDialog
+Imports SaveFileDialog = System.Windows.Forms.SaveFileDialog
 
 Class MainWindow
 
@@ -101,7 +104,31 @@ Class MainWindow
 
         win.Show()
     End Sub
+    Private Sub PersonReport_Click(sender As Object, e As RoutedEventArgs)
+        Dim PID As Integer
+        Dim win As New SuchePerson()
+        AddHandler win.PersonSelected, Sub(id, persontext)
+                                           PID = id
+                                           Dim saveFileDialog As New SaveFileDialog()
+                                           saveFileDialog.Filter = "PDF-Dateien (*.pdf)|*.pdf"
+                                           saveFileDialog.Title = "PDF speichern"
+                                           saveFileDialog.DefaultExt = "pdf"
+                                           saveFileDialog.AddExtension = True
 
+                                           ' Dialog anzeigen
+                                           If saveFileDialog.ShowDialog() = Forms.DialogResult.OK Then
+                                               Try
+                                                   MdlPdfPersonReport.GenerateReport(PID, saveFileDialog.FileName)
+
+                                                   MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                                               Catch ex As Exception
+                                                   MessageBox.Show("Fehler beim Speichern der PDF: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                               End Try
+                                           End If
+                                       End Sub
+        win.Show()
+
+    End Sub
     Private Sub Info_Click(sender As Object, e As RoutedEventArgs)
         Dim win As New AboutWindow()
 
@@ -174,7 +201,7 @@ Class MainWindow
                 Dim item As New MenuItem() With {.Header = filePath}
                 AddHandler item.Click, Sub()
                                            My.Settings.DBPath = filePath
-                                           My.Settings.Save()
+                                           SaveSettingAfterFileChange(filePath)
                                            Start()
                                        End Sub
                 RecentFilesMenu.Items.Add(item)
@@ -201,5 +228,9 @@ Class MainWindow
         If Me.Width < newWidth Then
             Me.Width = newWidth
         End If
+    End Sub
+
+    Public Sub ShowContent(content As Object)
+        MainContent.Content = content
     End Sub
 End Class

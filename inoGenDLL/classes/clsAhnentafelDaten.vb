@@ -48,10 +48,29 @@ Public Class clsAhnentafelDaten
         Public FSID As String
     End Structure
 
+    Public Structure EventData
+        Public ID As Integer
+        Public Person As Boolean
+        Public EventID As Integer
+        Public Eventname As String
+        Public EventDate As String
+        Public EventLocation As String
+        Public EventTopic As String
+    End Structure
+
+    Public Structure FamilyData
+        Public ID As Integer
+        Public VID As Integer?
+        Public MID As Integer?
+    End Structure
+
     Public Persons As New List(Of PersonData)
     Public Kinder As New List(Of PersonData)
     Public Ehe As New List(Of Integer)
     Public LocationList As New List(Of ClsOSMKarte.marker)
+    Public EventList As New List(Of EventData)
+    Public FamilyList As New List(Of FamilyData)
+
     Public Property RootPersonID As Integer = 0
 
     Public Sub New(dbFileString As String)
@@ -459,4 +478,7 @@ Public Class clsAhnentafelDaten
         Loop
         Return childPos
     End Function
+
+
+
 End Class
