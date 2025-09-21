@@ -188,5 +188,68 @@ Namespace TestInoGen
             Assert.That(result, NUnit.Framework.Is.Null)
 
         End Sub
+
+        <Test>
+        Public Sub TestGetPersonenAdditionalData()
+            Dim EDL As New List(Of clsAhnentafelDaten.EventData)
+            EDL = cGDB.GetPersonenAdditionalData(1)
+
+            Assert.That(EDL.Count, [Is].EqualTo(3))
+
+            Assert.That(EDL(0).EventLocation, [Is].EqualTo("Bonn"))
+            Assert.That(EDL(0).EventID, [Is].EqualTo(9))
+            Assert.That(EDL(0).Eventname, [Is].EqualTo("Beruf"))
+            Assert.That(EDL(0).EventTopic, [Is].EqualTo("Bratschist"))
+            Assert.That(EDL(0).EventDate, [Is].EqualTo("09.1791"))
+            Assert.That(EDL(0).Person, [Is].True)
+
+            Assert.That(EDL(1).EventLocation, [Is].EqualTo("Bonn"))
+            Assert.That(EDL(1).EventID, [Is].EqualTo(9))
+            Assert.That(EDL(1).Eventname, [Is].EqualTo("Beruf"))
+            Assert.That(EDL(1).EventTopic, [Is].EqualTo("Organist"))
+            Assert.That(EDL(1).EventDate, [Is].EqualTo("09.1791"))
+            Assert.That(EDL(1).Person, [Is].True)
+
+            Assert.That(EDL(2).EventLocation, [Is].EqualTo("Wien"))
+            Assert.That(EDL(2).EventID, [Is].EqualTo(9))
+            Assert.That(EDL(2).Eventname, [Is].EqualTo("Beruf"))
+            Assert.That(EDL(2).EventTopic, [Is].EqualTo("Komponist"))
+            Assert.That(EDL(2).EventDate, [Is].EqualTo("ab 1792"))
+            Assert.That(EDL(2).Person, [Is].True)
+
+        End Sub
+
+        <Test>
+        Public Sub TestGetFamilies()
+            Dim FL As New List(Of clsAhnentafelDaten.FamilyData)
+            FL = cGDB.GetFamilies(2)
+
+            Assert.That(FL.Count, [Is].EqualTo(1))
+            Assert.That(FL(0).ID, [Is].EqualTo(2))
+            Assert.That(FL(0).VID, [Is].EqualTo(2))
+            Assert.That(FL(0).MID, [Is].EqualTo(7))
+
+            FL = cGDB.GetFamilies(7)
+
+            Assert.That(FL.Count, [Is].EqualTo(2))
+            Assert.That(FL(0).ID, [Is].EqualTo(68))
+            Assert.That(FL(0).VID, [Is].EqualTo(128))
+            Assert.That(FL(0).MID, [Is].EqualTo(7))
+            Assert.That(FL(1).ID, [Is].EqualTo(2))
+            Assert.That(FL(1).VID, [Is].EqualTo(2))
+            Assert.That(FL(1).MID, [Is].EqualTo(7))
+
+            FL = cGDB.GetFamilies(50)
+
+            Assert.That(FL.Count, [Is].EqualTo(1))
+            Assert.That(FL(0).ID, [Is].EqualTo(25))
+            Assert.That(FL(0).VID, [Is].EqualTo(50))
+            Assert.That(FL(0).MID, [Is].EqualTo(0))
+
+            FL = cGDB.GetFamilies(1)
+
+            Assert.That(FL.Count, [Is].EqualTo(0))
+
+        End Sub
     End Class
 End Namespace

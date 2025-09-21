@@ -278,4 +278,103 @@ Public Class ClsGenDB
         End If
         Return d
     End Function
+
+    Public Function GetPersonenAdditionalData(PID As Integer) As List(Of clsAhnentafelDaten.EventData)
+        Dim strSQL As String = "SELECT
+                tblEreignis.tblEreignisID,
+                tblEreignis.tblEreignisArtID,
+                tblEreignisArt.EreignisArt AS Ereignis,
+                tblEreignis.DatumText AS Datum,
+                tblEreignis.Datum AS HDatum,
+                tblEreignis.BisDatumText AS BDatum,
+                tblEreignis.BisDatum AS BHDatum,
+                tblEreignis.Zusatz AS Zusatz,
+                IIf([tblKreis]![Kreis]<>"""",[tblOrt]![Ort] & "" ("" & [tblKreis]![Kreis] & "")"",[tblOrt]![Ort]) AS Ort,
+                tblKonfession.Konfessionkurz AS Konfession,
+                tblEreignis.Referenz,
+                tblEreignis.FSID,
+                tblEreignis.Info
+            FROM
+                (
+                    (
+                        (
+                            tblEreignis
+                            INNER JOIN tblEreignisArt ON tblEreignis.tblEreignisArtID = tblEreignisArt.tblEreignisArtID
+                        )
+                        INNER JOIN tblKonfession ON tblEreignis.tblKonfessionID = tblKonfession.tblKonfessionID
+                    )
+                    INNER JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
+                )
+                LEFT JOIN tblKreis ON tblOrt.tblKreisID = tblKreis.tblKreisID
+            WHERE tblPersonID = ? AND tblFamilieID = 0 AND tblEreignis.tblEreignisArtID > 8
+            ORDER BY
+                tblEreignisArt.Reihenfolge,
+                tblEreignis.Datum"
+        Dim EDL As New List(Of clsAhnentafelDaten.EventData)
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("?", PID) 'Parameter einsetzen
+
+                Using rdr As OleDbDataReader = cmd.ExecuteReader()
+                    While rdr.Read()
+                        Dim ED As New clsAhnentafelDaten.EventData
+                        ED.ID = PID
+                        ED.Person = True
+                        ED.EventID = rdr("tblEreignisArtID")
+                        ED.EventDate = GetDatum(rdr)
+                        ED.EventLocation = rdr("Ort").ToString()
+                        ED.Eventname = rdr("Ereignis").ToString()
+                        ED.EventTopic = rdr("Zusatz").ToString()
+
+                        EDL.Add(ED)
+                    End While
+                End Using
+            End Using
+        End Using
+        Return EDL
+    End Function
+
+    Public Function GetFamilies(PID As Integer) As List(Of clsAhnentafelDaten.FamilyData)
+        Dim strSQL As String = "SELECT
+                tblFamilie.tblFamilieID,
+                tblFamilie.FS,
+                tblFamilie.tblPersonIDV,
+                tblFamilie.tblPersonIDM,
+                Min(tblEreignis.Datum) AS Datum
+            FROM
+                tblFamilie
+                LEFT JOIN tblEreignis ON tblFamilie.tblFamilieID = tblEreignis.tblFamilieID
+            GROUP BY
+                tblFamilie.tblFamilieID,
+                tblFamilie.FS,
+                tblFamilie.tblPersonIDV,
+                tblFamilie.tblPersonIDM
+            HAVING
+                tblFamilie.tblPersonIDV = ? 
+                OR tblFamilie.tblPersonIDM = ?
+            ORDER BY
+                Min(tblEreignis.Datum)"
+        Dim FL As New List(Of clsAhnentafelDaten.FamilyData)
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("?", PID)
+                cmd.Parameters.AddWithValue("?", PID)
+
+                Using rdr As OleDbDataReader = cmd.ExecuteReader()
+                    While rdr.Read()
+                        Dim FD As New clsAhnentafelDaten.FamilyData
+                        FD.ID = rdr("tblFamilieID")
+                        FD.VID = If(IsDBNull(rdr("tblPersonIDV")), Nothing, CType(rdr("tblPersonIDV"), Integer))
+                        FD.MID = If(IsDBNull(rdr("tblPersonIDM")), Nothing, CType(rdr("tblPersonIDM"), Integer))
+                        FL.Add(FD)
+                    End While
+                End Using
+            End Using
+        End Using
+        Return FL
+    End Function
 End Class
