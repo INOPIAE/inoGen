@@ -146,7 +146,7 @@ Class MainWindow
         saveDialog.FileName = "Datenquelle.inoGdb"
         saveDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
 
-        If saveDialog.ShowDialog() = True Then
+        If saveDialog.ShowDialog() = Forms.DialogResult.OK Then
             Dim filePath As String = saveDialog.FileName
             SaveSettingAfterFileChange(filePath)
             Start()
