@@ -14,7 +14,12 @@ Public Class ClsDatabase
         connString = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";Persist Security Info=True", dbFileString)
         dbFile = dbFileString
         If AppDomain.CurrentDomain.BaseDirectory.Contains("TestInoGen") Then
-            sqlPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\TestInoGen\bin\Debug\net9.0-windows7.0\", "") & "\inoGenDLL\SQL\"
+            If AppDomain.CurrentDomain.BaseDirectory.Contains("Release") Then
+                sqlPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\TestInoGen\bin\Release\net9.0\", "") & "\inoGenDLL\SQL\"
+            Else
+                sqlPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\TestInoGen\bin\Debug\net9.0\", "") & "\inoGenDLL\SQL\"
+            End If
+
         End If
     End Sub
 
