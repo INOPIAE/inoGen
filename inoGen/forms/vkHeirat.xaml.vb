@@ -150,13 +150,13 @@ Public Class vkHeirat
             VN_BR, FN_BR, W_BR, H_BR, Z_BR, VN_VBR, FN_VBR, Z_VBR, VN_MBR, FN_MBR, Z_MBR, W_EBR, 
             VN_BT, FN_BT, W_BT, H_BT, Z_BT, VN_VBT, FN_VBT, Z_VBT, VN_MBT, FN_MBT, Z_MBT, W_EBT, 
             ANM_H, VN_HZ1, FN_HZ1, G_HZ1, Z_HZ1, VN_HZ2, FN_HZ2, G_HZ2, Z_HZ2, 
-            VN_HZ3, FN_HZ3, G_HZ3, Z_HZ3, VN_HZ4, FN_HZ4, G_HZ4, Z_HZ4) 
+            VN_HZ3, FN_HZ3, G_HZ3, Z_HZ3, VN_HZ4, FN_HZ4, G_HZ4, Z_HZ4, CheckNeeded) 
             VALUES (?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
             ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?)"
-        Dim strUpdate As String = "UPDATE tblVKH SET BUCH_H = ?, SEITE_H = ?, NR_H = ?, HDatum = ?, DimDatum = ?, VN_BR = ?, FN_BR = ?, W_BR = ?, H_BR = ?, Z_BR = ?, VN_VBR = ?, FN_VBR = ?, Z_VBR = ?, VN_MBR = ?, FN_MBR = ?, Z_MBR = ?, W_EBR = ?, VN_BT = ?, FN_BT = ?, W_BT = ?, H_BT = ?, Z_BT = ?, VN_VBT = ?, FN_VBT = ?, Z_VBT = ?, VN_MBT = ?, FN_MBT = ?, Z_MBT = ?, W_EBT = ?, ANM_H = ?, VN_HZ1 = ?, FN_HZ1 = ?, G_HZ1 = ?, Z_HZ1 = ?, VN_HZ2 = ?, FN_HZ2 = ?, G_HZ2 = ?, Z_HZ2 = ?, VN_HZ3 = ?, FN_HZ3 = ?, G_HZ3 = ?, Z_HZ3 = ?, VN_HZ4 = ?, FN_HZ4 = ?, G_HZ4 = ?, Z_HZ4 = ? WHERE tblVKHID = ?"
+            ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        Dim strUpdate As String = "UPDATE tblVKH SET BUCH_H = ?, SEITE_H = ?, NR_H = ?, HDatum = ?, DimDatum = ?, VN_BR = ?, FN_BR = ?, W_BR = ?, H_BR = ?, Z_BR = ?, VN_VBR = ?, FN_VBR = ?, Z_VBR = ?, VN_MBR = ?, FN_MBR = ?, Z_MBR = ?, W_EBR = ?, VN_BT = ?, FN_BT = ?, W_BT = ?, H_BT = ?, Z_BT = ?, VN_VBT = ?, FN_VBT = ?, Z_VBT = ?, VN_MBT = ?, FN_MBT = ?, Z_MBT = ?, W_EBT = ?, ANM_H = ?, VN_HZ1 = ?, FN_HZ1 = ?, G_HZ1 = ?, Z_HZ1 = ?, VN_HZ2 = ?, FN_HZ2 = ?, G_HZ2 = ?, Z_HZ2 = ?, VN_HZ3 = ?, FN_HZ3 = ?, G_HZ3 = ?, Z_HZ3 = ?, VN_HZ4 = ?, FN_HZ4 = ?, G_HZ4 = ?, Z_HZ4 = ?, CheckNeeded = ? WHERE tblVKHID = ?"
 
         Try
             Using conn As New OleDbConnection(connectionString)
@@ -196,7 +196,7 @@ Public Class vkHeirat
                 cmd.Parameters.AddWithValue("W_BT", txtWOBt.Text)
                 cmd.Parameters.AddWithValue("H_BT", txtHOBt.Text)
                 cmd.Parameters.AddWithValue("Z_BT", txtZuBt.Text)
-                cmd.Parameters.AddWithValue("VN_VBT", txtVBt.Text)
+                cmd.Parameters.AddWithValue("VN_VBT", txtVVtBt.Text)
                 cmd.Parameters.AddWithValue("FN_VBT", txtNVtBt.Text)
                 cmd.Parameters.AddWithValue("Z_VBT", txtZuVtBt.Text)
                 cmd.Parameters.AddWithValue("VN_MBT", txtVMtBt.Text)
@@ -222,6 +222,9 @@ Public Class vkHeirat
                 cmd.Parameters.AddWithValue("FN_HZ4", txtNZ4.Text)
                 cmd.Parameters.AddWithValue("G_HZ4", txtSexZ4.Text)
                 cmd.Parameters.AddWithValue("Z_HZ4", txtZuZ4.Text)
+
+                cmd.Parameters.AddWithValue("CheckNeeded", If(ckbCheck.IsChecked.HasValue AndAlso ckbCheck.IsChecked.Value, True, False))
+
                 If Not isNewRecord AndAlso ID.HasValue Then
                     cmd.Parameters.AddWithValue("tblVKHID", ID.Value)
                 End If
@@ -326,6 +329,7 @@ Public Class vkHeirat
                 ClearAllTextBoxes(child)
             End If
         Next
+        ckbCheck.IsChecked = False
     End Sub
 
     Private Sub OnLoaded(sender As Object, e As RoutedEventArgs)
@@ -416,7 +420,7 @@ Public Class vkHeirat
                             txtZuBt.Text = reader("Z_BT")
                         End If
                         If Not IsDBNull(reader("VN_VBT")) Then
-                            txtVBt.Text = reader("VN_VBT")
+                            txtVVtBt.Text = reader("VN_VBT")
                         End If
                         If Not IsDBNull(reader("FN_VBT")) Then
                             txtNVtBt.Text = reader("FN_VBT")
@@ -487,6 +491,7 @@ Public Class vkHeirat
                         If Not IsDBNull(reader("Z_HZ4")) Then
                             txtZuZ4.Text = reader("Z_HZ4")
                         End If
+                        ckbCheck.IsChecked = reader(reader.GetOrdinal("CheckNeeded"))
                         ID = EID
                         isNewRecord = False
                     Else
