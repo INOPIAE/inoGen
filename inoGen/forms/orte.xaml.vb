@@ -16,6 +16,7 @@ Public Class orte
 
         LoadData()
         LoadKreisListe()
+        cOSM.Email = My.Settings.Email
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As RoutedEventArgs) Handles btnSave.Click

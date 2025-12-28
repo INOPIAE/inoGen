@@ -124,6 +124,18 @@ Namespace My
                 Me("LastContent") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property Email() As String
+            Get
+                Return CType(Me("Email"),String)
+            End Get
+            Set
+                Me("Email") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

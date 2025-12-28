@@ -23,6 +23,8 @@ Public Class ClsOSMKarte
         Public Property display_name As String
     End Class
 
+    Public Property Email As String = ""
+
     Public markers As New List(Of marker)
 
     Public Function FindGeoCode(searchText As String) As List(Of GeoCodeResult)
@@ -30,7 +32,7 @@ Public Class ClsOSMKarte
         Try
             Dim url As String = "https://nominatim.openstreetmap.org/search?format=json&q=" & Uri.EscapeDataString(searchText)
             Dim client As New HttpClient()
-            client.DefaultRequestHeaders.Add("User-Agent", "inoGEN/1.0 (meineemail@example.com)")
+            client.DefaultRequestHeaders.Add("User-Agent", String.Format("inoGEN/1.0 ({0})", Email))
 
             Dim response As HttpResponseMessage = client.GetAsync(url).Result
             If response.IsSuccessStatusCode Then

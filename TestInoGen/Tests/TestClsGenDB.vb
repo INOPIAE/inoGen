@@ -96,7 +96,7 @@ Namespace TestInoGen
             Assert.That(pd.Geschlecht, NUnit.Framework.Is.EqualTo("m"))
             Assert.That(pd.Konfession, NUnit.Framework.Is.Null.Or.Empty)
             Assert.That(pd.FID, NUnit.Framework.Is.EqualTo(1))
-            Assert.That(pd.PS, NUnit.Framework.Is.EqualTo("VAN JOHA1792"))
+            Assert.That(pd.PS, NUnit.Framework.Is.EqualTo("VAN JOHA1740"))
 
             Assert.That(pd.V, NUnit.Framework.Is.EqualTo(3))
             Assert.That(pd.M, NUnit.Framework.Is.EqualTo(4))

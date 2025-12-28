@@ -28,6 +28,7 @@ Namespace TestInoGen
 
         <Test>
         Public Sub TestFindGeoCode()
+            cOK.Email = cHelper.GetEmail(Path.Combine(testPath, "TestSettings.txt"))
             Dim town As String = "Bonn"
             Dim results As List(Of ClsOSMKarte.GeoCodeResult) = cOK.FindGeoCode(town)
 
