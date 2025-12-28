@@ -87,6 +87,10 @@ Class MainWindow
 
         DBText.Text = "Datenbank: " & Path.GetFileNameWithoutExtension(strDB)
         StatusText.Text = ""
+
+        If My.Settings.Email = "" Then
+            Options_Click(Nothing, Nothing)
+        End If
     End Sub
 
     Public Sub ShowContent(ctrl As UserControl)
@@ -232,5 +236,10 @@ Class MainWindow
 
     Public Sub ShowContent(content As Object)
         MainContent.Content = content
+    End Sub
+
+    Private Sub Options_Click(sender As Object, e As RoutedEventArgs)
+        Dim Options = New OptionsWindow()
+        Options.ShowDialog()
     End Sub
 End Class
