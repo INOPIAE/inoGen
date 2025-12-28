@@ -1,6 +1,7 @@
 ﻿Imports System.IO
 Imports NUnit.Framework
 Imports inoGenDLL
+Imports System.Data
 
 Namespace TestInoGen
     Public Class TestClsGenDB
@@ -19,6 +20,8 @@ Namespace TestInoGen
             Dim DBFileTest As String = testFolder & "\Beethoven.inoGdb"
             File.Copy(DBFile, DBFileTest)
             cGDB = New inoGenDLL.ClsGenDB(DBFileTest)
+            DBFileTest = testFolder & "\TestVK.inoGdb"
+            File.Copy(testPath & "\TestVK.inoGdb", DBFileTest)
         End Sub
 
         <TearDown>
@@ -249,6 +252,68 @@ Namespace TestInoGen
             FL = cGDB.GetFamilies(1)
 
             Assert.That(FL.Count, [Is].EqualTo(0))
+
+        End Sub
+
+        <Test>
+        Public Sub TestStatisicsVKHeirat()
+            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.StatisicsVKHeirat()
+
+            Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item(2), NUnit.Framework.Is.EqualTo(0))
+            Assert.That(dt.Rows(0).Item(3), NUnit.Framework.Is.EqualTo(0))
+            Assert.That(dt.Rows(0).Item(4), NUnit.Framework.Is.EqualTo(0))
+            Assert.That(dt.Rows(0).Item(5), NUnit.Framework.Is.EqualTo(0))
+            Assert.That(dt.Rows(0).Item(6), NUnit.Framework.Is.EqualTo(0))
+            Assert.That(dt.Rows(0).Item(7), NUnit.Framework.Is.EqualTo(0))
+            Assert.That(dt.Rows(0).Item(8), NUnit.Framework.Is.EqualTo(0))
+            Assert.That(dt.Rows(0).Item(9), NUnit.Framework.Is.EqualTo(0))
+            Assert.That(dt.Rows(0).Item(10), NUnit.Framework.Is.EqualTo(0))
+
+
+        End Sub
+
+        <Test>
+        Public Sub TestStatisicsVornamen()
+            Dim result As Integer = cGDB.StatisicsVornamen
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo(79))
+
+        End Sub
+
+        <Test>
+        Public Sub TestStatisicsNachnamen()
+            Dim result As Integer = cGDB.StatisicsNachnamen
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo(64))
+
+        End Sub
+
+        <Test>
+        Public Sub TestStatisicsOrt()
+            Dim result As Integer = cGDB.StatisicsOrte
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo(35))
+
+        End Sub
+
+        <Test>
+        Public Sub TestStatisicsPersonen()
+            Dim result As Integer = cGDB.StatisicsPersonen
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo(135))
+
+        End Sub
+
+        <Test>
+        Public Sub TestStatisicsFamilien()
+            Dim result As Integer = cGDB.StatisicsFamilien
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo(68))
 
         End Sub
     End Class

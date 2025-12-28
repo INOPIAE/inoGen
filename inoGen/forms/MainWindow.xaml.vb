@@ -242,4 +242,10 @@ Class MainWindow
         Dim Options = New OptionsWindow()
         Options.ShowDialog()
     End Sub
+
+    Private Sub Statistics_Click(sender As Object, e As RoutedEventArgs)
+        Dim Stats = New Statistics
+        Stats.ShowDialog()
+    End Sub
+
 End Class

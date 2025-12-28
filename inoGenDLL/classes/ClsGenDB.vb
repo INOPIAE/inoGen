@@ -1,6 +1,7 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
 Imports System.Text.RegularExpressions
+Imports ADODB
 
 Public Class ClsGenDB
 
@@ -376,5 +377,102 @@ Public Class ClsGenDB
             End Using
         End Using
         Return FL
+    End Function
+
+    Public Function StatisicsVKHeirat() As DataTable
+        Dim strSQL As String = "SELECT
+                COUNT(tblVKHID) AS Total,
+                COUNT(IIF(FN_BR IS NOT NULL AND FN_BR<>'',1,NULL)) AS TotalBR,
+                COUNT(IIF(FN_VBR IS NOT NULL AND FN_VBR<>'',1,NULL)) AS TotalVBR,
+                COUNT(IIF(FN_MBR IS NOT NULL AND FN_MBR<>'',1,NULL)) AS TotalMBR,
+                COUNT(IIF(FN_BT IS NOT NULL AND FN_BT<>'',1,NULL)) AS TotalBT,
+                COUNT(IIF(FN_VBT IS NOT NULL AND FN_VBT<>'',1,NULL)) AS TotalVBT,
+                COUNT(IIF(FN_MBT IS NOT NULL AND FN_MBT<>'',1,NULL)) AS TotalMBT,
+                COUNT(IIF(FN_HZ1 IS NOT NULL AND FN_HZ1<>'',1,NULL)) AS TotalZ1,
+                COUNT(IIF(FN_HZ2 IS NOT NULL AND FN_HZ2<>'',1,NULL)) AS TotalZ2,
+                COUNT(IIF(FN_HZ3 IS NOT NULL AND FN_HZ3<>'',1,NULL)) AS TotalZ3,
+                COUNT(IIF(FN_HZ4 IS NOT NULL AND FN_HZ4<>'',1,NULL)) AS TotalZ4
+            FROM tblVKH;"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+
+    End Function
+
+    Public Function StatisicsVornamen() As Integer
+        Dim strSQL As String =
+            "SELECT COUNT(*) FROM tblVorname"
+        Dim count As Integer
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                count = CInt(cmd.ExecuteScalar())
+            End Using
+        End Using
+        Return count
+    End Function
+
+    Public Function StatisicsNachnamen() As Integer
+        Dim strSQL As String =
+            "SELECT COUNT(*) FROM tblNachname"
+        Dim count As Integer
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                count = CInt(cmd.ExecuteScalar())
+            End Using
+        End Using
+        Return count
+    End Function
+
+    Public Function StatisicsOrte() As Integer
+        Dim strSQL As String =
+            "SELECT COUNT(*) FROM tblOrt"
+        Dim count As Integer
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                count = CInt(cmd.ExecuteScalar())
+            End Using
+        End Using
+        Return count
+    End Function
+
+    Public Function StatisicsPersonen() As Integer
+        Dim strSQL As String =
+            "SELECT COUNT(*) FROM tblPerson"
+        Dim count As Integer
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                count = CInt(cmd.ExecuteScalar())
+            End Using
+        End Using
+        Return count
+    End Function
+
+    Public Function StatisicsFamilien() As Integer
+        Dim strSQL As String =
+            "SELECT COUNT(*) FROM tblFamilie"
+        Dim count As Integer
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                count = CInt(cmd.ExecuteScalar())
+            End Using
+        End Using
+        Return count
     End Function
 End Class
