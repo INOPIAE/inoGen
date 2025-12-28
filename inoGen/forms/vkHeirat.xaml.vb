@@ -100,6 +100,19 @@ Public Class vkHeirat
         NID = cDB.NachnamenID(txtNZ4.Text)
         If NID = -1 Then Exit Sub
 
+        Dim OID As Int16 = cDB.OrtID(txtWOBtg.Text)
+        If OID = -1 Then Exit Sub
+        OID = cDB.OrtID(txtHOBtg.Text)
+        If OID = -1 Then Exit Sub
+        OID = cDB.OrtID(txtWEBtg.Text)
+        If OID = -1 Then Exit Sub
+        OID = cDB.OrtID(txtWOBt.Text)
+        If OID = -1 Then Exit Sub
+        OID = cDB.OrtID(txtHOBt.Text)
+        If OID = -1 Then Exit Sub
+        OID = cDB.OrtID(txtWEBt.Text)
+        If OID = -1 Then Exit Sub
+
         If txtVZ1.Text <> "" Or txtNZ1.Text <> "" Then
             If txtSexZ1.Text <> "m" And txtSexZ1.Text <> "w" Then
                 MessageBox.Show("Geschlecht 1. Zeuge fehlt oder ist ungültig (m/w)!")

@@ -170,4 +170,40 @@ Public Class clsDB
         End Using
         Return id
     End Function
+
+    Public Function OrtID(Ort As String) As Int16
+        Dim id As Integer = -1
+        Dim sqlSelect As String = "SELECT tblOrtID FROM tblOrt WHERE Ort = ?"
+        Dim sqlInsert As String = "INSERT INTO tblOrt (Ort, tblKreisID) VALUES (?, 1)"
+        If Trim(Ort) = "" Then
+            Return 0
+        End If
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmd As New OleDbCommand(sqlSelect, conn)
+                cmd.Parameters.AddWithValue("@Ort", Ort)
+
+                Dim result = cmd.ExecuteScalar()
+                If result IsNot Nothing AndAlso Not IsDBNull(result) Then
+                    id = Convert.ToInt32(result)
+                    Return id
+                End If
+            End Using
+
+            If MessageBox.Show(String.Format("Soll der Ort '{0}' angelegt werden?", Ort), "Ort anlegen", MessageBoxButton.YesNo) = MessageBoxResult.No Then
+                Return -1
+            End If
+            Using cmdInsert As New OleDbCommand(sqlInsert, conn)
+                cmdInsert.Parameters.AddWithValue("@Ort", Ort)
+                cmdInsert.ExecuteNonQuery()
+            End Using
+
+            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
+                id = Convert.ToInt32(cmdId.ExecuteScalar())
+            End Using
+        End Using
+        Return id
+    End Function
+
 End Class
