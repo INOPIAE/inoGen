@@ -264,7 +264,7 @@ Namespace TestInoGen
 
             Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo(2))
             Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo(2))
-            Assert.That(dt.Rows(0).Item(2), NUnit.Framework.Is.EqualTo(0))
+            Assert.That(dt.Rows(0).Item(2), NUnit.Framework.Is.EqualTo(1))
             Assert.That(dt.Rows(0).Item(3), NUnit.Framework.Is.EqualTo(0))
             Assert.That(dt.Rows(0).Item(4), NUnit.Framework.Is.EqualTo(0))
             Assert.That(dt.Rows(0).Item(5), NUnit.Framework.Is.EqualTo(0))
@@ -315,6 +315,28 @@ Namespace TestInoGen
 
             Assert.That(result, NUnit.Framework.Is.EqualTo(68))
 
+        End Sub
+
+        <Test>
+        Public Sub TestVKH_Personen()
+            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.VKH_Personen()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(3))
+
+            dt = cGDB.VKH_Personen("Bräutigam")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            dt = cGDB.VKH_Personen("Vater Bräutigam")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            dt = cGDB.VKH_Personen("Zeuge")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
         End Sub
     End Class
 End Namespace

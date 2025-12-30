@@ -475,4 +475,151 @@ Public Class ClsGenDB
         End Using
         Return count
     End Function
+
+    Public Function VKH_Personen(Optional Filter As String = "") As DataTable
+        Dim SQLFilter As String = ""
+        If Filter.Trim <> "" Then
+            SQLFilter = " WHERE Person LIKE '?' "
+        End If
+        Dim strSQL As String = String.Format(
+            "SELECT
+                tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum,
+                VN_BR AS Vorname,
+                FN_BR AS Nachname,
+                W_BR AS Wohnort,
+                H_BR AS Heimatort,
+                Z_BR AS Bemerkung,
+                'Bräutigam' AS Person
+            FROM
+                tblVKH
+            WHERE
+                 Len(VN_BR & '') > 0
+                 OR Len(FN_BR & '') > 0
+                 OR Len(Z_BR & '') > 0
+            UNION
+            SELECT
+                tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum,
+                VN_VBR AS Vorname,
+                FN_VBR AS Nachname,
+                W_EBR AS Wohnort,
+                '' AS Heimatort,
+                Z_VBR AS Bemerkung,
+                'Vater Bräutigam' AS Person
+            FROM
+                tblVKH
+            WHERE
+                 Len(VN_VBR & '') > 0
+                 OR Len(FN_VBR & '') > 0
+                 OR Len(Z_VBR & '') > 0
+            UNION
+            SELECT
+                tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum,
+                VN_MBR AS Vorname,
+                FN_MBR AS Nachname,
+                W_EBR AS Wohnort,
+                '' AS Heimatort,
+                Z_MBR AS Bemerkung,
+                'Mutter Bräutigam' AS Person
+            FROM
+                tblVKH
+            WHERE
+                 Len(VN_MBR & '') > 0
+                 OR Len(FN_MBR & '') > 0
+                 OR Len(Z_MBR & '') > 0
+            UNION
+            SELECT
+                tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum,
+                VN_BT AS Vorname,
+                FN_BT AS Nachname,
+                W_BT AS Wohnort,
+                '' AS Heimatort,
+                Z_BT AS Bemerkung,
+                'Braut' AS Person
+            FROM
+                tblVKH
+            WHERE
+                 Len(VN_BT & '') > 0
+                 OR Len(FN_BT & '') > 0
+                 OR Len(Z_BT & '') > 0
+            UNION
+            SELECT
+                tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum,
+                VN_VBT AS Vorname,
+                FN_VBT AS Nachname,
+                W_EBT AS Wohnort,
+                '' AS Heimatort,
+                Z_VBT AS Bemerkung,
+                'Vater Braut' AS Person
+            FROM
+                tblVKH
+            WHERE
+                 Len(VN_VBT & '') > 0
+                 OR Len(FN_VBT & '') > 0
+                 OR Len(Z_VBT & '') > 0
+            UNION
+            SELECT
+                tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum,
+                VN_MBT AS Vorname,
+                FN_MBT AS Nachname,
+                W_EBT AS Wohnort,
+                '' AS Heimatort,
+                Z_MBT AS Bemerkung,
+                'Mutter Braut' AS Person
+            FROM
+                tblVKH
+            WHERE
+                 Len(VN_MBT & '') > 0
+                 OR Len(FN_MBT & '') > 0
+                 OR Len(Z_MBT & '') > 0
+            UNION
+            SELECT tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum, VN_HZ1 AS Vorname, FN_HZ1 AS Nachname, '' AS Wohnort, '' AS Heimatort, Z_HZ1 AS Bemerkung, IIf(G_HZ1='m','Zeuge','Zeugin') AS Person
+            FROM tblVKH
+            WHERE
+                 Len(VN_HZ1 & '') > 0
+                 OR Len(FN_HZ1 & '') > 0
+                 OR Len(Z_HZ1 & '') > 0
+            UNION
+            SELECT tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum, VN_HZ2 AS Vorname, FN_HZ2 AS Nachname, '' AS Wohnort, '' AS Heimatort, Z_HZ2 AS Bemerkung, IIf(G_HZ2='m','Zeuge','Zeugin') AS Person
+            FROM tblVKH
+            WHERE
+                 Len(VN_HZ2 & '') > 0
+                 OR Len(FN_HZ2 & '') > 0
+                 OR Len(Z_HZ2 & '') > 0
+            UNION
+            SELECT tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum, VN_HZ3 AS Vorname, FN_HZ3 AS Nachname, '' AS Wohnort, '' AS Heimatort, Z_HZ3 AS Bemerkung, IIf(G_HZ3='m','Zeuge','Zeugin') AS Person
+            FROM tblVKH
+            WHERE
+                 Len(VN_HZ3 & '') > 0
+                 OR Len(FN_HZ3 & '') > 0
+                 OR Len(Z_HZ3 & '') > 0
+            UNION
+            SELECT tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum, VN_HZ4 AS Vorname, FN_HZ4 AS Nachname, '' AS Wohnort, '' AS Heimatort, Z_HZ4 AS Bemerkung, IIf(G_HZ4='m','Zeuge','Zeugin') AS Person
+            FROM tblVKH
+            WHERE
+                 Len(VN_HZ4 & '') > 0
+                 OR Len(FN_HZ4 & '') > 0
+                 OR Len(Z_HZ4 & '') > 0
+            {0}
+            ORDER BY
+                Nachname,
+                Vorname,
+                SEITE_H,
+                NR_H
+            ;", SQLFilter)
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                If Filter.Trim <> "" Then
+                    cmd.Parameters.AddWithValue("@Person", Filter.Trim)
+                End If
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class

@@ -248,4 +248,9 @@ Class MainWindow
         Stats.ShowDialog()
     End Sub
 
+    Private Sub VKH_PersonReport_Click(sender As Object, e As RoutedEventArgs)
+        Dim VKH_Person = New VKH_Personen
+        VKH_Person.Show()
+    End Sub
+
 End Class
