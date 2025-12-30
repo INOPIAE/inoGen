@@ -39,14 +39,16 @@ Public Class vkHeirat
     Private Sub btnNew_Click(sender As Object, e As RoutedEventArgs) Handles btnNew.Click
         Dim Q As String = txtQuelle.Text
         Dim Seite As String = txtSeite.Text
-        Dim Nr As String = txtNr.Text
+        Dim Nr() As String = txtNr.Text.Split("/")
         ClearAllTextBoxes(Me)
         ID = Nothing
         isNewRecord = True
         txtQuelle.Text = Q
         txtSeite.Text = Seite
-        If IsNumeric(Nr) Then
-            txtNr.Text = CInt(Nr) + 1
+
+        If Nr.Count = 2 Then
+            Dim v As Integer = CInt(Nr(1)) + 1
+            txtNr.Text = Nr(0) & "/" & v.ToString("000")
         End If
 
         txtVBtg.Focus()
