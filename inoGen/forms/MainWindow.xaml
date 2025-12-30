@@ -17,13 +17,16 @@
             <MenuItem Header="_Basisdaten">
                 <MenuItem Header="_Person" Click="Person_Click"/>
                 <MenuItem Header="_Familie" Click="Familie_Click"/>
-                <MenuItem Header="_VK Heirat KB" Click="VKH_Click"/>
             </MenuItem>
             <MenuItem Header="_Definitionen">
                 <MenuItem Header="_Orte" Click="Orte_Click"/>
                 <MenuItem Header="_Kreise" Click="Kreise_Click"/>
                 <MenuItem Header="_Konfession" Click="Konfession_Click"/>
                 <MenuItem Header="_Ereignisart" Click="Ereignisart_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Verkartung">
+                <MenuItem Header="_VK Heirat KB" Click="VKH_Click"/>
+                <MenuItem Header="_VK Heirat Personen" Click="VKH_PersonReport_Click"/>
             </MenuItem>
             <MenuItem Header="_Ausgabe">
                 <MenuItem Header="_Ahnentafel" Click="Ahnentafel_Click"/>
