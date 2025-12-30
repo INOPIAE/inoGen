@@ -83,7 +83,7 @@ Public Class ClsDatabase
             End If
         End If
 
-            Return ReadDBVersion()
+        Return ReadDBVersion()
     End Function
 
     Public Function ReadDBVersion() As Long

@@ -23,11 +23,11 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
                     <TextBlock Text="Quelle:" Width="30" VerticalAlignment="Center"/>
-                    <TextBox x:Name="txtQuelle" Width="40" />
+                    <TextBox x:Name="txtQuelle" Width="200" />
                     <TextBlock Text="Seite:" Width="30" VerticalAlignment="Center"/>
                     <TextBox x:Name="txtSeite" Width="40" />
                     <TextBlock Text="Nummer:" Width="50" VerticalAlignment="Center"/>
-                    <TextBox x:Name="txtNr" Width="40" />
+                    <TextBox x:Name="txtNr" Width="60" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
                     <TextBlock Text="HDatum:" Width="100" VerticalAlignment="Center"/>
