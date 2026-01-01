@@ -622,4 +622,40 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Public Function StatisticsVKHYears() As DataTable
+        Dim strSQL As String =
+            "SELECT Left(NR_H,4) AS Jahr, Count(NR_H) AS Anzahl, BUCH_H
+                FROM tblVKH
+                GROUP BY Left(NR_H,4), BUCH_H;"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function StatisticsVKHPages() As DataTable
+        Dim strSQL As String =
+            "SELECT SEITE_H, Count(tblVKHID) AS Anzahl, BUCH_H
+                FROM tblVKH
+                GROUP BY SEITE_H, BUCH_H;"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class
