@@ -11,7 +11,7 @@ Class MainWindow
     Public connectionString As String =
         String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "D:\Daten\programierung neu\inoGen\Daten\Drews.accdb")
 
-    Public shared fsWindow As FamilySearchWeb = Nothing
+    Public Shared fsWindow As FamilySearchWeb = Nothing
 
     Public Sub New()
 
@@ -251,6 +251,11 @@ Class MainWindow
     Private Sub VKH_PersonReport_Click(sender As Object, e As RoutedEventArgs)
         Dim VKH_Person = New VKH_Personen
         VKH_Person.Show()
+    End Sub
+
+    Private Sub Kirchenjahr_Click(sender As Object, e As RoutedEventArgs)
+        Dim Kirchenjahr = New Kirchenjahr
+        Kirchenjahr.Show()
     End Sub
 
 End Class
