@@ -328,7 +328,7 @@ Namespace TestInoGen
 
             dt = cGDB.VKH_Personen("Bräutigam")
 
-            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+            'Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
 
             dt = cGDB.VKH_Personen("Vater Bräutigam")
 

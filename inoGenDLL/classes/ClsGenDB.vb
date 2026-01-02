@@ -479,10 +479,10 @@ Public Class ClsGenDB
     Public Function VKH_Personen(Optional Filter As String = "") As DataTable
         Dim SQLFilter As String = ""
         If Filter.Trim <> "" Then
-            SQLFilter = " WHERE Person LIKE '?' "
+            SQLFilter = " WHERE Person = ? "
         End If
         Dim strSQL As String = String.Format(
-            "SELECT
+            "SELECT * FROM (SELECT
                 tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum,
                 VN_BR AS Vorname,
                 FN_BR AS Nachname,
@@ -598,7 +598,7 @@ Public Class ClsGenDB
             WHERE
                  Len(VN_HZ4 & '') > 0
                  OR Len(FN_HZ4 & '') > 0
-                 OR Len(Z_HZ4 & '') > 0
+                 OR Len(Z_HZ4 & '') > 0)
             {0}
             ORDER BY
                 Nachname,
