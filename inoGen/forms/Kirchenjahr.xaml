@@ -1,0 +1,91 @@
+﻿<Window x:Class="Kirchenjahr"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Berechnung Kirchenjahr"
+        Width="500"
+        Height="420"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="10">
+
+        <!-- Zeilen -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Jahr -->
+            <RowDefinition Height="Auto"/>
+            <!-- Optionen -->
+            <RowDefinition Height="Auto"/>
+            <!-- Ergebnis -->
+            <RowDefinition Height="Auto"/>
+            <!-- Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- ================= Jahr ================= -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="Jahr:" Width="80"/>
+            <TextBox Width="100" Name="TxtYear"/>
+        </StackPanel>
+
+        <!-- ================= Optionen ================= -->
+        <GroupBox Grid.Row="1" Header="Berechnung" Padding="10" Margin="0,0,0,10">
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Zeile 1 -->
+                <RadioButton x:Name="RbEpi" Grid.Row="0" Grid.Column="0" GroupName="Calc"
+                             Margin="0,0,10,5"/>
+                <Label Grid.Row="0" Grid.Column="1" Content="Sonntag nach Epiphinas:"/>
+                <TextBox Grid.Row="0" Grid.Column="2" Name="TxtEpi"/>
+
+                <!-- Zeile 2 -->
+                <RadioButton x:Name="RbNamedSunday" Grid.Row="1" Grid.Column="0" GroupName="Calc"
+                             Margin="0,0,10,5"/>
+                <Label Grid.Row="1" Grid.Column="1" Content="Benannter Sonntag::"/>
+                <ComboBox Grid.Row="1"
+                      Grid.Column="2"
+                      Name="CmbNamedSunday"
+                      SelectedIndex="0"
+                      />
+
+                <!-- Zeile 3 -->
+                <RadioButton x:Name="RbTrinit" Grid.Row="2" Grid.Column="0" GroupName="Calc"
+                             Margin="0,0,10,5"/>
+                <Label Grid.Row="2" Grid.Column="1" Content="Sonntag nach Trinitatis:"/>
+                <TextBox Grid.Row="2" Grid.Column="2" Name="TxtTrinit"/>
+
+                <!-- Zeile 4 -->
+                <RadioButton x:Name="RbAdvent" Grid.Row="3" Grid.Column="0" GroupName="Calc"/>
+                <Label Grid.Row="3" Grid.Column="1" Content="Adventsonntag:"/>
+                <TextBox Grid.Row="3" Grid.Column="2" Name="TxtAdvent"/>
+
+            </Grid>
+        </GroupBox>
+
+        <!-- ================= Ergebnis ================= -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="Ergebnis:" Width="80"/>
+            <TextBox Name="TxtResult" IsReadOnly="True"/>
+        </StackPanel>
+
+        <!-- ================= Buttons ================= -->
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button x:Name="BtnCopy" Content="Kopieren" Width="100" Margin="0,0,10,0"/>
+            <Button x:Name="BtnClose" Content="Schließen" Width="100"/>
+        </StackPanel>
+
+    </Grid>
+</Window>
