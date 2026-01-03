@@ -258,4 +258,9 @@ Class MainWindow
         Kirchenjahr.Show()
     End Sub
 
+    Private Sub VK_Heirat_Click(sender As Object, e As RoutedEventArgs)
+        Dim VKH_Ausgabe = New VKH_Ausgabe
+        VKH_Ausgabe.Show()
+    End Sub
+
 End Class

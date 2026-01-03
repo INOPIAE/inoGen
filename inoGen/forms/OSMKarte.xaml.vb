@@ -66,6 +66,39 @@ Public Class OSMKarte
 
     End Sub
 
+    Public Sub New(GenLocations As List(Of ClsOSMKarte.marker))
+        InitializeComponent()
+
+        Dim map = New Mapsui.Map()
+        map.Layers.Add(Mapsui.Tiling.OpenStreetMap.CreateTileLayer())
+        mapControl.Map = map
+        PLocations = GenLocations
+
+        ' Marker hinzufügen
+        Dim markerFeatures As New List(Of IFeature)
+        For Each location In GenLocations
+            markerFeatures.Add(CreateMarker(location.lat, location.lon, location.title))
+        Next
+
+        Dim markerLayer = New MemoryLayer("Marker") With {
+            .IsMapInfoLayer = True,
+            .Features = markerFeatures
+        }
+        map.Layers.Add(markerLayer)
+
+        ' Nach Home -> auf alle Marker zoomen
+        map.Home = Sub(n As Navigator)
+                       Dim env = markerLayer.Extent
+                       If env IsNot Nothing Then
+                           Dim buffered = env.Grow(env.Width * 0.1, env.Height * 0.1)
+                           n.ZoomToBox(buffered)
+                       End If
+                   End Sub
+
+        mapControl.Refresh()
+
+    End Sub
+
     Public Sub New(GenLocations As List(Of ClsOSMKarte.marker), PPersons As List(Of clsAhnentafelDaten.PersonData))
         InitializeComponent()
 
