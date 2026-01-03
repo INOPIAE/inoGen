@@ -735,4 +735,38 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Public Function GetNachname() As DataTable
+        Dim strSQL As String =
+            "SELECT * FROM tblNachname ORDER BY Nachname"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function UpdateNachname(ID As Integer, Nachname As String) As DataTable
+        Dim strSQL As String =
+            "UPDATE tblNachname SET Nachname = ? WHERE tblNachnameID = ?"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                cmd.Parameters.AddWithValue("@Nachname", Nachname)
+                cmd.Parameters.AddWithValue("@ID", ID)
+                cmd.ExecuteNonQuery()
+
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class

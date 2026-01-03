@@ -263,4 +263,8 @@ Class MainWindow
         VKH_Ausgabe.Show()
     End Sub
 
+    Private Sub Nachnamen_Click(sender As Object, e As RoutedEventArgs)
+        MainContent.Content = New nachnamen()
+    End Sub
+
 End Class

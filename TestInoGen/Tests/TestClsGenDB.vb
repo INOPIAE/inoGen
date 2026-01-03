@@ -352,5 +352,53 @@ Namespace TestInoGen
             Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo(1))
 
         End Sub
+
+        <Test>
+        Public Sub TestGetNachname()
+            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetNachname()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo("Müller"))
+
+            Assert.That(dt.Rows(1).Item(0), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(1).Item(1), NUnit.Framework.Is.EqualTo("Mustermann"))
+
+
+        End Sub
+
+        <Test>
+        Public Sub TestUpdateNachname()
+            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetNachname()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo("Müller"))
+            Assert.That(dt.Rows(1).Item(0), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(1).Item(1), NUnit.Framework.Is.EqualTo("Mustermann"))
+
+            Dim Nachname As String = "Doe"
+            Dim ID As Integer = 1
+
+            cGDB.UpdateNachname(ID, Nachname)
+
+            dt = cGDB.GetNachname()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo(ID))
+            Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo(Nachname))
+            Assert.That(dt.Rows(1).Item(0), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(1).Item(1), NUnit.Framework.Is.EqualTo("Müller"))
+        End Sub
+
     End Class
 End Namespace

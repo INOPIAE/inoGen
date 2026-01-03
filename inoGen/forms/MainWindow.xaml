@@ -23,6 +23,7 @@
                 <MenuItem Header="_Kreise" Click="Kreise_Click"/>
                 <MenuItem Header="_Konfession" Click="Konfession_Click"/>
                 <MenuItem Header="_Ereignisart" Click="Ereignisart_Click"/>
+                <MenuItem Header="_Nachnamen" Click="Nachnamen_Click"/>
             </MenuItem>
             <MenuItem Header="_Verkartung">
                 <MenuItem Header="_VK Heirat KB" Click="VKH_Click"/>
