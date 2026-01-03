@@ -658,4 +658,81 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Public Function StatisticsVKHLocations() As DataTable
+        Dim strSQL As String =
+            "SELECT Ort, SUM(Anzahl) AS Total FROM 
+                (SELECT
+                    W_BR AS Ort,
+                    Count(W_BR) AS Anzahl
+                FROM
+                    tblVKH
+                GROUP BY
+                    W_BR
+                HAVING
+                    W_BR <> ''
+                UNION
+                SELECT
+                    H_BR AS Ort,
+                    Count(H_BR) AS Anzahl
+                FROM
+                    tblVKH
+                GROUP BY
+                    H_BR
+                HAVING
+                    H_BR <> ''
+                UNION
+                SELECT
+                    W_EBR AS Ort,
+                    Count(W_EBR) AS Anzahl
+                FROM
+                    tblVKH
+                GROUP BY
+                    W_EBR
+                HAVING
+                    W_EBR <> ''
+                UNION
+                SELECT
+                    W_BT AS Ort,
+                    Count(W_BT) AS Anzahl
+                FROM
+                    tblVKH
+                GROUP BY
+                    W_BT
+                HAVING
+                    W_BT <> ''
+                UNION
+                SELECT
+                    H_BT AS Ort,
+                    Count(H_BT) AS Anzahl
+                FROM
+                    tblVKH
+                GROUP BY
+                    H_BT
+                HAVING
+                    H_BT <> ''
+                UNION
+                SELECT
+                    W_EBT AS Ort,
+                    Count(W_EBT) AS Anzahl
+                FROM
+                    tblVKH
+                GROUP BY
+                    W_EBT
+                HAVING
+                    W_EBT <> ''
+                ) 
+                GROUP BY Ort;"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class
