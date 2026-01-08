@@ -199,6 +199,8 @@ CREATE TABLE tblVKH(
     G_HZ4 VARCHAR(255),
     Z_HZ4 VARCHAR(255),
     CheckNeeded YESNO DEFAULT 0,
+    OnlineReference VARCHAR(255),
+    ReferenceDetails VARCHAR(255),
     CONSTRAINT PrimaryKey PRIMARY KEY (tblVKHID));
 
 DROP PROCEDURE qryPerson;
@@ -235,4 +237,4 @@ INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis)
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Taufpate');
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Trauzeuge');
 
-UPDATE tblVersion SET Version = 4;
+UPDATE tblVersion SET Version = 5;

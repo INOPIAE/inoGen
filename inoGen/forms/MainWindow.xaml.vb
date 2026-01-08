@@ -164,7 +164,7 @@ Class MainWindow
         openDialog.Filter = "Daten (*.inoGdb)|*.inoGdb"
         openDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
 
-        If openDialog.ShowDialog() = True Then
+        If openDialog.ShowDialog() = Forms.DialogResult.OK Then
             Dim filePath As String = openDialog.FileName
             SaveSettingAfterFileChange(filePath)
             Start()

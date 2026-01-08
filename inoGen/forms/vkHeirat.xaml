@@ -28,6 +28,10 @@
                     <TextBox x:Name="txtSeite" Width="40" />
                     <TextBlock Text="Nummer:" Width="50" VerticalAlignment="Center"/>
                     <TextBox x:Name="txtNr" Width="60" />
+                    <TextBlock Text="Url:" Width="30" VerticalAlignment="Center"/>
+                    <TextBox x:Name="txtURL" Width="350" Foreground="Blue" TextDecorations="Underline"/>
+                    <TextBlock Text="QuelleSeite:" Width="60" VerticalAlignment="Center"/>
+                    <TextBox x:Name="txtQuelleSeite" Width="60" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
                     <TextBlock Text="HDatum:" Width="100" VerticalAlignment="Center"/>

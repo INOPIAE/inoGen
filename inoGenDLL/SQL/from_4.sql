@@ -1,0 +1,4 @@
+﻿ALTER TABLE tblVKH ADD COLUMN OnlineReference VARCHAR(255);
+ALTER TABLE tblVKH ADD COLUMN ReferenceDetails VARCHAR(255);
+
+UPDATE tblVersion SET Version = 5;

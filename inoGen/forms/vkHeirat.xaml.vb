@@ -40,11 +40,15 @@ Public Class vkHeirat
         Dim Q As String = txtQuelle.Text
         Dim Seite As String = txtSeite.Text
         Dim Nr() As String = txtNr.Text.Split("/")
+        Dim URL As String = txtURL.Text
+        Dim QuelleSeite As String = txtQuelleSeite.Text
         ClearAllTextBoxes(Me)
         ID = Nothing
         isNewRecord = True
         txtQuelle.Text = Q
         txtSeite.Text = Seite
+        txtURL.Text = URL
+        txtQuelleSeite.Text = QuelleSeite
 
         If Nr.Count = 2 Then
             Dim v As Integer = CInt(Nr(1)) + 1
@@ -152,13 +156,13 @@ Public Class vkHeirat
             VN_BR, FN_BR, W_BR, H_BR, Z_BR, VN_VBR, FN_VBR, Z_VBR, VN_MBR, FN_MBR, Z_MBR, W_EBR, 
             VN_BT, FN_BT, W_BT, H_BT, Z_BT, VN_VBT, FN_VBT, Z_VBT, VN_MBT, FN_MBT, Z_MBT, W_EBT, 
             ANM_H, VN_HZ1, FN_HZ1, G_HZ1, Z_HZ1, VN_HZ2, FN_HZ2, G_HZ2, Z_HZ2, 
-            VN_HZ3, FN_HZ3, G_HZ3, Z_HZ3, VN_HZ4, FN_HZ4, G_HZ4, Z_HZ4, CheckNeeded) 
+            VN_HZ3, FN_HZ3, G_HZ3, Z_HZ3, VN_HZ4, FN_HZ4, G_HZ4, Z_HZ4, CheckNeeded, OnlineReference, ReferenceDetails) 
             VALUES (?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
             ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        Dim strUpdate As String = "UPDATE tblVKH SET BUCH_H = ?, SEITE_H = ?, NR_H = ?, HDatum = ?, DimDatum = ?, VN_BR = ?, FN_BR = ?, W_BR = ?, H_BR = ?, Z_BR = ?, VN_VBR = ?, FN_VBR = ?, Z_VBR = ?, VN_MBR = ?, FN_MBR = ?, Z_MBR = ?, W_EBR = ?, VN_BT = ?, FN_BT = ?, W_BT = ?, H_BT = ?, Z_BT = ?, VN_VBT = ?, FN_VBT = ?, Z_VBT = ?, VN_MBT = ?, FN_MBT = ?, Z_MBT = ?, W_EBT = ?, ANM_H = ?, VN_HZ1 = ?, FN_HZ1 = ?, G_HZ1 = ?, Z_HZ1 = ?, VN_HZ2 = ?, FN_HZ2 = ?, G_HZ2 = ?, Z_HZ2 = ?, VN_HZ3 = ?, FN_HZ3 = ?, G_HZ3 = ?, Z_HZ3 = ?, VN_HZ4 = ?, FN_HZ4 = ?, G_HZ4 = ?, Z_HZ4 = ?, CheckNeeded = ? WHERE tblVKHID = ?"
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        Dim strUpdate As String = "UPDATE tblVKH SET BUCH_H = ?, SEITE_H = ?, NR_H = ?, HDatum = ?, DimDatum = ?, VN_BR = ?, FN_BR = ?, W_BR = ?, H_BR = ?, Z_BR = ?, VN_VBR = ?, FN_VBR = ?, Z_VBR = ?, VN_MBR = ?, FN_MBR = ?, Z_MBR = ?, W_EBR = ?, VN_BT = ?, FN_BT = ?, W_BT = ?, H_BT = ?, Z_BT = ?, VN_VBT = ?, FN_VBT = ?, Z_VBT = ?, VN_MBT = ?, FN_MBT = ?, Z_MBT = ?, W_EBT = ?, ANM_H = ?, VN_HZ1 = ?, FN_HZ1 = ?, G_HZ1 = ?, Z_HZ1 = ?, VN_HZ2 = ?, FN_HZ2 = ?, G_HZ2 = ?, Z_HZ2 = ?, VN_HZ3 = ?, FN_HZ3 = ?, G_HZ3 = ?, Z_HZ3 = ?, VN_HZ4 = ?, FN_HZ4 = ?, G_HZ4 = ?, Z_HZ4 = ?, CheckNeeded = ?, OnlineReference = ?, ReferenceDetails =? WHERE tblVKHID = ?"
 
         Try
             Using conn As New OleDbConnection(connectionString)
@@ -226,6 +230,8 @@ Public Class vkHeirat
                 cmd.Parameters.AddWithValue("Z_HZ4", txtZuZ4.Text)
 
                 cmd.Parameters.AddWithValue("CheckNeeded", If(ckbCheck.IsChecked.HasValue AndAlso ckbCheck.IsChecked.Value, True, False))
+                cmd.Parameters.AddWithValue("OnlineReference", txtURL.Text)
+                cmd.Parameters.AddWithValue("ReferenceDetails", txtQuelleSeite.Text)
 
                 If Not isNewRecord AndAlso ID.HasValue Then
                     cmd.Parameters.AddWithValue("tblVKHID", ID.Value)
@@ -493,7 +499,17 @@ Public Class vkHeirat
                         If Not IsDBNull(reader("Z_HZ4")) Then
                             txtZuZ4.Text = reader("Z_HZ4")
                         End If
+
                         ckbCheck.IsChecked = reader(reader.GetOrdinal("CheckNeeded"))
+
+                        If Not IsDBNull(reader("OnlineReference")) Then
+                            txtURL.Text = reader("OnlineReference")
+                        End If
+                        If Not IsDBNull(reader("ReferenceDetails")) Then
+                            txtQuelleSeite.Text = reader("ReferenceDetails")
+                        End If
+
+
                         ID = EID
                         isNewRecord = False
                     Else
@@ -502,5 +518,19 @@ Public Class vkHeirat
                 End Using
             End Using
         End Using
+    End Sub
+
+    Private Sub txtURL_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs) Handles txtURL.MouseDoubleClick
+        If txtURL.Text <> "" Then
+            Dim url As String = txtURL.Text
+
+            If MainWindow.fsWindow Is Nothing OrElse Not MainWindow.fsWindow.IsLoaded Then
+                MainWindow.fsWindow = New FamilySearchWeb(url)
+                MainWindow.fsWindow.Show()
+            Else
+                MainWindow.fsWindow.Focus()
+                MainWindow.fsWindow.NavigateTo(url)
+            End If
+        End If
     End Sub
 End Class

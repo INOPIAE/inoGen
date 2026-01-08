@@ -81,6 +81,10 @@ Public Class ClsDatabase
                 strSQLFile = sqlPath & "from_3.sql"
                 FillDatabase(strSQLFile)
             End If
+            If dbVersion < 5 Then
+                strSQLFile = sqlPath & "from_4.sql"
+                FillDatabase(strSQLFile)
+            End If
         End If
 
         Return ReadDBVersion()
