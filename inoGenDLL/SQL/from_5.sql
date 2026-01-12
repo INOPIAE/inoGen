@@ -1,0 +1,4 @@
+﻿ALTER TABLE tblVKH ADD COLUMN GebDatum_BR DATE;
+ALTER TABLE tblVKH ADD COLUMN GebDatum_BT DATE;
+
+UPDATE tblVersion SET Version = 6;

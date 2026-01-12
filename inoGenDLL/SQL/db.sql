@@ -159,6 +159,7 @@ CREATE TABLE tblVKH(
     DimDatum DATE,
     VN_BR VARCHAR(255),
     FN_BR VARCHAR(255),
+    GebDatum_BR DATE,
     W_BR VARCHAR(255),
     H_BR VARCHAR(255),
     Z_BR VARCHAR(255),
@@ -171,6 +172,7 @@ CREATE TABLE tblVKH(
     W_EBR VARCHAR(255),
     VN_BT VARCHAR(255),
     FN_BT VARCHAR(255),
+    GebDatum_BT DATE,
     W_BT VARCHAR(255),
     H_BT VARCHAR(255),
     Z_BT VARCHAR(255),
@@ -237,4 +239,4 @@ INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis)
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Taufpate');
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Trauzeuge');
 
-UPDATE tblVersion SET Version = 5;
+UPDATE tblVersion SET Version = 6;

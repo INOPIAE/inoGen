@@ -153,16 +153,16 @@ Public Class vkHeirat
 
 
         Dim strInsert As String = "INSERT INTO tblVKH (BUCH_H, SEITE_H, NR_H, HDatum, DimDatum, 
-            VN_BR, FN_BR, W_BR, H_BR, Z_BR, VN_VBR, FN_VBR, Z_VBR, VN_MBR, FN_MBR, Z_MBR, W_EBR, 
-            VN_BT, FN_BT, W_BT, H_BT, Z_BT, VN_VBT, FN_VBT, Z_VBT, VN_MBT, FN_MBT, Z_MBT, W_EBT, 
+            VN_BR, FN_BR, GebDatum_BR, W_BR, H_BR, Z_BR, VN_VBR, FN_VBR, Z_VBR, VN_MBR, FN_MBR, Z_MBR, W_EBR, 
+            VN_BT, FN_BT, GebDatum_BT, W_BT, H_BT, Z_BT, VN_VBT, FN_VBT, Z_VBT, VN_MBT, FN_MBT, Z_MBT, W_EBT, 
             ANM_H, VN_HZ1, FN_HZ1, G_HZ1, Z_HZ1, VN_HZ2, FN_HZ2, G_HZ2, Z_HZ2, 
             VN_HZ3, FN_HZ3, G_HZ3, Z_HZ3, VN_HZ4, FN_HZ4, G_HZ4, Z_HZ4, CheckNeeded, OnlineReference, ReferenceDetails) 
             VALUES (?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
             ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        Dim strUpdate As String = "UPDATE tblVKH SET BUCH_H = ?, SEITE_H = ?, NR_H = ?, HDatum = ?, DimDatum = ?, VN_BR = ?, FN_BR = ?, W_BR = ?, H_BR = ?, Z_BR = ?, VN_VBR = ?, FN_VBR = ?, Z_VBR = ?, VN_MBR = ?, FN_MBR = ?, Z_MBR = ?, W_EBR = ?, VN_BT = ?, FN_BT = ?, W_BT = ?, H_BT = ?, Z_BT = ?, VN_VBT = ?, FN_VBT = ?, Z_VBT = ?, VN_MBT = ?, FN_MBT = ?, Z_MBT = ?, W_EBT = ?, ANM_H = ?, VN_HZ1 = ?, FN_HZ1 = ?, G_HZ1 = ?, Z_HZ1 = ?, VN_HZ2 = ?, FN_HZ2 = ?, G_HZ2 = ?, Z_HZ2 = ?, VN_HZ3 = ?, FN_HZ3 = ?, G_HZ3 = ?, Z_HZ3 = ?, VN_HZ4 = ?, FN_HZ4 = ?, G_HZ4 = ?, Z_HZ4 = ?, CheckNeeded = ?, OnlineReference = ?, ReferenceDetails =? WHERE tblVKHID = ?"
+        Dim strUpdate As String = "UPDATE tblVKH SET BUCH_H = ?, SEITE_H = ?, NR_H = ?, HDatum = ?, DimDatum = ?, VN_BR = ?, FN_BR = ?, GebDatum_BR = ?, W_BR = ?, H_BR = ?, Z_BR = ?, VN_VBR = ?, FN_VBR = ?, Z_VBR = ?, VN_MBR = ?, FN_MBR = ?, Z_MBR = ?, W_EBR = ?, VN_BT = ?, FN_BT = ?, GebDatum_BT = ?, W_BT = ?, H_BT = ?, Z_BT = ?, VN_VBT = ?, FN_VBT = ?, Z_VBT = ?, VN_MBT = ?, FN_MBT = ?, Z_MBT = ?, W_EBT = ?, ANM_H = ?, VN_HZ1 = ?, FN_HZ1 = ?, G_HZ1 = ?, Z_HZ1 = ?, VN_HZ2 = ?, FN_HZ2 = ?, G_HZ2 = ?, Z_HZ2 = ?, VN_HZ3 = ?, FN_HZ3 = ?, G_HZ3 = ?, Z_HZ3 = ?, VN_HZ4 = ?, FN_HZ4 = ?, G_HZ4 = ?, Z_HZ4 = ?, CheckNeeded = ?, OnlineReference = ?, ReferenceDetails =? WHERE tblVKHID = ?"
 
         Try
             Using conn As New OleDbConnection(connectionString)
@@ -186,6 +186,11 @@ Public Class vkHeirat
 
                 cmd.Parameters.AddWithValue("VN_BR", txtVBtg.Text)
                 cmd.Parameters.AddWithValue("FN_BR", txtNBtg.Text)
+                If IsDate(txtGebBtg.Text) Then
+                    cmd.Parameters.AddWithValue("@GebDatum_BR", CDate(txtGebBtg.Text))
+                Else
+                    cmd.Parameters.AddWithValue("@GebDatum_BR", DBNull.Value)
+                End If
                 cmd.Parameters.AddWithValue("W_BR", txtWOBtg.Text)
                 cmd.Parameters.AddWithValue("H_BR", txtHOBtg.Text)
                 cmd.Parameters.AddWithValue("Z_BR", txtZuBtg.Text)
@@ -199,6 +204,11 @@ Public Class vkHeirat
 
                 cmd.Parameters.AddWithValue("VN_BT", txtVBt.Text)
                 cmd.Parameters.AddWithValue("FN_BT", txtNBt.Text)
+                If IsDate(txtGebBt.Text) Then
+                    cmd.Parameters.AddWithValue("@GebDatum_BT", CDate(txtGebBt.Text))
+                Else
+                    cmd.Parameters.AddWithValue("@GebDatum_BT", DBNull.Value)
+                End If
                 cmd.Parameters.AddWithValue("W_BT", txtWOBt.Text)
                 cmd.Parameters.AddWithValue("H_BT", txtHOBt.Text)
                 cmd.Parameters.AddWithValue("Z_BT", txtZuBt.Text)
@@ -382,6 +392,9 @@ Public Class vkHeirat
                         If Not IsDBNull(reader("FN_BR")) Then
                             txtNBtg.Text = reader("FN_BR")
                         End If
+                        If Not IsDBNull(reader("GebDatum_BR")) Then
+                            txtGebBtg.Text = reader("GebDatum_BR")
+                        End If
                         If Not IsDBNull(reader("W_BR")) Then
                             txtWOBtg.Text = reader("W_BR")
                         End If
@@ -417,6 +430,9 @@ Public Class vkHeirat
                         End If
                         If Not IsDBNull(reader("FN_BT")) Then
                             txtNBt.Text = reader("FN_BT")
+                        End If
+                        If Not IsDBNull(reader("GebDatum_BT")) Then
+                            txtGebBt.Text = reader("GebDatum_BT")
                         End If
                         If Not IsDBNull(reader("W_BT")) Then
                             txtWOBt.Text = reader("W_BT")
