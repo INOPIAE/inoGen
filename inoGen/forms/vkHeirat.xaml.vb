@@ -64,87 +64,87 @@ Public Class vkHeirat
 
         Dim VID As Int16 = cDB.VornameAnlegen(txtVBtg.Text, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVVtBtg.Text, 0)
+        VID = cDB.VornameAnlegen(txtVVtBtg.Text.Trim, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVMtBtg.Text, 0)
+        VID = cDB.VornameAnlegen(txtVMtBtg.Text.Trim, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVBt.Text, 0)
+        VID = cDB.VornameAnlegen(txtVBt.Text.Trim, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVBt.Text, 0)
+        VID = cDB.VornameAnlegen(txtVBt.Text.Trim, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVVtBt.Text, 0)
+        VID = cDB.VornameAnlegen(txtVVtBt.Text.Trim, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVMtBt.Text, 0)
+        VID = cDB.VornameAnlegen(txtVMtBt.Text.Trim, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVZ1.Text, 0)
+        VID = cDB.VornameAnlegen(txtVZ1.Text.Trim, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVZ2.Text, 0)
+        VID = cDB.VornameAnlegen(txtVZ2.Text.Trim, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVZ3.Text, 0)
+        VID = cDB.VornameAnlegen(txtVZ3.Text.Trim, 0)
         If VID = -1 Then Exit Sub
-        VID = cDB.VornameAnlegen(txtVZ4.Text, 0)
+        VID = cDB.VornameAnlegen(txtVZ4.Text.Trim, 0)
         If VID = -1 Then Exit Sub
 
-        Dim NID As Int16 = cDB.NachnamenID(txtNBtg.Text)
+        Dim NID As Int16 = cDB.NachnamenID(txtNBtg.Text.Trim)
         If NID = -1 Then Exit Sub
-        NID = cDB.NachnamenID(txtNVtBtg.Text)
+        NID = cDB.NachnamenID(txtNVtBtg.Text.Trim)
         If NID = -1 Then Exit Sub
-        NID = cDB.NachnamenID(txtNMtBtg.Text)
+        NID = cDB.NachnamenID(txtNMtBtg.Text.Trim)
         If NID = -1 Then Exit Sub
-        NID = cDB.NachnamenID(txtNBt.Text)
+        NID = cDB.NachnamenID(txtNBt.Text.Trim)
         If NID = -1 Then Exit Sub
-        NID = cDB.NachnamenID(txtNVtBt.Text)
+        NID = cDB.NachnamenID(txtNVtBt.Text.Trim)
         If NID = -1 Then Exit Sub
-        NID = cDB.NachnamenID(txtNMtBt.Text)
+        NID = cDB.NachnamenID(txtNMtBt.Text.Trim)
         If NID = -1 Then Exit Sub
-        NID = cDB.NachnamenID(txtNZ1.Text)
+        NID = cDB.NachnamenID(txtNZ1.Text.Trim)
         If NID = -1 Then Exit Sub
-        NID = cDB.NachnamenID(txtNZ2.Text)
+        NID = cDB.NachnamenID(txtNZ2.Text.Trim)
         If NID = -1 Then Exit Sub
-        NID = cDB.NachnamenID(txtNZ3.Text)
+        NID = cDB.NachnamenID(txtNZ3.Text.Trim)
         If NID = -1 Then Exit Sub
-        NID = cDB.NachnamenID(txtNZ4.Text)
+        NID = cDB.NachnamenID(txtNZ4.Text.Trim)
         If NID = -1 Then Exit Sub
 
-        Dim OID As Int16 = cDB.OrtID(txtWOBtg.Text)
+        Dim OID As Int16 = cDB.OrtID(txtWOBtg.Text.Trim)
         If OID = -1 Then Exit Sub
-        OID = cDB.OrtID(txtHOBtg.Text)
+        OID = cDB.OrtID(txtHOBtg.Text.Trim)
         If OID = -1 Then Exit Sub
-        OID = cDB.OrtID(txtWEBtg.Text)
+        OID = cDB.OrtID(txtWEBtg.Text.Trim)
         If OID = -1 Then Exit Sub
-        OID = cDB.OrtID(txtWOBt.Text)
+        OID = cDB.OrtID(txtWOBt.Text.Trim)
         If OID = -1 Then Exit Sub
-        OID = cDB.OrtID(txtHOBt.Text)
+        OID = cDB.OrtID(txtHOBt.Text.Trim)
         If OID = -1 Then Exit Sub
-        OID = cDB.OrtID(txtWEBt.Text)
+        OID = cDB.OrtID(txtWEBt.Text.Trim)
         If OID = -1 Then Exit Sub
 
-        If txtVZ1.Text <> "" Or txtNZ1.Text <> "" Then
-            If txtSexZ1.Text <> "m" And txtSexZ1.Text <> "w" Then
+        If txtVZ1.Text.Trim <> "" Or txtNZ1.Text.Trim <> "" Then
+            If txtSexZ1.Text.Trim <> "m" And txtSexZ1.Text.Trim <> "w" Then
                 MessageBox.Show("Geschlecht 1. Zeuge fehlt oder ist ungültig (m/w)!")
                 txtSexZ1.Focus()
                 Exit Sub
             End If
         End If
 
-        If txtVZ2.Text <> "" Or txtNZ2.Text <> "" Then
-            If txtSexZ2.Text <> "m" And txtSexZ2.Text <> "w" Then
+        If txtVZ2.Text.Trim <> "" Or txtNZ2.Text.Trim <> "" Then
+            If txtSexZ2.Text.Trim <> "m" And txtSexZ2.Text.Trim <> "w" Then
                 MessageBox.Show("Geschlecht 2. Zeuge fehlt oder ist ungültig (m/w)!")
                 txtSexZ2.Focus()
                 Exit Sub
             End If
         End If
 
-        If txtVZ3.Text <> "" Or txtNZ3.Text <> "" Then
-            If txtSexZ3.Text <> "m" And txtSexZ3.Text <> "w" Then
+        If txtVZ3.Text.Trim <> "" Or txtNZ3.Text.Trim <> "" Then
+            If txtSexZ3.Text.Trim <> "m" And txtSexZ3.Text.Trim <> "w" Then
                 MessageBox.Show("Geschlecht 3. Zeuge fehlt oder ist ungültig (m/w)!")
                 txtSexZ3.Focus()
                 Exit Sub
             End If
         End If
 
-        If txtVZ4.Text <> "" Or txtNZ4.Text <> "" Then
-            If txtSexZ4.Text <> "m" And txtSexZ4.Text <> "w" Then
+        If txtVZ4.Text.Trim <> "" Or txtNZ4.Text.Trim <> "" Then
+            If txtSexZ4.Text.Trim <> "m" And txtSexZ4.Text.Trim <> "w" Then
                 MessageBox.Show("Geschlecht 4. Zeuge fehlt oder ist ungültig (m/w)!")
                 txtSexZ4.Focus()
                 Exit Sub
@@ -169,9 +169,9 @@ Public Class vkHeirat
                 conn.Open()
                 Dim cmd As New OleDbCommand(If(isNewRecord, strInsert, strUpdate), conn)
                 ' Add parameters in the same order as in the SQL statement
-                cmd.Parameters.AddWithValue("BUCH_H", txtQuelle.Text)
-                cmd.Parameters.AddWithValue("SEITE_H", txtSeite.Text)
-                cmd.Parameters.AddWithValue("NR_H", txtNr.Text)
+                cmd.Parameters.AddWithValue("BUCH_H", txtQuelle.Text.Trim)
+                cmd.Parameters.AddWithValue("SEITE_H", txtSeite.Text.Trim)
+                cmd.Parameters.AddWithValue("NR_H", txtNr.Text.Trim)
                 If IsDate(txtHDatum.Text) Then
                     cmd.Parameters.AddWithValue("@HDatum", CDate(txtHDatum.Text))
                 Else
@@ -184,64 +184,64 @@ Public Class vkHeirat
                 End If
 
 
-                cmd.Parameters.AddWithValue("VN_BR", txtVBtg.Text)
-                cmd.Parameters.AddWithValue("FN_BR", txtNBtg.Text)
+                cmd.Parameters.AddWithValue("VN_BR", txtVBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_BR", txtNBtg.Text.Trim)
                 If IsDate(txtGebBtg.Text) Then
                     cmd.Parameters.AddWithValue("@GebDatum_BR", CDate(txtGebBtg.Text))
                 Else
                     cmd.Parameters.AddWithValue("@GebDatum_BR", DBNull.Value)
                 End If
-                cmd.Parameters.AddWithValue("W_BR", txtWOBtg.Text)
-                cmd.Parameters.AddWithValue("H_BR", txtHOBtg.Text)
-                cmd.Parameters.AddWithValue("Z_BR", txtZuBtg.Text)
-                cmd.Parameters.AddWithValue("VN_VBR", txtVVtBtg.Text)
-                cmd.Parameters.AddWithValue("FN_VBR", txtNVtBtg.Text)
-                cmd.Parameters.AddWithValue("Z_VBR", txtZuVtBtg.Text)
-                cmd.Parameters.AddWithValue("VN_MBR", txtVMtBtg.Text)
-                cmd.Parameters.AddWithValue("FN_MBR", txtNMtBtg.Text)
-                cmd.Parameters.AddWithValue("Z_MBR", txtZuMtBtg.Text)
-                cmd.Parameters.AddWithValue("W_EBR", txtWEBtg.Text)
+                cmd.Parameters.AddWithValue("W_BR", txtWOBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("H_BR", txtHOBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_BR", txtZuBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("VN_VBR", txtVVtBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_VBR", txtNVtBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_VBR", txtZuVtBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("VN_MBR", txtVMtBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_MBR", txtNMtBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_MBR", txtZuMtBtg.Text.Trim)
+                cmd.Parameters.AddWithValue("W_EBR", txtWEBtg.Text.Trim)
 
-                cmd.Parameters.AddWithValue("VN_BT", txtVBt.Text)
-                cmd.Parameters.AddWithValue("FN_BT", txtNBt.Text)
+                cmd.Parameters.AddWithValue("VN_BT", txtVBt.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_BT", txtNBt.Text.Trim)
                 If IsDate(txtGebBt.Text) Then
                     cmd.Parameters.AddWithValue("@GebDatum_BT", CDate(txtGebBt.Text))
                 Else
                     cmd.Parameters.AddWithValue("@GebDatum_BT", DBNull.Value)
                 End If
-                cmd.Parameters.AddWithValue("W_BT", txtWOBt.Text)
-                cmd.Parameters.AddWithValue("H_BT", txtHOBt.Text)
-                cmd.Parameters.AddWithValue("Z_BT", txtZuBt.Text)
-                cmd.Parameters.AddWithValue("VN_VBT", txtVVtBt.Text)
-                cmd.Parameters.AddWithValue("FN_VBT", txtNVtBt.Text)
-                cmd.Parameters.AddWithValue("Z_VBT", txtZuVtBt.Text)
-                cmd.Parameters.AddWithValue("VN_MBT", txtVMtBt.Text)
-                cmd.Parameters.AddWithValue("FN_MBT", txtNMtBt.Text)
-                cmd.Parameters.AddWithValue("Z_MBT", txtZuMtBt.Text)
-                cmd.Parameters.AddWithValue("W_EBT", txtWEBt.Text)
+                cmd.Parameters.AddWithValue("W_BT", txtWOBt.Text.Trim)
+                cmd.Parameters.AddWithValue("H_BT", txtHOBt.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_BT", txtZuBt.Text.Trim)
+                cmd.Parameters.AddWithValue("VN_VBT", txtVVtBt.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_VBT", txtNVtBt.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_VBT", txtZuVtBt.Text.Trim)
+                cmd.Parameters.AddWithValue("VN_MBT", txtVMtBt.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_MBT", txtNMtBt.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_MBT", txtZuMtBt.Text.Trim)
+                cmd.Parameters.AddWithValue("W_EBT", txtWEBt.Text.Trim)
 
-                cmd.Parameters.AddWithValue("ANM_H", txtInfo.Text)
-                cmd.Parameters.AddWithValue("VN_HZ1", txtVZ1.Text)
-                cmd.Parameters.AddWithValue("FN_HZ1", txtNZ1.Text)
-                cmd.Parameters.AddWithValue("G_HZ1", txtSexZ1.Text)
-                cmd.Parameters.AddWithValue("Z_HZ1", txtZuZ1.Text)
-                cmd.Parameters.AddWithValue("VN_HZ2", txtVZ2.Text)
-                cmd.Parameters.AddWithValue("FN_HZ2", txtNZ2.Text)
-                cmd.Parameters.AddWithValue("G_HZ2", txtSexZ2.Text)
-                cmd.Parameters.AddWithValue("Z_HZ2", txtZuZ2.Text)
+                cmd.Parameters.AddWithValue("ANM_H", txtInfo.Text.Trim)
+                cmd.Parameters.AddWithValue("VN_HZ1", txtVZ1.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_HZ1", txtNZ1.Text.Trim)
+                cmd.Parameters.AddWithValue("G_HZ1", txtSexZ1.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_HZ1", txtZuZ1.Text.Trim)
+                cmd.Parameters.AddWithValue("VN_HZ2", txtVZ2.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_HZ2", txtNZ2.Text.Trim)
+                cmd.Parameters.AddWithValue("G_HZ2", txtSexZ2.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_HZ2", txtZuZ2.Text.Trim)
 
-                cmd.Parameters.AddWithValue("VN_HZ3", txtVZ3.Text)
-                cmd.Parameters.AddWithValue("FN_HZ3", txtNZ3.Text)
-                cmd.Parameters.AddWithValue("G_HZ3", txtSexZ3.Text)
-                cmd.Parameters.AddWithValue("Z_HZ3", txtZuZ3.Text)
-                cmd.Parameters.AddWithValue("VN_HZ4", txtVZ4.Text)
-                cmd.Parameters.AddWithValue("FN_HZ4", txtNZ4.Text)
-                cmd.Parameters.AddWithValue("G_HZ4", txtSexZ4.Text)
-                cmd.Parameters.AddWithValue("Z_HZ4", txtZuZ4.Text)
+                cmd.Parameters.AddWithValue("VN_HZ3", txtVZ3.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_HZ3", txtNZ3.Text.Trim)
+                cmd.Parameters.AddWithValue("G_HZ3", txtSexZ3.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_HZ3", txtZuZ3.Text.Trim)
+                cmd.Parameters.AddWithValue("VN_HZ4", txtVZ4.Text.Trim)
+                cmd.Parameters.AddWithValue("FN_HZ4", txtNZ4.Text.Trim)
+                cmd.Parameters.AddWithValue("G_HZ4", txtSexZ4.Text.Trim)
+                cmd.Parameters.AddWithValue("Z_HZ4", txtZuZ4.Text.Trim)
 
                 cmd.Parameters.AddWithValue("CheckNeeded", If(ckbCheck.IsChecked.HasValue AndAlso ckbCheck.IsChecked.Value, True, False))
-                cmd.Parameters.AddWithValue("OnlineReference", txtURL.Text)
-                cmd.Parameters.AddWithValue("ReferenceDetails", txtQuelleSeite.Text)
+                cmd.Parameters.AddWithValue("OnlineReference", txtURL.Text.Trim)
+                cmd.Parameters.AddWithValue("ReferenceDetails", txtQuelleSeite.Text.Trim)
 
                 If Not isNewRecord AndAlso ID.HasValue Then
                     cmd.Parameters.AddWithValue("tblVKHID", ID.Value)
