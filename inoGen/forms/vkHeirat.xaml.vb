@@ -3,6 +3,7 @@ Imports System.Data.OleDb
 Imports System.Diagnostics.Metrics
 Imports System.Drawing.Text
 Imports System.Security.Cryptography
+Imports inoGenDLL
 
 Public Class vkHeirat
     Private connectionString As String =
@@ -12,6 +13,7 @@ Public Class vkHeirat
 
     Private isNewRecord As Boolean = False
     Private ID As Integer? = Nothing
+    Private testDate As String
 
     Private pSQL As String = "SELECT
             *
@@ -19,6 +21,7 @@ Public Class vkHeirat
             tblVKH"
 
     Private cDB As New clsDB(My.Settings.DBPath)
+    Private cGDB As New ClsGenDB(My.Settings.DBPath)
 
     Public Event RequestResizeMainWindow(width As Double)
 
@@ -573,4 +576,23 @@ Public Class vkHeirat
             txtWEBtg.Text = txtWOBtg.Text.Trim()
         End If
     End Sub
+
+    Private Sub txtHDatum_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtHDatum.GotFocus, txtDimDatum.GotFocus, txtGebBtg.GotFocus, txtGebBt.GotFocus
+        testDate = sender.Text
+    End Sub
+
+    Private Sub txtHDatum_LostFocus(sender As Object, e As RoutedEventArgs) Handles txtHDatum.LostFocus, txtGebBt.LostFocus, txtDimDatum.LostFocus, txtGebBtg.LostFocus
+        If sender.Text <> testDate Then
+            testDate = sender.Text
+            If cGDB.CleanDate(testDate) = False Then
+                MessageBox.Show("Ungültiges Datum!")
+                sender.Text = testDate
+                sender.Focus()
+            Else
+                sender.Text = testDate
+            End If
+        End If
+    End Sub
+
+
 End Class

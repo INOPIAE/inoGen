@@ -400,5 +400,76 @@ Namespace TestInoGen
             Assert.That(dt.Rows(1).Item(1), NUnit.Framework.Is.EqualTo("Müller"))
         End Sub
 
+        <Test>
+        Public Sub TestCleanDate()
+            Dim dateString As String = "12.01.1900"
+            Dim result As Boolean = cGDB.CleanDate(dateString)
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("12.01.1900"))
+
+            dateString = "12-01-1900"
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("12.01.1900"))
+
+            dateString = "12,01,1900"
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("12.01.1900"))
+
+            dateString = "12;01;1900"
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("12.01.1900"))
+
+            dateString = "12_01_1900"
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("12.01.1900"))
+
+            dateString = " 12. 01 . 1900 "
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("12.01.1900"))
+
+            dateString = "2.1.1900"
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("02.01.1900"))
+
+            dateString = "29.2.1904"
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("29.02.1904"))
+
+            dateString = "29.2.1902"
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(False))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("29.2.1902"))
+
+            dateString = "29-2-1902"
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(False))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("29.2.1902"))
+
+            dateString = ""
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo(""))
+
+            dateString = "   "
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(True))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo(""))
+
+
+            dateString = "hallo"
+            result = cGDB.CleanDate(dateString)
+            Assert.That(result, NUnit.Framework.Is.EqualTo(False))
+            Assert.That(dateString, NUnit.Framework.Is.EqualTo("hallo"))
+
+        End Sub
+
     End Class
 End Namespace

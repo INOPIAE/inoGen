@@ -769,4 +769,21 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Public Function CleanDate(ByRef dateString As String) As Boolean
+        dateString = dateString.Trim.Replace(",", ".")
+        dateString = dateString.Replace("-", ".")
+        dateString = dateString.Replace("_", ".")
+        dateString = dateString.Replace(";", ".")
+        dateString = dateString.Replace(" ", "")
+        If IsDate(dateString) Then
+            Dim d As Date = CDate(dateString)
+            dateString = d.ToString("dd.MM.yyyy")
+            Return True
+        End If
+        If dateString = vbNullString Then
+            Return True
+        End If
+        Return False
+    End Function
 End Class
