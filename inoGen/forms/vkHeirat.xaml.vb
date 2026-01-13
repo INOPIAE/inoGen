@@ -549,4 +549,28 @@ Public Class vkHeirat
             End If
         End If
     End Sub
+
+    Private Sub txtNVtBt_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtNVtBt.GotFocus
+        If txtNVtBt.Text.Trim() = "" And txtVVtBt.Text.Trim() <> "" Then
+            txtNVtBt.Text = txtNBt.Text.Trim()
+        End If
+    End Sub
+
+    Private Sub txtNVtBtg_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtNVtBtg.GotFocus
+        If txtNVtBtg.Text.Trim() = "" And txtVVtBtg.Text.Trim() <> "" Then
+            txtNVtBtg.Text = txtNBtg.Text.Trim()
+        End If
+    End Sub
+
+    Private Sub txtWEBt_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtWEBt.GotFocus
+        If txtWEBt.Text.Trim() = "" And txtWOBt.Text.Trim() <> "" And txtNVtBt.Text.Trim() <> "" Then
+            txtWEBt.Text = txtWOBt.Text.Trim()
+        End If
+    End Sub
+
+    Private Sub txtWEBtg_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtWEBtg.GotFocus
+        If txtWEBtg.Text.Trim() = "" And txtWOBtg.Text.Trim() <> "" And txtNVtBtg.Text.Trim() <> "" Then
+            txtWEBtg.Text = txtWOBtg.Text.Trim()
+        End If
+    End Sub
 End Class
