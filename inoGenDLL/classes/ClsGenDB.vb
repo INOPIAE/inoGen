@@ -786,4 +786,29 @@ Public Class ClsGenDB
         End If
         Return False
     End Function
+
+
+    Public Function VKH_ReportData(Optional Filter As Boolean = False) As DataTable
+        Dim SQLFilter As String = ""
+        If Filter = True Then
+            SQLFilter = " WHERE CheckNeeded = -1 "
+        End If
+        Dim strSQL As String = String.Format(
+            "SELECT * FROM tblVKH
+            {0}
+            ORDER BY
+                NR_H
+            ;", SQLFilter)
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class

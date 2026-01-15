@@ -53,12 +53,12 @@ Public Class vkHeirat
         txtURL.Text = URL
         txtQuelleSeite.Text = QuelleSeite
 
-        If Nr.Count = 2 Then
+        If Nr.Length = 2 Then
             Dim v As Integer = CInt(Nr(1)) + 1
             txtNr.Text = Nr(0) & "/" & v.ToString("000")
         End If
 
-        txtVBtg.Focus()
+        txtHDatum.Focus()
 
     End Sub
 

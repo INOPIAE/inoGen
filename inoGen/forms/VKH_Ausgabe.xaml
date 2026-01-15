@@ -17,8 +17,8 @@
         <!-- linker Platzhalter -->
         <TextBlock Grid.Column="0"/>
 
-        <Button Grid.Column="1"
-            Content="Kopieren"
+        <Button x:Name="btnPDF" Grid.Column="1"
+            Content="PDF Report"
             Width="100"
             Margin="5"/>
 
