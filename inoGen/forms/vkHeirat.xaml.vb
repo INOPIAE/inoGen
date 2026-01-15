@@ -537,6 +537,7 @@ Public Class vkHeirat
                 End Using
             End Using
         End Using
+        CalculateAge()
     End Sub
 
     Private Sub txtURL_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs) Handles txtURL.MouseDoubleClick
@@ -590,9 +591,35 @@ Public Class vkHeirat
                 sender.Focus()
             Else
                 sender.Text = testDate
+                CalculateAge()
             End If
         End If
     End Sub
 
-
+    Private Sub CalculateAge()
+        Dim eventDate As Date
+        If IsDate(txtHDatum.Text) Then
+            eventDate = CDate(txtHDatum.Text)
+        End If
+        If IsDate(txtGebBtg.Text) AndAlso IsDate(txtHDatum.Text) Then
+            Dim birthDate As Date = CDate(txtGebBtg.Text)
+            Dim age As Integer = eventDate.Year - birthDate.Year
+            If (eventDate.Month < birthDate.Month) Or (eventDate.Month = birthDate.Month And eventDate.Day < birthDate.Day) Then
+                age -= 1
+            End If
+            lblAlterBtg.Text = age.ToString()
+        Else
+            lblAlterBtg.Text = ""
+        End If
+        If IsDate(txtGebBt.Text) AndAlso IsDate(txtHDatum.Text) Then
+            Dim birthDate As Date = CDate(txtGebBt.Text)
+            Dim age As Integer = eventDate.Year - birthDate.Year
+            If (eventDate.Month < birthDate.Month) Or (eventDate.Month = birthDate.Month And eventDate.Day < birthDate.Day) Then
+                age -= 1
+            End If
+            lblAlterBt.Text = age.ToString()
+        Else
+            lblAlterBt.Text = ""
+        End If
+    End Sub
 End Class

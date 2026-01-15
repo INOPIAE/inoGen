@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:inoGen"
              mc:Ignorable="d" 
-             d:DesignHeight="550" d:DesignWidth="1300">
+             d:DesignHeight="550" d:DesignWidth="1310">
     <Grid>
         <DockPanel LastChildFill="False">
             <TextBlock Text="VK Heirat"
@@ -24,33 +24,34 @@
                   HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Quelle:" Width="30" VerticalAlignment="Center"/>
+                        <TextBlock Text="Quelle:" Width="40" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtQuelle" Width="200" />
                         <TextBlock Text="Seite:" Width="30" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtSeite" Width="40" />
                         <TextBlock Text="Nummer:" Width="50" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNr" Width="60" />
-                        <TextBlock Text="Url:" Width="30" VerticalAlignment="Center"/>
+                        <TextBlock Text="URL:" Width="30" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtURL" Width="350" Foreground="Blue" TextDecorations="Underline"/>
-                        <TextBlock Text="QuelleSeite:" Width="60" VerticalAlignment="Center"/>
+                        <TextBlock Text="Quelle Seite:" Width="70" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtQuelleSeite" Width="60" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="HDatum:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="HDatum:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtHDatum" Width="200" />
                         <TextBlock Text="Dimissionsdatum:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtDimDatum" Width="200" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Vornamen Btg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vornamen Btg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVBtg" Width="200"/>
                         <TextBlock Text="Nachname Btg:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNBtg" Width="200"/>
                         <TextBlock Text="Geb Datum Btg:" Width="100" VerticalAlignment="Center"/>
-                        <TextBox x:Name="txtGebBtg" Width="200"/>
+                        <TextBox x:Name="txtGebBtg" Width="100"/>
+                        <TextBlock x:Name="lblAlterBtg" Text=" " Width="20" VerticalAlignment="Center" TextAlignment="Right"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Wohnort Btg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Wohnort Btg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtWOBtg" Width="200"/>
                         <TextBlock Text="Heimatort Btg:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtHOBtg" Width="200"/>
@@ -58,7 +59,7 @@
                         <TextBox x:Name="txtZuBtg" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Vorname Vt Btg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vorname Vt Btg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVVtBtg" Width="200"/>
                         <TextBlock Text="Nachname Vt Btg:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNVtBtg" Width="200"/>
@@ -66,11 +67,11 @@
                         <TextBox x:Name="txtZuVtBtg" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Wohnort Eltern Btg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Wohnort Eltern Btg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtWEBtg" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Vorname Mt Btg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vorname Mt Btg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVMtBtg" Width="200"/>
                         <TextBlock Text="Nachname Mt Btg:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNMtBtg" Width="200"/>
@@ -78,15 +79,16 @@
                         <TextBox x:Name="txtZuMtBtg" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 20 0 5">
-                        <TextBlock Text="Vornamen Bt:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vornamen Bt:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVBt" Width="200"/>
                         <TextBlock Text="Nachname Bt:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNBt" Width="200"/>
                         <TextBlock Text="Geb Datum Bt:" Width="100" VerticalAlignment="Center"/>
-                        <TextBox x:Name="txtGebBt" Width="200"/>
+                        <TextBox x:Name="txtGebBt" Width="100"/>
+                        <TextBlock x:Name="lblAlterBt" Text=" " Width="20" VerticalAlignment="Center" TextAlignment="Right"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Wohnort Bt:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Wohnort Bt:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtWOBt" Width="200"/>
                         <TextBlock Text="Heimatort Bt:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtHOBt" Width="200"/>
@@ -94,7 +96,7 @@
                         <TextBox x:Name="txtZuBt" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Vorname Vt Bt:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vorname Vt Bt:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVVtBt" Width="200"/>
                         <TextBlock Text="Nachname Vt Bt:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNVtBt" Width="200"/>
@@ -102,11 +104,11 @@
                         <TextBox x:Name="txtZuVtBt" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Wohnort Eltern Bt:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Wohnort Eltern Bt:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtWEBt" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Vorname Mt Btg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vorname Mt Btg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVMtBt" Width="200"/>
                         <TextBlock Text="Nachname Mt Bt:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNMtBt" Width="200"/>
@@ -115,47 +117,47 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
-                        <TextBlock Text="Bemerkung:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Bemerkung:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtInfo" Width="700"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
-                        <TextBlock Text="Vorname 1. Zg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vorname 1. Zg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVZ1" Width="200"/>
                         <TextBlock Text="Nachname 1. Zg:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNZ1" Width="200"/>
-                        <TextBlock Text="Sex 1. Zg:" Width="50" VerticalAlignment="Center"/>
+                        <TextBlock Text="Sex 1. Zg:" Width="60" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtSexZ1" Width="20"/>
-                        <TextBlock Text="Zusatz Z1:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Zusatz Z1:" Width="90" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtZuZ1" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Vorname 2. Zg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vorname 2. Zg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVZ2" Width="200"/>
                         <TextBlock Text="Nachname 1. Zg:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNZ2" Width="200"/>
-                        <TextBlock Text="Sex 1. Zg:" Width="50" VerticalAlignment="Center"/>
+                        <TextBlock Text="Sex 1. Zg:" Width="60" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtSexZ2" Width="20"/>
-                        <TextBlock Text="Zusatz Z2:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Zusatz Z2:" Width="90" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtZuZ2" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Vorname 3. Zg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vorname 3. Zg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVZ3" Width="200"/>
                         <TextBlock Text="Nachname 3. Zg:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNZ3" Width="200"/>
-                        <TextBlock Text="Sex 3. Zg:" Width="50" VerticalAlignment="Center"/>
+                        <TextBlock Text="Sex 3. Zg:" Width="60" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtSexZ3" Width="20"/>
-                        <TextBlock Text="Zusatz Z3:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Zusatz Z3:" Width="90" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtZuZ3" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Vorname 4. Zg:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Vorname 4. Zg:" Width="110" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtVZ4" Width="200"/>
                         <TextBlock Text="Nachname 4. Zg:" Width="100" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtNZ4" Width="200"/>
-                        <TextBlock Text="Sex 4. Zg:" Width="50" VerticalAlignment="Center"/>
+                        <TextBlock Text="Sex 4. Zg:" Width="60" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtSexZ4" Width="20"/>
-                        <TextBlock Text="Zusatz Z4:" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="Zusatz Z4:" Width="90" VerticalAlignment="Center"/>
                         <TextBox x:Name="txtZuZ4" Width="200"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
