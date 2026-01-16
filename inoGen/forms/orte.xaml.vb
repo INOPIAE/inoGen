@@ -168,4 +168,42 @@ Public Class orte
             MessageBox.Show("Kein Ergebnis gefunden.")
         End If
     End Sub
+
+    Private Sub txtLat_LostFocus(sender As Object, e As RoutedEventArgs) Handles txtLat.LostFocus
+        If sender.text.trim = "" Then
+            sender.text = ""
+            Exit Sub
+        End If
+        If sender.Text.Trim <> "" AndAlso Not IsNumeric(sender.text) Then
+            MessageBox.Show("Bitte eine gültige Zahl für die Breite eingeben.")
+            sender.text = ""
+            sender.focus()
+            Exit Sub
+        End If
+        Dim test As Double = CDbl(sender.text)
+        If test < -90 Or test > 90 Then
+            MessageBox.Show("Die Breite muss zwischen -90 und 90 liegen.")
+            sender.text = ""
+            sender.focus()
+        End If
+    End Sub
+
+    Private Sub txtLon_LostFocus(sender As Object, e As RoutedEventArgs) Handles txtLon.LostFocus
+        If sender.text.trim = "" Then
+            sender.text = ""
+            Exit Sub
+        End If
+        If sender.Text.Trim <> "" AndAlso Not IsNumeric(sender.text) Then
+            MessageBox.Show("Bitte eine gültige Zahl für die Länge eingeben.")
+            sender.text = ""
+            sender.focus()
+            Exit Sub
+        End If
+        Dim test As Double = CDbl(sender.text)
+        If test < -180 Or test > 180 Then
+            MessageBox.Show("Die Länge muss zwischen -180 und 180 liegen.")
+            sender.text = ""
+            sender.focus()
+        End If
+    End Sub
 End Class
