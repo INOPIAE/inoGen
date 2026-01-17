@@ -476,11 +476,32 @@ Public Class ClsGenDB
         Return count
     End Function
 
-    Public Function VKH_Personen(Optional Filter As String = "") As DataTable
+    Public Function VKH_Personen() As DataTable
+        Return VKH_Personen("", 1)
+    End Function
+
+    Public Function VKH_Personen(Filter As String) As DataTable
+        Return VKH_Personen(Filter, 1)
+    End Function
+
+    Public Function VKH_Personen(Order As Integer) As DataTable
+        Return VKH_Personen("", Order)
+    End Function
+
+    Public Function VKH_Personen(Filter As String, Order As Integer) As DataTable
         Dim SQLFilter As String = ""
+        Dim SQLOrder As String = "ORDER BY Nachname, Vorname, SEITE_H, NR_H"
         If Filter.Trim <> "" Then
             SQLFilter = " WHERE Person = ? "
         End If
+        Select Case Order
+            Case 1
+                SQLOrder = "ORDER BY Nachname, Vorname, SEITE_H, NR_H"
+            Case 2
+                SQLOrder = "ORDER BY Nachname, Vorname, NR_H"
+            Case 3
+                SQLOrder = "ORDER BY Nachname, NR_H"
+        End Select
         Dim strSQL As String = String.Format(
             "SELECT * FROM (SELECT
                 tblVKHID, BUCH_H, SEITE_H, NR_H, HDatum,
@@ -532,7 +553,7 @@ Public Class ClsGenDB
                 VN_BT AS Vorname,
                 FN_BT AS Nachname,
                 W_BT AS Wohnort,
-                '' AS Heimatort,
+                H_BT AS Heimatort,
                 Z_BT AS Bemerkung,
                 'Braut' AS Person
             FROM
@@ -600,12 +621,8 @@ Public Class ClsGenDB
                  OR Len(FN_HZ4 & '') > 0
                  OR Len(Z_HZ4 & '') > 0)
             {0}
-            ORDER BY
-                Nachname,
-                Vorname,
-                SEITE_H,
-                NR_H
-            ;", SQLFilter)
+            {1}
+            ;", SQLFilter, SQLOrder)
 
         Dim dt As New DataTable()
         Using conn As New OleDbConnection(connectionString)
@@ -804,6 +821,86 @@ Public Class ClsGenDB
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
             Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function VKH_Orte(Optional Filter As String = "") As DataTable
+        Dim SQLFilter As String = ""
+        If Filter.Trim <> "" Then
+            SQLFilter = " WHERE Ort <> ? "
+        End If
+        Dim strSQL As String = String.Format(
+            "SELECT * FROM (SELECT
+                SEITE_H,
+                NR_H,
+                W_BR AS Ort
+            FROM
+                tblVKH
+            WHERE
+                W_BR IS NOT NULL AND W_BR <> ''
+            UNION
+            SELECT
+                SEITE_H,
+                NR_H,
+                H_BR AS Ort
+            FROM
+                tblVKH
+            WHERE
+                H_BR IS NOT NULL AND H_BR <> ''
+            UNION
+            SELECT
+                SEITE_H,
+                NR_H,
+                W_EBR AS Ort
+            FROM
+                tblVKH
+            WHERE
+                W_EBR IS NOT NULL AND W_EBR <> ''
+            UNION
+            SELECT
+                SEITE_H,
+                NR_H,
+                W_BT AS Ort
+            FROM
+                tblVKH
+            WHERE
+                W_BT IS NOT NULL AND W_BT <> ''
+            UNION
+            SELECT
+                SEITE_H,
+                NR_H,
+                H_BT AS Ort
+            FROM
+                tblVKH
+            WHERE
+                H_BT IS NOT NULL AND W_BT <> ''
+            UNION
+            SELECT
+                SEITE_H,
+                NR_H,
+                W_EBT AS Ort
+            FROM
+                tblVKH
+            WHERE
+                W_EBT IS NOT NULL AND H_BR <> ''
+            )
+            {0}
+            Order BY Ort, NR_H
+            ;", SQLFilter)
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                If Filter.Trim <> "" Then
+                    cmd.Parameters.AddWithValue("@Ort", Filter.Trim)
+                End If
+
                 Using adapter As New OleDbDataAdapter(cmd)
                     adapter.Fill(dt)
                 End Using

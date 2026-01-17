@@ -326,9 +326,23 @@ Namespace TestInoGen
 
             Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(3))
 
+            Assert.That(dt.Rows(0).Item("Nachname"), NUnit.Framework.Is.EqualTo("Müller"))
+            Assert.That(dt.Rows(0).Item("Vorname"), NUnit.Framework.Is.EqualTo("Dieter"))
+            Assert.That(dt.Rows(0).Item("Person"), NUnit.Framework.Is.EqualTo("Bräutigam"))
+
+            Assert.That(dt.Rows(1).Item("Nachname"), NUnit.Framework.Is.EqualTo("Mustermann"))
+            Assert.That(dt.Rows(1).Item("Vorname"), NUnit.Framework.Is.EqualTo("Bernhard"))
+            Assert.That(dt.Rows(1).Item("Person"), NUnit.Framework.Is.EqualTo("Vater Bräutigam"))
+
+            Assert.That(dt.Rows(2).Item("Nachname"), NUnit.Framework.Is.EqualTo("Mustermann"))
+            Assert.That(dt.Rows(2).Item("Vorname"), NUnit.Framework.Is.EqualTo("Peter"))
+            Assert.That(dt.Rows(2).Item("Person"), NUnit.Framework.Is.EqualTo("Bräutigam"))
+
+
+
             dt = cGDB.VKH_Personen("Bräutigam")
 
-            'Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
 
             dt = cGDB.VKH_Personen("Vater Bräutigam")
 
@@ -337,6 +351,66 @@ Namespace TestInoGen
             dt = cGDB.VKH_Personen("Zeuge")
 
             Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+
+
+            dt = cGDB.VKH_Personen("Bräutigam", 1)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            dt = cGDB.VKH_Personen("Bräutigam", 3)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            dt = cGDB.VKH_Personen("Vater Bräutigam", 1)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            dt = cGDB.VKH_Personen("Vater Bräutigam", 3)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            dt = cGDB.VKH_Personen("Zeuge", 1)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+            dt = cGDB.VKH_Personen("Zeuge", 3)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+
+
+            dt = cGDB.VKH_Personen(1)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(3))
+
+            Assert.That(dt.Rows(0).Item("Nachname"), NUnit.Framework.Is.EqualTo("Müller"))
+            Assert.That(dt.Rows(0).Item("Vorname"), NUnit.Framework.Is.EqualTo("Dieter"))
+            Assert.That(dt.Rows(0).Item("Person"), NUnit.Framework.Is.EqualTo("Bräutigam"))
+
+            Assert.That(dt.Rows(1).Item("Nachname"), NUnit.Framework.Is.EqualTo("Mustermann"))
+            Assert.That(dt.Rows(1).Item("Vorname"), NUnit.Framework.Is.EqualTo("Bernhard"))
+            Assert.That(dt.Rows(1).Item("Person"), NUnit.Framework.Is.EqualTo("Vater Bräutigam"))
+
+            Assert.That(dt.Rows(2).Item("Nachname"), NUnit.Framework.Is.EqualTo("Mustermann"))
+            Assert.That(dt.Rows(2).Item("Vorname"), NUnit.Framework.Is.EqualTo("Peter"))
+            Assert.That(dt.Rows(2).Item("Person"), NUnit.Framework.Is.EqualTo("Bräutigam"))
+
+            dt = cGDB.VKH_Personen(3)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(3))
+
+            Assert.That(dt.Rows(0).Item("Nachname"), NUnit.Framework.Is.EqualTo("Müller"))
+            Assert.That(dt.Rows(0).Item("Vorname"), NUnit.Framework.Is.EqualTo("Dieter"))
+            Assert.That(dt.Rows(0).Item("Person"), NUnit.Framework.Is.EqualTo("Bräutigam"))
+
+            Assert.That(dt.Rows(1).Item("Nachname"), NUnit.Framework.Is.EqualTo("Mustermann"))
+            Assert.That(dt.Rows(1).Item("Vorname"), NUnit.Framework.Is.EqualTo("Peter"))
+            Assert.That(dt.Rows(1).Item("Person"), NUnit.Framework.Is.EqualTo("Bräutigam"))
+
+            Assert.That(dt.Rows(2).Item("Nachname"), NUnit.Framework.Is.EqualTo("Mustermann"))
+            Assert.That(dt.Rows(2).Item("Vorname"), NUnit.Framework.Is.EqualTo("Bernhard"))
+            Assert.That(dt.Rows(2).Item("Person"), NUnit.Framework.Is.EqualTo("Vater Bräutigam"))
         End Sub
 
         <Test>
@@ -469,6 +543,24 @@ Namespace TestInoGen
             Assert.That(result, NUnit.Framework.Is.EqualTo(False))
             Assert.That(dateString, NUnit.Framework.Is.EqualTo("hallo"))
 
+        End Sub
+
+        <Test>
+        Public Sub TestVKH_Orte()
+            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.VKH_Orte()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo("1900/1"))
+            Assert.That(dt.Rows(0).Item(2), NUnit.Framework.Is.EqualTo("Musterstadt"))
+
+            dt = cGDB.VKH_Orte("Musterstadt")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
         End Sub
 
     End Class

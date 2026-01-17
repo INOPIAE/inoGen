@@ -26,12 +26,18 @@ Public Class VKH_Ausgabe
 
         ' Dialog anzeigen
         If saveFileDialog.ShowDialog() = Forms.DialogResult.OK Then
+            My.Settings.LastPlace = txtOrt.Text.Trim
+            My.Settings.Save()
             Try
-                MdlPDFVKHReport.GenerateReport(saveFileDialog.FileName)
+                MdlPDFVKHReport.GenerateReport(saveFileDialog.FileName, txtOrt.Text.Trim)
                 MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Catch ex As Exception
                 MessageBox.Show("Fehler beim Speichern der PDF: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End If
+    End Sub
+
+    Private Sub VKH_Ausgabe_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
+        txtOrt.Text = My.Settings.LastPlace
     End Sub
 End Class
