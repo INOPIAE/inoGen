@@ -37,6 +37,7 @@ Public Class vkHeirat
 
         LoadData()
 
+        ckbAutoCorrect.IsChecked = True
         AddHandler Me.Loaded, AddressOf OnLoaded
     End Sub
     Private Sub btnNew_Click(sender As Object, e As RoutedEventArgs) Handles btnNew.Click
@@ -621,5 +622,19 @@ Public Class vkHeirat
         Else
             lblAlterBt.Text = ""
         End If
+    End Sub
+
+    Private Sub txtWOBt_LostFocus(sender As Object, e As RoutedEventArgs) Handles _
+            txtWOBt.LostFocus, txtWOBtg.LostFocus, txtHOBt.LostFocus, txtHOBtg.LostFocus,
+            txtNBt.LostFocus, txtNBtg.LostFocus, txtVBt.LostFocus, txtVBtg.LostFocus,
+            txtNVtBt.LostFocus, txtNVtBtg.LostFocus, txtVVtBt.LostFocus, txtVVtBtg.LostFocus,
+            txtNMtBt.LostFocus, txtNMtBtg.LostFocus, txtVMtBt.LostFocus, txtVMtBtg.LostFocus,
+            txtNZ1.LostFocus, txtNZ2.LostFocus, txtNZ3.LostFocus, txtNZ4.LostFocus,
+            txtVZ1.LostFocus, txtVZ2.LostFocus, txtVZ3.LostFocus, txtVZ4.LostFocus
+
+        If ckbAutoCorrect.IsChecked = True Then
+            sender.text = cGDB.ToTitleCase(sender.text)
+        End If
+
     End Sub
 End Class

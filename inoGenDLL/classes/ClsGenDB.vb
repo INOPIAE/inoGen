@@ -1,5 +1,6 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
+Imports System.Globalization
 Imports System.Text.RegularExpressions
 Imports ADODB
 
@@ -907,5 +908,15 @@ Public Class ClsGenDB
             End Using
         End Using
         Return dt
+    End Function
+
+    Function ToTitleCase(text As String) As String
+
+        text = Regex.Replace(text.Trim(), "\s+", " ")
+
+        If String.IsNullOrWhiteSpace(text) Then Return text
+
+        Dim culture As CultureInfo = CultureInfo.CurrentCulture
+        Return culture.TextInfo.ToTitleCase(text.ToLower())
     End Function
 End Class

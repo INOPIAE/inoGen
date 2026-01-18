@@ -563,5 +563,28 @@ Namespace TestInoGen
             Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
         End Sub
 
+        <Test>
+        Public Sub TestToTitleCase()
+            Dim test As String = "this is a test STRING"
+            Dim result As String = cGDB.ToTitleCase(test)
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo("This Is A Test String"))
+
+            test = ""
+            result = cGDB.ToTitleCase(test)
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo(""))
+
+            test = " "
+            result = cGDB.ToTitleCase(test)
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo(""))
+
+            test = " new  TEST  string "
+            result = cGDB.ToTitleCase(test)
+
+            Assert.That(result, NUnit.Framework.Is.EqualTo("New Test String"))
+        End Sub
+
     End Class
 End Namespace
