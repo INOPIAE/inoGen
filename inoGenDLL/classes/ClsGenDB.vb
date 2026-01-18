@@ -805,11 +805,29 @@ Public Class ClsGenDB
         Return False
     End Function
 
+    Public Function VKH_ReportData() As DataTable
+        Return VKH_ReportData(False, "")
+    End Function
 
-    Public Function VKH_ReportData(Optional Filter As Boolean = False) As DataTable
+    Public Function VKH_ReportData(Filter As Boolean) As DataTable
+        Return VKH_ReportData(Filter, "")
+    End Function
+
+    Public Function VKH_ReportData(Book As String) As DataTable
+        Return VKH_ReportData(False, Book)
+    End Function
+
+    Public Function VKH_ReportData(Filter As Boolean, book As String) As DataTable
         Dim SQLFilter As String = ""
         If Filter = True Then
             SQLFilter = " WHERE CheckNeeded = -1 "
+        End If
+        If book.Trim <> "" Then
+            If SQLFilter.Trim <> "" Then
+                SQLFilter &= " AND BUCH_H = ? "
+            Else
+                SQLFilter = " WHERE BUCH_H = ? "
+            End If
         End If
         Dim strSQL As String = String.Format(
             "SELECT * FROM tblVKH
@@ -822,6 +840,9 @@ Public Class ClsGenDB
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
             Using cmd As New OleDbCommand(strSQL, conn)
+                If book.Trim <> "" Then
+                    cmd.Parameters.AddWithValue("@BUCH_H", book.Trim)
+                End If
                 Using adapter As New OleDbDataAdapter(cmd)
                     adapter.Fill(dt)
                 End Using
@@ -830,16 +851,31 @@ Public Class ClsGenDB
         Return dt
     End Function
 
-    Public Function VKH_Orte(Optional Filter As String = "") As DataTable
+    Public Function VKH_Orte() As DataTable
+        Return VKH_Orte("", "")
+    End Function
+
+    Public Function VKH_Orte(Filter As String) As DataTable
+        Return VKH_Orte(Filter, "")
+    End Function
+    Public Function VKH_Orte(Filter As String, Book As String) As DataTable
         Dim SQLFilter As String = ""
         If Filter.Trim <> "" Then
             SQLFilter = " WHERE Ort <> ? "
+        End If
+        If Book.Trim <> "" Then
+            If SQLFilter.Trim <> "" Then
+                SQLFilter &= " AND BUCH_H = ? "
+            Else
+                SQLFilter = " WHERE BUCH_H = ? "
+            End If
         End If
         Dim strSQL As String = String.Format(
             "SELECT * FROM (SELECT
                 SEITE_H,
                 NR_H,
-                W_BR AS Ort
+                W_BR AS Ort,
+                BUCH_H
             FROM
                 tblVKH
             WHERE
@@ -848,7 +884,8 @@ Public Class ClsGenDB
             SELECT
                 SEITE_H,
                 NR_H,
-                H_BR AS Ort
+                H_BR AS Ort,
+                BUCH_H
             FROM
                 tblVKH
             WHERE
@@ -857,7 +894,8 @@ Public Class ClsGenDB
             SELECT
                 SEITE_H,
                 NR_H,
-                W_EBR AS Ort
+                W_EBR AS Ort,
+                BUCH_H
             FROM
                 tblVKH
             WHERE
@@ -866,7 +904,8 @@ Public Class ClsGenDB
             SELECT
                 SEITE_H,
                 NR_H,
-                W_BT AS Ort
+                W_BT AS Ort,
+                BUCH_H
             FROM
                 tblVKH
             WHERE
@@ -875,7 +914,8 @@ Public Class ClsGenDB
             SELECT
                 SEITE_H,
                 NR_H,
-                H_BT AS Ort
+                H_BT AS Ort,
+                BUCH_H
             FROM
                 tblVKH
             WHERE
@@ -884,7 +924,8 @@ Public Class ClsGenDB
             SELECT
                 SEITE_H,
                 NR_H,
-                W_EBT AS Ort
+                W_EBT AS Ort,
+                BUCH_H
             FROM
                 tblVKH
             WHERE
@@ -900,6 +941,9 @@ Public Class ClsGenDB
             Using cmd As New OleDbCommand(strSQL, conn)
                 If Filter.Trim <> "" Then
                     cmd.Parameters.AddWithValue("@Ort", Filter.Trim)
+                End If
+                If Book.Trim <> "" Then
+                    cmd.Parameters.AddWithValue("@BUCH_H", Book.Trim)
                 End If
 
                 Using adapter As New OleDbDataAdapter(cmd)
@@ -918,5 +962,20 @@ Public Class ClsGenDB
 
         Dim culture As CultureInfo = CultureInfo.CurrentCulture
         Return culture.TextInfo.ToTitleCase(text.ToLower())
+    End Function
+
+    Function GetVKH_Books() As DataTable
+        Dim strSQL As String =
+            "SELECT DISTINCT BUCH_H FROM tblVKH ORDER BY BUCH_H"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
     End Function
 End Class

@@ -18,18 +18,18 @@ Public Class MdlPDFVKHReport
     Private Shared cAT As New clsAhnentafelDaten(My.Settings.DBPath)
 
     Public Shared Sub GenerateReport(dest As String)
-        GenerateReport(dest, False, "")
+        GenerateReport(dest, False, "", "")
     End Sub
 
     Public Shared Sub GenerateReport(dest As String, CheckData As Boolean)
-        GenerateReport(dest, CheckData, "")
+        GenerateReport(dest, CheckData, "", "")
     End Sub
 
     Public Shared Sub GenerateReport(dest As String, Ort As String)
-        GenerateReport(dest, False, Ort)
+        GenerateReport(dest, False, Ort, "")
     End Sub
 
-    Public Shared Sub GenerateReport(dest As String, CheckData As Boolean, Ort As String)
+    Public Shared Sub GenerateReport(dest As String, CheckData As Boolean, Ort As String, Book As String)
         Using writer As New PdfWriter(dest)
             Using pdfDoc As New PdfDocument(writer)
                 Using document As New Document(pdfDoc)
@@ -47,25 +47,28 @@ Public Class MdlPDFVKHReport
                     ' Outline-Root für Bookmarks
                     Dim rootOutline As PdfOutline = pdfDoc.GetOutlines(CheckData)
 
-                    Dim dt As DataTable = cGenDB.VKH_ReportData()
+                    Dim CheckText As String = IIf(CheckData, " - Datenprüfung", "")
+
+                    Dim dt As DataTable = cGenDB.VKH_ReportData(CheckData, Book)
                     Dim line As String
-                    line = String.Format("#{0} {1}", "Kirchenbuch Verkartung aus", dt.Rows(0).Item("BUCH_H"))
+                    line = String.Format("#{0} {1} {2}", "Kirchenbuch Verkartung aus", dt.Rows(0).Item("BUCH_H"), CheckText)
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
 
-                    Dim dtÜ As DataTable = cGenDB.StatisicsVKHeirat
+                    If CheckData = False Then
+                        Dim dtÜ As DataTable = cGenDB.StatisicsVKHeirat
 
-                    With dtÜ.Rows(0)
-                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Einträge gesamt: " & Format(.Item(0), "#,##0"))
-                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Bräutigame gesamt: " & Format(.Item(1), "#,##0"))
-                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Väter des Bräutigams gesamt: " & Format(.Item(2), "#,##0"))
-                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Mütter des Bräutigams gesamt: " & Format(.Item(3), "#,##0"))
-                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Bräute gesamt: " & Format(.Item(4), "#,##0"))
-                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Väter der Braut gesamt: " & Format(.Item(5), "#,##0"))
-                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Mütter des Braut gesamt: " & Format(.Item(6), "#,##0"))
-                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Personen gesamt: " & Format(.Item(1) + .Item(2) + .Item(3) + .Item(4) + .Item(5) + .Item(6), "#,##0"))
-                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Zeugen gesamt: " & Format(.Item(7) + .Item(8) + .Item(9) + .Item(10), "#,##0"))
-                    End With
-
+                        With dtÜ.Rows(0)
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Einträge gesamt: " & Format(.Item(0), "#,##0"))
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Bräutigame gesamt: " & Format(.Item(1), "#,##0"))
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Väter des Bräutigams gesamt: " & Format(.Item(2), "#,##0"))
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Mütter des Bräutigams gesamt: " & Format(.Item(3), "#,##0"))
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Bräute gesamt: " & Format(.Item(4), "#,##0"))
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Väter der Braut gesamt: " & Format(.Item(5), "#,##0"))
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Mütter des Braut gesamt: " & Format(.Item(6), "#,##0"))
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Personen gesamt: " & Format(.Item(1) + .Item(2) + .Item(3) + .Item(4) + .Item(5) + .Item(6), "#,##0"))
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Zeugen gesamt: " & Format(.Item(7) + .Item(8) + .Item(9) + .Item(10), "#,##0"))
+                        End With
+                    End If
 
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Abkürzungen:")
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§Bt: Braut")
@@ -80,7 +83,7 @@ Public Class MdlPDFVKHReport
                     line = String.Format("#{0}", "Einträge")
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
 
-                    dt = cGenDB.VKH_ReportData()
+
 
                     Dim year As Integer = 0
                     Dim counter As Integer = 0
@@ -297,71 +300,74 @@ Public Class MdlPDFVKHReport
                         'End If
                     Next
 
-                    document.Add(New AreaBreak(AreaBreakType.NEXT_PAGE))
-                    line = String.Format("#{0}", "Namensverzeichnis")
-                    OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
+                    If CheckData = False Then
+                        document.Add(New AreaBreak(AreaBreakType.NEXT_PAGE))
+                        line = String.Format("#{0}", "Namensverzeichnis")
+                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
 
-                    dt = cGenDB.VKH_Personen(3)
-                    counter = 0
-                    Dim OutputObject As String = ""
-                    Dim Nr_H As String = ""
-                    Dim LineN As String = ""
-                    For Each dr As DataRow In dt.Rows
-                        counter += 1
+                        dt = cGenDB.VKH_Personen(3)
+                        counter = 0
+                        Dim OutputObject As String = ""
+                        Dim Nr_H As String = ""
+                        Dim LineN As String = ""
+                        For Each dr As DataRow In dt.Rows
+                            counter += 1
 
-                        If dr.Item("Nachname").ToString.Trim <> OutputObject Then
-                            If OutputObject <> "" Then
-                                OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
+                            If dr.Item("Nachname").ToString.Trim <> OutputObject Then
+                                If OutputObject <> "" Then
+                                    OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
+                                End If
+                                line = String.Format("{0}", dr.Item("Nachname").ToString)
+                                OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
+                                OutputObject = dr.Item("Nachname").ToString.Trim
+                                LineN = ""
+                                Nr_H = ""
                             End If
-                            line = String.Format("{0}", dr.Item("Nachname").ToString)
-                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
-                            OutputObject = dr.Item("Nachname").ToString.Trim
-                            LineN = ""
-                            Nr_H = ""
-                        End If
 
-                        If dr.Item("NR_H").ToString <> Nr_H Then
-                            LineN &= IIf(LineN = "", "", ", ") & dr.Item("NR_H")
-                            Nr_H = dr.Item("NR_H").ToString
-                        End If
-
-                        'If counter > 100 Then
-                        '    Exit For
-                        'End If
-                    Next
-                    OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
-
-                    document.Add(New AreaBreak(AreaBreakType.NEXT_PAGE))
-                    line = String.Format("#{0}", "Ortsverzeichnis")
-                    OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
-
-                    dt = cGenDB.VKH_Orte(Ort)
-                    counter = 0
-                    OutputObject = ""
-                    LineN = ""
-                    For Each dr As DataRow In dt.Rows
-                        counter += 1
-                        If dr.Item("Ort").ToString.Trim <> OutputObject Then
-                            If OutputObject <> "" Then
-                                OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
+                            If dr.Item("NR_H").ToString <> Nr_H Then
+                                LineN &= IIf(LineN = "", "", ", ") & dr.Item("NR_H")
+                                Nr_H = dr.Item("NR_H").ToString
                             End If
-                            line = String.Format("{0}", dr.Item("Ort").ToString)
-                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
-                            OutputObject = dr.Item("Ort").ToString.Trim
-                            LineN = ""
-                            Nr_H = ""
-                        End If
 
-                        If dr.Item("NR_H").ToString <> Nr_H Then
-                            LineN &= IIf(LineN = "", "", ", ") & dr.Item("NR_H")
-                            Nr_H = dr.Item("NR_H").ToString
-                        End If
+                            'If counter > 100 Then
+                            '    Exit For
+                            'End If
+                        Next
+                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
 
-                        'If counter > 100 Then
-                        '    Exit For
-                        'End If
-                    Next
-                    OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
+                        document.Add(New AreaBreak(AreaBreakType.NEXT_PAGE))
+                        line = String.Format("#{0}", "Ortsverzeichnis")
+                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
+
+                        dt = cGenDB.VKH_Orte(Ort)
+                        counter = 0
+                        OutputObject = ""
+                        LineN = ""
+                        For Each dr As DataRow In dt.Rows
+                            counter += 1
+                            If dr.Item("Ort").ToString.Trim <> OutputObject Then
+                                If OutputObject <> "" Then
+                                    OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
+                                End If
+                                line = String.Format("{0}", dr.Item("Ort").ToString)
+                                OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
+                                OutputObject = dr.Item("Ort").ToString.Trim
+                                LineN = ""
+                                Nr_H = ""
+                            End If
+
+                            If dr.Item("NR_H").ToString <> Nr_H Then
+                                LineN &= IIf(LineN = "", "", ", ") & dr.Item("NR_H")
+                                Nr_H = dr.Item("NR_H").ToString
+                            End If
+
+                            'If counter > 100 Then
+                            '    Exit For
+                            'End If
+                        Next
+                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
+
+                    End If
                 End Using
             End Using
         End Using

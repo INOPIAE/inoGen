@@ -561,6 +561,20 @@ Namespace TestInoGen
             dt = cGDB.VKH_Orte("Musterstadt")
 
             Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+
+            dt = cGDB.VKH_Orte("", "D")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo("1900/1"))
+            Assert.That(dt.Rows(0).Item(2), NUnit.Framework.Is.EqualTo("Musterstadt"))
+
+            dt = cGDB.VKH_Orte("", "E")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
         End Sub
 
         <Test>
@@ -586,5 +600,52 @@ Namespace TestInoGen
             Assert.That(result, NUnit.Framework.Is.EqualTo("New Test String"))
         End Sub
 
+        <Test>
+        Public Sub TestGetVKH_Books()
+            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetVKH_Books()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo("D"))
+
+        End Sub
+
+        <Test>
+        Public Sub TestVKH_ReportData()
+            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.VKH_ReportData()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+
+            dt = cGDB.VKH_ReportData(False)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            dt = cGDB.VKH_ReportData(True)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item(3), NUnit.Framework.Is.EqualTo("1900/2"))
+
+
+            dt = cGDB.VKH_ReportData("D")
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            dt = cGDB.VKH_ReportData("E")
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+
+            dt = cGDB.VKH_ReportData(False, "D")
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            dt = cGDB.VKH_ReportData(True, "D")
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item(3), NUnit.Framework.Is.EqualTo("1900/2"))
+
+
+        End Sub
     End Class
 End Namespace
