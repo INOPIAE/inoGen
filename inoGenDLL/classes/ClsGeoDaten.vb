@@ -1,7 +1,7 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
 
-Public Class ClsVKHDaten
+Public Class ClsGeoDaten
     Public DBPath As String = ""
     Public connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "")
 
