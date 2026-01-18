@@ -583,17 +583,33 @@ Public Class vkHeirat
         testDate = sender.Text
     End Sub
 
-    Private Sub txtHDatum_LostFocus(sender As Object, e As RoutedEventArgs) Handles txtHDatum.LostFocus, txtGebBt.LostFocus, txtDimDatum.LostFocus, txtGebBtg.LostFocus
-        If sender.Text <> testDate Then
-            testDate = sender.Text
-            If cGDB.CleanDate(testDate) = False Then
-                MessageBox.Show("Ungültiges Datum!")
-                sender.Text = testDate
-                sender.Focus()
-            Else
-                sender.Text = testDate
-                CalculateAge()
-            End If
+    'Private Sub txtHDatum_LostFocus(sender As Object, e As RoutedEventArgs) Handles txtHDatum.LostFocus, txtGebBt.LostFocus, txtDimDatum.LostFocus, txtGebBtg.LostFocus
+    '    If sender.Text <> testDate Then
+    '        testDate = sender.Text
+    '        If cGDB.CleanDate(testDate) = False Then
+    '            MessageBox.Show("Ungültiges Datum!")
+    '            sender.Text = testDate
+    '            sender.Focus()
+    '        Else
+    '            sender.Text = testDate
+    '            CalculateAge()
+    '        End If
+    '    End If
+    'End Sub
+
+    Private Sub txtHDatum_PreviewLostKeyboardFocus(sender As Object, e As KeyboardFocusChangedEventArgs) _
+    Handles txtHDatum.PreviewLostKeyboardFocus, txtGebBt.PreviewLostKeyboardFocus,
+            txtDimDatum.PreviewLostKeyboardFocus, txtGebBtg.PreviewLostKeyboardFocus
+
+        Dim tb = DirectCast(sender, TextBox)
+
+        If Not cGDB.CleanDate(tb.Text) Then
+            MessageBox.Show("Ungültiges Datum!")
+            sender.Text = tb.Text
+            e.Handled = True   ' Fokus bleibt im Feld
+        Else
+            sender.Text = tb.Text
+            CalculateAge()
         End If
     End Sub
 
@@ -637,4 +653,5 @@ Public Class vkHeirat
         End If
 
     End Sub
+
 End Class
