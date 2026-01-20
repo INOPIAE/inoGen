@@ -8,6 +8,8 @@ Imports SaveFileDialog = System.Windows.Forms.SaveFileDialog
 
 Class MainWindow
 
+    Private VKH_Übernahme As VKH_Übernahme
+
     Public connectionString As String =
         String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "D:\Daten\programierung neu\inoGen\Daten\Drews.accdb")
 
@@ -267,4 +269,40 @@ Class MainWindow
         MainContent.Content = New nachnamen()
     End Sub
 
+    Private Sub VKH_Übernahme_Click(sender As Object, e As RoutedEventArgs)
+        VKH_Übernahme = New VKH_Übernahme
+        AddHandler VKH_Übernahme.PersonenUebergabe, AddressOf OnPersonenUebergabe
+        VKH_Übernahme.Show()
+    End Sub
+
+    Private Sub OnPersonenUebergabe(sender As Object, e As PersonenUebergabeEventArgs)
+
+        Dim personenCtrl As personen
+
+        If TypeOf MainContent.Content Is personen Then
+            personenCtrl = DirectCast(MainContent.Content, personen)
+        Else
+            personenCtrl = New personen()
+            MainContent.Content = personenCtrl
+        End If
+
+
+        personenCtrl.NewPersonRecordSet()
+
+        personenCtrl.Vorname = e.Vorname
+        personenCtrl.Nachname = e.Nachname
+        personenCtrl.Sex = e.Sex
+
+        personenCtrl.SavePersonRecordSet()
+
+        If e.EventDatum <> "" Then
+            personenCtrl.CreateAndSaveEvent(personenCtrl.ID, 0, e.EventDatum, e.EventArt, e.Referenz, e.OnlineRef, e.Ort)
+        End If
+
+        personenCtrl.SavePersonRecordSet()
+
+        Dim win = DirectCast(sender, VKH_Übernahme)
+        win.PersonReturn(True, personenCtrl.ID)
+
+    End Sub
 End Class

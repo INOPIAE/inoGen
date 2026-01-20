@@ -69,6 +69,10 @@ Public Class ereignis
     Public Event DataSaved(sender As Object, e As EventArgs)
 
     Private Sub btnSave_Click(sender As Object, e As RoutedEventArgs) Handles btnSave.Click
+        SaveData()
+    End Sub
+
+    Public Sub SaveData()
         Dim sqlFind As String = "SELECT tblEreignisID FROM  tblEreignis WHERE tblEreignisArtID = ? AND  tblPersonID = ?"
         Dim sqlFindF As String = "SELECT tblEreignisID FROM  tblEreignis  WHERE tblEreignisArtID = ? AND  tblFamilieID = ?"
         Dim sqlInsert As String = "INSERT INTO tblEreignis (tblEreignisArtID, tblPersonID, tblFamilieID, Datum, DatumText, BisDatum, BisDatumText, tblOrtID, tblKonfessionID, Zusatz, Referenz, FSID, Info) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -87,20 +91,7 @@ Public Class ereignis
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
 
-            'Using cmd As New OleDbCommand(sqlFind, conn)
-            '    cmd.Parameters.AddWithValue("@tblEreignisArtID", cbEreignis.SelectedValue)
-            '    cmd.Parameters.AddWithValue("@tblPersonID", PID)
-            '    Dim result = cmd.ExecuteScalar()
-            '    If result IsNot Nothing AndAlso Not IsDBNull(result) Then
-            '        ID = Convert.ToInt32(result)
-            '        If cbEreignis.SelectedValue > 8 Then
-            '            ID = 0
-            '        End If
-            '    End If
-            'End Using
             If ID = 0 Or ID Is Nothing Then
-
-
 
                 Using cmdInsert As New OleDbCommand(sqlInsert, conn)
                     cmdInsert.Parameters.AddWithValue("@tblEreignisArtID", cbEreignis.SelectedValue)
@@ -350,4 +341,19 @@ Public Class ereignis
         End Using
         Return id
     End Function
+
+    Public Sub InitNew(personId As Integer,
+                   familieId As Integer,
+                   Optional autoSave As Boolean = False)
+
+        NewDataset()
+
+        Me.PersonId = personId
+        Me.FamilieId = familieId
+
+
+        If autoSave Then
+            SaveData()
+        End If
+    End Sub
 End Class

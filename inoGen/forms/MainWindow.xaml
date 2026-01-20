@@ -28,6 +28,7 @@
             <MenuItem Header="_Verkartung">
                 <MenuItem Header="_VK Heirat KB" Click="VKH_Click"/>
                 <MenuItem Header="_VK Heirat Personen" Click="VKH_PersonReport_Click"/>
+                <MenuItem Header="_VK Heirat Übernahme" Click="VKH_Übernahme_Click"/>
             </MenuItem>
             <MenuItem Header="_Ausgabe">
                 <MenuItem Header="_Ahnentafel" Click="Ahnentafel_Click"/>

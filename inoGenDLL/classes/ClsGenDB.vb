@@ -9,6 +9,7 @@ Public Class ClsGenDB
     Public connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "")
 
 
+
     Public Sub New(dbFileString As String)
         connectionString = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";Persist Security Info=True", dbFileString)
         ' Constructor logic if needed
