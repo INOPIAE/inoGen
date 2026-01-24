@@ -416,7 +416,7 @@ Public Class personen
         FillPerson(VID)
     End Sub
 
-    Private Sub FillPerson(PID As Integer)
+    Public Sub FillPerson(PID As Integer)
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
 
@@ -532,8 +532,10 @@ Public Class personen
                                     EventArt As String,
                                     Referenz As String,
                                     OnlineRef As String,
-                                    Ort As String)
+                                    Ort As String,
+                                    Zusatz As String)
 
+        isNewRecord=False
         Dim details As New ereignis(True)
         AddHandler details.DataSaved, AddressOf OnDatenGespeichert
 
@@ -545,6 +547,7 @@ Public Class personen
         details.txtReferenz.Text = Referenz
         details.txtFSID.Text = OnlineRef
         details.cbOrt.Text = Ort
+        details.txtZusatz.Text = Zusatz
 
 
         ' Optional anzeigen
@@ -553,6 +556,7 @@ Public Class personen
         ' Automatisch speichern
         details.SaveData()
 
+        PSSpeichern()
     End Sub
 
 End Class

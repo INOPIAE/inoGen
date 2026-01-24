@@ -979,4 +979,78 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Function GetSearchPersons() As DataTable
+        Dim strSQL As String =
+            "SELECT
+                p.tblPersonID,
+                p.PS,
+                n.Nachname,
+                p.Vorname,
+                p.Sex,
+                IIf([p].[tblFamilieID] > 0, ""X"", """") AS Kind,
+                p.Info,
+                p.FSID,
+                e.Datum,
+                e.DatumText,
+                e.Referenz,
+                e.EreignisArt
+            FROM
+                (tblPerson AS p
+                    LEFT JOIN tblNachname AS n
+                        ON p.tblNachnameID = n.tblNachnameID)
+                LEFT JOIN
+                    (
+                        SELECT
+                            tblEreignis.tblPersonID,
+                            First(tblEreignis.Datum) AS Datum,
+                            First(tblEreignis.DatumText) AS DatumText,
+                            First(tblEreignis.Referenz) AS Referenz,
+                            First(tblEreignisArt.EreignisArt) AS EreignisArt
+                        FROM
+                            tblEreignis
+                            INNER JOIN tblEreignisArt
+                                ON tblEreignis.tblEreignisArtID = tblEreignisArt.tblEreignisArtID
+                        GROUP BY
+                            tblEreignis.tblPersonID
+                    ) AS e
+                ON p.tblPersonID = e.tblPersonID
+            ORDER BY
+                p.PS;"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Function GetFamilies() As DataTable
+        Dim strSQL As String =
+            "SELECT
+                tblFamilie.tblFamilieID,
+                tblFamilie.FS,
+                tblFamilie.tblPersonIDV,
+                tblFamilie.tblPersonIDM,
+                [qryPerson]![Vorname] & ' ' & UCase([qryPerson]![Nachname]) AS Vater, 
+                m.Vorname & ' ' & UCase(m.Nachname) AS Mutter
+            FROM qryPerson As m RIGHT Join (qryPerson RIGHT Join tblFamilie On qryPerson.tblPersonID = tblFamilie.tblPersonIDV) ON m.tblPersonID = tblFamilie.tblPersonIDM
+            ORDER BY FS;"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class

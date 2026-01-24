@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:inoGen"
         mc:Ignorable="d"
-        Title="VKH_Übernahme" Height="450" Width="1300">
+        Title="VKH_Übernahme" Height="500" Width="1300">
     <Grid>
         <DockPanel LastChildFill="False">
             <TextBlock Text="VK Heirat Übernahme"
@@ -66,33 +66,106 @@
                         <Button x:Name="btnZ3" Content="Z 3" Width="50" Margin="5 5 5 5" />
                         <Button x:Name="btnZ4" Content="Z 4" Width="50" Margin="5 5 5 5" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
-                        <TextBlock Text="Vornamen:" Width="110" VerticalAlignment="Center"/>
-                        <TextBox x:Name="txtV" Width="200"/>
-                        <TextBlock Text="Nachname:" Width="100" VerticalAlignment="Center"/>
-                        <TextBox x:Name="txtN" Width="200"/>
-                        <TextBlock Text="Geb Datum:" Width="100" VerticalAlignment="Center"/>
-                        <TextBox x:Name="txtGeb" Width="70"/>
-                        <TextBlock x:Name="lblVTag" Text=" " Width="100" VerticalAlignment="Center" TextAlignment="Right"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Wohnort:" Width="110" VerticalAlignment="Center"/>
-                        <TextBox x:Name="txtWO" Width="200"/>
-                        <TextBlock Text="Heimatort:" Width="100" VerticalAlignment="Center"/>
-                        <TextBox x:Name="txtHO" Width="200"/>
-                        <TextBlock Text="Zusatz:" Width="100" VerticalAlignment="Center"/>
-                        <TextBox x:Name="txtZu" Width="200"/>
-                    </StackPanel>
+                    <TabControl Margin="0 10 0 0">
+                        <!-- Tab: Person -->
+                        <TabItem Header="Person">
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
+                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                    <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
+                                        <TextBlock Text="Vornamen:" Width="110" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtV" Width="200"/>
+                                        <TextBlock Text="Nachname:" Width="100" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtN" Width="200"/>
+                                    </StackPanel>
 
+                                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                                        <TextBlock Text="Wohnort:" Width="110" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtWO" Width="200"/>
+                                        <TextBlock Text="Heimatort:" Width="100" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtHO" Width="200"/>
+                                    </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
-                        <TextBlock Text="Sex Zg:" Width="60" VerticalAlignment="Center"/>
-                        <TextBox x:Name="txtSex" Width="20"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
-                        <Button x:Name="btnNewPerson" Content="Neu" Width="50" Margin="5 5 5 5" />
-                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
+                                        <TextBlock Text="Geb Datum:" Width="100" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtGeb" Width="70"/>
+                                       
+                                        <TextBlock Text="Zusatz:" Width="100" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtZu" Width="200"/>
+                                        <TextBlock Text="Sex Zg:" Width="60" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtSex" Width="20"/>
+                                        <TextBlock x:Name="lblVTag" Text=" " Width="100" VerticalAlignment="Center" TextAlignment="Right"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
+                                        <Button x:Name="btnNewPerson" Content="Neu" Width="50" Margin="5"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
+                                        <TextBlock Text="Datum:" Width="50" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtDatum" Width="70"/>
+                                        <TextBlock Text="Ereignis:" Width="50" VerticalAlignment="Center"/>
+                                        <ComboBox x:Name="cbEreignis"
+                                              Width="200"
+                                              DisplayMemberPath="EreignisArt"
+                                              SelectedValuePath="tblEreignisArtID"
+                                              SelectionChanged="cbEreignis_SelectionChanged"/>  
+                                        <TextBlock Text="Zusatz:" Width="60" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtEintragZusatz" Width="200"/>
+                                        
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
+                                        <Button x:Name="btnNewPEintrag" Content="Weiterer Eintrag" Width="100" Margin="5"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <DataGrid Grid.Column="1"
+                                      x:Name="dgPersonDetails"
+                                      AutoGenerateColumns="True"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      AutoGeneratedColumns="dgPersonDetails_AutoGeneratedColumns"
+                                      Margin="0 0 10 0"
+                                      MouseDoubleClick="dgPersonDetails_MouseDoubleClick" />
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Familie">
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                    <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
+                                        <Button x:Name="btnNewHEintrag" Content="Heirat" Width="100" Margin="5"/>
+                                        <Button x:Name="btnNewHVEintrag" Content="Heirat Eltern Bräutigam" Width="100" Margin="5"/>
+                                        <Button x:Name="btnNewHMEintrag" Content="Heirat Eltern Braut" Width="100" Margin="5"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                                        <TextBlock Text="Ehemann:" Width="110" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtEhemann" Width="200"/>
+                                        <TextBlock Text="Ehefrau:" Width="100" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtEhefrau" Width="200"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <DataGrid Grid.Column="1"
+                                      x:Name="dgHeiratDetails"
+                                      AutoGenerateColumns="True"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      AutoGeneratedColumns="dgHeiratDetails_AutoGeneratedColumns"
+                                      Margin="0 0 10 0"
+                                      MouseDoubleClick="dgHeiratDetails_MouseDoubleClick" />
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>

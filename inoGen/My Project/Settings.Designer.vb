@@ -160,6 +160,29 @@ Namespace My
                 Me("LastPlace") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property LastVKHIDÜbergabe() As Integer
+            Get
+                Return CType(Me("LastVKHIDÜbergabe"),Integer)
+            End Get
+            Set
+                Me("LastVKHIDÜbergabe") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property CurrentWork() As Global.System.Collections.Specialized.StringCollection
+            Get
+                Return CType(Me("CurrentWork"),Global.System.Collections.Specialized.StringCollection)
+            End Get
+            Set
+                Me("CurrentWork") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

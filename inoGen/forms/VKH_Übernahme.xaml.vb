@@ -1,5 +1,6 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
+Imports inoGen.MdlPdfAhnentafel
 Imports inoGenDLL
 Imports iText.StyledXmlParser.Jsoup.[Select].Evaluator
 
@@ -8,6 +9,8 @@ Public Class VKH_Übernahme
    String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
 
     Private dt As New DataTable()
+    Private dtP As New DataTable()
+    Private dtH As New DataTable()
 
     Private isNewRecord As Boolean = False
     Private ID As Integer? = Nothing
@@ -27,7 +30,10 @@ Public Class VKH_Übernahme
     Private DaT As String = "0000"
 
     Public Event PersonenUebergabe As EventHandler(Of PersonenUebergabeEventArgs)
+    Public Event PersonenUebergabeEreignis As EventHandler(Of PersonenUebergabeEreignisEventArgs)
     Public Event PersonRueckgabe As EventHandler(Of PersonRueckgabeEventArgs)
+    Public Event FamilyUbergabe As EventHandler(Of FamilyUebergabeEventArgs)
+    Public Event FamilyRueckgabe As EventHandler(Of PersonRueckgabeEventArgs)
 
     Public Enum PersonTyp
         Leer
@@ -47,22 +53,24 @@ Public Class VKH_Übernahme
     End Enum
 
     Public PType As PersonTyp
+    Public FType As PersonTyp
 
     Dim CurrentIDs As New Dictionary(Of PersonTyp, Integer)
+    Dim CurrentFIDs As New Dictionary(Of PersonTyp, Integer)
 
     Public Sub New()
         InitializeComponent()
 
-        'If My.Settings.LastVKHID > 0 Then
-        '    ID = My.Settings.LastVKHID
-        '    FillEntry(ID)
-        'Else
-        '    btnNew_Click(Nothing, Nothing)
-        'End If
+        If My.Settings.LastVKHIDÜbergabe > 0 Then
+            ID = My.Settings.LastVKHIDÜbergabe
+            FillEntry(ID)
+        Else
+            'btnNew_Click(Nothing, Nothing)
+        End If
 
         LoadData()
+        LoadEventListe()
 
-        'ckbAutoCorrect.IsChecked = True
         AddHandler Me.Loaded, AddressOf OnLoaded
     End Sub
 
@@ -101,6 +109,8 @@ Public Class VKH_Übernahme
         If rowView IsNot Nothing Then
             ID = Convert.ToInt32(rowView("tblVKHID"))
             FillEntry(ID)
+            My.Settings.LastVKHIDÜbergabe = ID.Value
+            My.Settings.Save()
         End If
 
     End Sub
@@ -127,30 +137,50 @@ Public Class VKH_Übernahme
         If ID.HasValue Then
             For Each rowView As DataRowView In dgEintrag.Items
                 If CInt(rowView("tblVKHID")) = ID Then
-                    ' Selektion setzen
+
                     dgEintrag.SelectedItem = rowView
 
-                    ' Sichtbar machen
                     dgEintrag.ScrollIntoView(rowView)
 
                     Exit For
                 End If
             Next
         End If
+
+        FillPersons()
+        FillMarriage()
+    End Sub
+
+    Private Sub FillPersons()
+        dtP.Clear()
+        dtP = cGDB.GetSearchPersons
+
+        dgPersonDetails.ItemsSource = dtP.DefaultView
+    End Sub
+
+    Private Sub FillMarriage()
+        dtH.Clear()
+        dtH = cGDB.GetFamilies
+
+        dgHeiratDetails.ItemsSource = dtH.DefaultView
     End Sub
 
     Private Sub FillEntry(EID As Integer)
         Using conn As New OleDbConnection(connectionString)
-            conn.Open()
+            isNewRecord = False
+            PType = PersonTyp.Leer
+            CurrentIDs.Clear()
+            CurrentFIDs.Clear()
+
             ClearAllTextBoxes(Me)
             ResetAllButtonsBackground(Me, True)
+            conn.Open()
             Dim sql As String = pSQL & " WHERE tblVKHID = ?"
             Using cmd As New OleDbCommand(sql, conn)
                 cmd.Parameters.AddWithValue("@p1", EID)
 
                 Using reader As OleDbDataReader = cmd.ExecuteReader()
                     If reader.Read() Then
-                        ' Werte auslesen und prüfen auf DBNull
                         If Not IsDBNull(reader("BUCH_H")) Then
                             txtQuelle.Text = reader("BUCH_H")
                         End If
@@ -179,50 +209,62 @@ Public Class VKH_Übernahme
                             txtQuelleSeite.Text = reader("ReferenceDetails")
                         End If
 
-
                         ID = EID
-                        isNewRecord = False
-                        PType = PersonTyp.Leer
-                        CurrentIDs.Clear()
-
 
                         If Not IsDBNull(reader("VN_BR")) Then
                             btnBtg.IsEnabled = IIf(reader("VN_BR") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("VN_BR") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("FN_BR")) Then
+                        If Not IsDBNull(reader("FN_BR")) And btnBtg.IsEnabled = False Then
                             btnBtg.IsEnabled = IIf(reader("FN_BR") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("FN_BR") <> "", True, False)
                         End If
                         'If Not IsDBNull(reader("GebDatum_BR")) Then
                         '    '   btnBtg.IsEnabled = IIf(reader("GebDatum_BR") <> "", True, False)
                         'End If
-                        If Not IsDBNull(reader("W_BR")) Then
+                        If Not IsDBNull(reader("W_BR")) And btnBtg.IsEnabled = False Then
                             btnBtg.IsEnabled = IIf(reader("W_BR") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("W_BR") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("H_BR")) Then
+                        If Not IsDBNull(reader("H_BR")) And btnBtg.IsEnabled = False Then
                             btnBtg.IsEnabled = IIf(reader("H_BR") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("H_BR") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("Z_BR")) Then
+                        If Not IsDBNull(reader("Z_BR")) And btnBtg.IsEnabled = False Then
                             btnBtg.IsEnabled = IIf(reader("Z_BR") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("Z_BR") <> "", True, False)
                         End If
 
                         If Not IsDBNull(reader("VN_VBR")) Then
                             btnVBtg.IsEnabled = IIf(reader("VN_VBR") <> "", True, False)
+                            btnNewHVEintrag.IsEnabled = IIf(reader("VN_VBR") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("FN_VBR")) Then
+                        If Not IsDBNull(reader("FN_VBR")) And btnVBtg.IsEnabled = False Then
                             btnVBtg.IsEnabled = IIf(reader("FN_VBR") <> "", True, False)
+                            btnNewHVEintrag.IsEnabled = IIf(reader("FN_VBR") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("Z_VBR")) Then
+                        If Not IsDBNull(reader("Z_VBR")) And btnVBtg.IsEnabled = False Then
                             btnVBtg.IsEnabled = IIf(reader("Z_VBR") <> "", True, False)
+                            btnNewHVEintrag.IsEnabled = IIf(reader("Z_VBR") <> "", True, False)
                         End If
 
                         If Not IsDBNull(reader("VN_MBR")) Then
                             btnMBtg.IsEnabled = IIf(reader("VN_MBR") <> "", True, False)
+                            If btnNewHVEintrag.IsEnabled = False Then
+                                btnNewHVEintrag.IsEnabled = IIf(reader("VN_MBR") <> "", True, False)
+                            End If
                         End If
-                        If Not IsDBNull(reader("FN_MBR")) Then
+                            If Not IsDBNull(reader("FN_MBR")) And btnMBtg.IsEnabled = False Then
                             btnMBtg.IsEnabled = IIf(reader("FN_MBR") <> "", True, False)
+                            If btnNewHVEintrag.IsEnabled = False Then
+                                btnNewHVEintrag.IsEnabled = IIf(reader("VN_MBR") <> "", True, False)
+                            End If
                         End If
-                        If Not IsDBNull(reader("Z_MBR")) Then
+                        If Not IsDBNull(reader("Z_MBR")) And btnMBtg.IsEnabled = False Then
                             btnMBtg.IsEnabled = IIf(reader("Z_MBR") <> "", True, False)
+                            If btnNewHVEintrag.IsEnabled = False Then
+                                btnNewHVEintrag.IsEnabled = IIf(reader("VN_MBR") <> "", True, False)
+                            End If
                         End If
                         'If Not IsDBNull(reader("W_EBR")) Then
                         '    btnVBtg.IsEnabled = True
@@ -230,41 +272,64 @@ Public Class VKH_Übernahme
 
                         If Not IsDBNull(reader("VN_BT")) Then
                             btnBt.IsEnabled = IIf(reader("VN_BT") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("VN_BT") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("FN_BT")) Then
+                        If Not IsDBNull(reader("FN_BT")) And btnBt.IsEnabled = False Then
                             btnBt.IsEnabled = IIf(reader("FN_BT") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("FN_BT") <> "", True, False)
                         End If
                         'If Not IsDBNull(reader("GebDatum_BT")) Then
                         '    btnBt.IsEnabled = True
                         'End If
-                        If Not IsDBNull(reader("W_BT")) Then
+                        If Not IsDBNull(reader("W_BT")) And btnBt.IsEnabled = False Then
                             btnBt.IsEnabled = IIf(reader("W_BT") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("W_BT") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("H_BT")) Then
+                        If Not IsDBNull(reader("H_BT")) And btnBt.IsEnabled = False Then
                             btnBt.IsEnabled = IIf(reader("H_BT") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("H_BT") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("Z_BT")) Then
+                        If Not IsDBNull(reader("Z_BT")) And btnBt.IsEnabled = False Then
                             btnBt.IsEnabled = IIf(reader("Z_BT") <> "", True, False)
+                            btnNewHEintrag.IsEnabled = IIf(reader("Z_BT") <> "", True, False)
                         End If
 
                         If Not IsDBNull(reader("VN_VBT")) Then
                             btnVBt.IsEnabled = IIf(reader("VN_VBT") <> "", True, False)
+                            If btnNewHMEintrag.IsEnabled = False Then
+                                btnNewHMEintrag.IsEnabled = IIf(reader("VN_VBT") <> "", True, False)
+                            End If
                         End If
-                        If Not IsDBNull(reader("FN_VBT")) Then
+                        If Not IsDBNull(reader("FN_VBT")) And btnVBt.IsEnabled = False Then
                             btnVBt.IsEnabled = IIf(reader("FN_VBT") <> "", True, False)
+                            If btnNewHMEintrag.IsEnabled = False Then
+                                btnNewHMEintrag.IsEnabled = IIf(reader("VN_VBT") <> "", True, False)
+                            End If
                         End If
-                        If Not IsDBNull(reader("Z_VBT")) Then
+                        If Not IsDBNull(reader("Z_VBT")) And btnVBt.IsEnabled = False Then
                             btnVBt.IsEnabled = IIf(reader("Z_VBT") <> "", True, False)
+                            If btnNewHMEintrag.IsEnabled = False Then
+                                btnNewHMEintrag.IsEnabled = IIf(reader("VN_VBT") <> "", True, False)
+                            End If
                         End If
 
                         If Not IsDBNull(reader("VN_MBT")) Then
                             btnMBt.IsEnabled = IIf(reader("VN_MBT") <> "", True, False)
+                            If btnNewHMEintrag.IsEnabled = False Then
+                                btnNewHMEintrag.IsEnabled = IIf(reader("VN_VBT") <> "", True, False)
+                            End If
                         End If
-                        If Not IsDBNull(reader("FN_MBT")) Then
+                        If Not IsDBNull(reader("FN_MBT")) And btnMBt.IsEnabled = False Then
                             btnMBt.IsEnabled = IIf(reader("FN_MBT") <> "", True, False)
+                            If btnNewHMEintrag.IsEnabled = False Then
+                                btnNewHMEintrag.IsEnabled = IIf(reader("VN_VBT") <> "", True, False)
+                            End If
                         End If
-                        If Not IsDBNull(reader("Z_MBT")) Then
+                        If Not IsDBNull(reader("Z_MBT")) And btnMBt.IsEnabled = False Then
                             btnMBt.IsEnabled = IIf(reader("Z_MBT") <> "", True, False)
+                            If btnNewHMEintrag.IsEnabled = False Then
+                                btnNewHMEintrag.IsEnabled = IIf(reader("VN_VBT") <> "", True, False)
+                            End If
                         End If
                         'If Not IsDBNull(reader("W_EBT")) Then
                         '    txtWEBt.Text = reader("W_EBT")
@@ -277,52 +342,52 @@ Public Class VKH_Übernahme
                         If Not IsDBNull(reader("VN_HZ1")) Then
                             btnZ1.IsEnabled = IIf(reader("VN_HZ1") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("FN_HZ1")) Then
+                        If Not IsDBNull(reader("FN_HZ1")) And btnZ1.IsEnabled = False Then
                             btnZ1.IsEnabled = IIf(reader("FN_HZ1") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("G_HZ1")) Then
+                        If Not IsDBNull(reader("G_HZ1")) And btnZ1.IsEnabled = False Then
                             btnZ1.IsEnabled = IIf(reader("G_HZ1") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("Z_HZ1")) Then
+                        If Not IsDBNull(reader("Z_HZ1")) And btnZ1.IsEnabled = False Then
                             btnZ1.IsEnabled = IIf(reader("Z_HZ1") <> "", True, False)
                         End If
 
                         If Not IsDBNull(reader("VN_HZ2")) Then
                             btnZ2.IsEnabled = IIf(reader("VN_HZ2") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("FN_HZ2")) Then
+                        If Not IsDBNull(reader("FN_HZ2")) And btnZ2.IsEnabled = False Then
                             btnZ2.IsEnabled = IIf(reader("FN_HZ2") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("G_HZ2")) Then
+                        If Not IsDBNull(reader("G_HZ2")) And btnZ2.IsEnabled = False Then
                             btnZ2.IsEnabled = IIf(reader("G_HZ2") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("Z_HZ2")) Then
+                        If Not IsDBNull(reader("Z_HZ2")) And btnZ2.IsEnabled = False Then
                             btnZ2.IsEnabled = IIf(reader("Z_HZ2") <> "", True, False)
                         End If
 
                         If Not IsDBNull(reader("VN_HZ3")) Then
                             btnZ3.IsEnabled = IIf(reader("VN_HZ3") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("FN_HZ3")) Then
+                        If Not IsDBNull(reader("FN_HZ3")) And btnZ3.IsEnabled = False Then
                             btnZ3.IsEnabled = IIf(reader("FN_HZ3") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("G_HZ3")) Then
+                        If Not IsDBNull(reader("G_HZ3")) And btnZ3.IsEnabled = False Then
                             btnZ3.IsEnabled = IIf(reader("G_HZ3") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("Z_HZ3")) Then
+                        If Not IsDBNull(reader("Z_HZ3")) And btnZ3.IsEnabled = False Then
                             btnZ3.IsEnabled = IIf(reader("Z_HZ3") <> "", True, False)
                         End If
 
                         If Not IsDBNull(reader("VN_HZ4")) Then
                             btnZ4.IsEnabled = IIf(reader("VN_HZ4") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("FN_HZ4")) Then
+                        If Not IsDBNull(reader("FN_HZ4")) And btnZ4.IsEnabled = False Then
                             btnZ4.IsEnabled = IIf(reader("FN_HZ4") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("G_HZ4")) Then
+                        If Not IsDBNull(reader("G_HZ4")) And btnZ4.IsEnabled = False Then
                             btnZ4.IsEnabled = IIf(reader("G_HZ4") <> "", True, False)
                         End If
-                        If Not IsDBNull(reader("Z_HZ4")) Then
+                        If Not IsDBNull(reader("Z_HZ4")) And btnZ4.IsEnabled = False Then
                             btnZ4.IsEnabled = IIf(reader("Z_HZ4") <> "", True, False)
                         End If
 
@@ -387,6 +452,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_BT")) & cGH.GetIndexString(reader("VN_BT")) & DaT
                         btnBt.Background = Brushes.LightGreen
                         PType = PersonTyp.Bt
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -430,6 +496,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_BR")) & cGH.GetIndexString(reader("VN_BR")) & DaT
                         btnBtg.Background = Brushes.LightGreen
                         PType = PersonTyp.Btg
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -446,12 +513,54 @@ Public Class VKH_Übernahme
             If TypeOf child Is Button Then
                 Dim btn = DirectCast(child, Button)
                 btn.ClearValue(Button.BackgroundProperty)
+                btn.ClearValue(Button.BorderThicknessProperty)
                 If blnAll Then
                     btn.IsEnabled = False
                 End If
+
+                If btn.Name.Length > 4 Then
+                    Dim enumName As String = btn.Name.Substring(3)
+                    Dim pType As PersonTyp
+                    Dim pid As Integer
+
+                    If [Enum].TryParse(enumName, True, pType) Then
+
+                        If CurrentIDs.TryGetValue(pType, pid) Then
+                            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+                            btn.BorderThickness = New Thickness(3)
+                        Else
+                            ' MessageBox.Show($"Keine ID für {pType} vorhanden")
+                        End If
+
+                    Else
+                        Select Case btn.Name
+                            Case "btnNewHEintrag"
+                                If CurrentFIDs.TryGetValue(PersonTyp.Btg, pid) Then
+                                    'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+                                    btn.BorderThickness = New Thickness(3)
+                                Else
+                                    ' MessageBox.Show($"Keine ID für {pType} vorhanden")
+                                End If
+                            Case "btnNewHMEintrag"
+                                If CurrentFIDs.TryGetValue(PersonTyp.MBtg, pid) Then
+                                    'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+                                    btn.BorderThickness = New Thickness(3)
+                                Else
+                                    ' MessageBox.Show($"Keine ID für {pType} vorhanden")
+                                End If
+                            Case "btnNewHVEintrag"
+                                If CurrentFIDs.TryGetValue(PersonTyp.VBtg, pid) Then
+                                    'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+                                    btn.BorderThickness = New Thickness(3)
+                                Else
+                                    ' MessageBox.Show($"Keine ID für {pType} vorhanden")
+                                End If
+                        End Select
+
+                    End If
+                End If
             End If
 
-            ' Rekursiv weitergehen
             ResetAllButtonsBackground(child)
         Next
 
@@ -489,6 +598,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_MBT")) & cGH.GetIndexString(reader("VN_MBT")) & DaT
                         btnMBt.Background = Brushes.LightGreen
                         PType = PersonTyp.MBt
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -529,6 +639,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_MBR")) & cGH.GetIndexString(reader("VN_MBR")) & DaT
                         btnMBtg.Background = Brushes.LightGreen
                         PType = PersonTyp.MBtg
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -569,6 +680,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_VBT")) & cGH.GetIndexString(reader("VN_VBT")) & DaT
                         btnVBt.Background = Brushes.LightGreen
                         PType = PersonTyp.VBt
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -609,6 +721,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_VBR")) & cGH.GetIndexString(reader("VN_VBR")) & DaT
                         btnVBtg.Background = Brushes.LightGreen
                         PType = PersonTyp.VBtg
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -649,6 +762,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_HZ1")) & cGH.GetIndexString(reader("VN_HZ1")) & DaT
                         btnZ1.Background = Brushes.LightGreen
                         PType = PersonTyp.Z1
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -689,6 +803,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_HZ2")) & cGH.GetIndexString(reader("VN_HZ2")) & DaT
                         btnZ2.Background = Brushes.LightGreen
                         PType = PersonTyp.Z2
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -729,6 +844,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_HZ3")) & cGH.GetIndexString(reader("VN_HZ3")) & DaT
                         btnZ3.Background = Brushes.LightGreen
                         PType = PersonTyp.Z3
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -769,6 +885,7 @@ Public Class VKH_Übernahme
                         lblVTag.Text = cGH.GetIndexString(reader("FN_HZ4")) & cGH.GetIndexString(reader("VN_HZ4")) & DaT
                         btnZ4.Background = Brushes.LightGreen
                         PType = PersonTyp.Z4
+                        PFilterSetzen()
                     Else
                         MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
                     End If
@@ -816,13 +933,437 @@ Public Class VKH_Übernahme
             .PID = PID
         })
     End Sub
-
-    Private Sub OnRueckgabe(sender As Object, e As PersonRueckgabeEventArgs)
-        CurrentIDs.Add(PType, e.PID)
+    Public Sub FamilyReturn(success As Boolean, Optional PID As Integer = 0)
+        RaiseEvent FamilyRueckgabe(Me, New PersonRueckgabeEventArgs With {
+            .Success = success,
+            .PID = PID
+        })
     End Sub
 
-    Private Sub VKH_Übernahme_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
-        AddHandler Me.PersonRueckgabe, AddressOf OnRueckgabe
+    Private Sub OnRueckgabeP(sender As Object, e As PersonRueckgabeEventArgs)
+        CurrentIDs.Add(PType, e.PID)
+        FillPersons()
+        PFilterSetzen()
+    End Sub
 
+    Private Sub OnRueckgabeF(sender As Object, e As PersonRueckgabeEventArgs)
+        CurrentFIDs.Add(FType, e.PID)
+        FillMarriage()
+        ' HFilterSetzen("")
+    End Sub
+    Private Sub VKH_Übernahme_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+        AddHandler Me.PersonRueckgabe, AddressOf OnRueckgabeP
+        AddHandler Me.FamilyRueckgabe, AddressOf OnRueckgabeF
+
+    End Sub
+
+    Private Sub dgPersonDetails_AutoGeneratedColumns(sender As Object, e As EventArgs) Handles dgPersonDetails.AutoGeneratedColumns
+        For Each col In dgPersonDetails.Columns
+            If col.Header IsNot Nothing Then
+                Select Case col.Header.ToString()
+                    Case "tblPersonID", "Datum"
+                        col.Visibility = Visibility.Collapsed
+                End Select
+            End If
+        Next
+
+        dgPersonDetails.IsReadOnly = True
+        dgPersonDetails.CanUserAddRows = False
+        dgPersonDetails.CanUserDeleteRows = False
+    End Sub
+
+    Private Sub dgPersonDetails_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs)
+        Dim rowView As DataRowView = CType(dgPersonDetails.SelectedItem, DataRowView)
+        If rowView IsNot Nothing Then
+            Dim id As Integer = Convert.ToInt32(rowView("tblPersonID"))
+            CurrentIDs(PType) = id
+        End If
+    End Sub
+
+    Private Sub PFilterSetzen()
+        Dim filter As String = vbNullString
+        Dim sep As String = vbNullString
+        Dim Sex As String = vbNullString
+        If txtN.Text.Trim() <> vbNullString Then
+            filter = String.Format("PS LIKE '{0}%'", lblVTag.Text.Trim().Substring(0, 4))
+            sep = " AND "
+        End If
+
+        Select Case PType
+            Case PersonTyp.Btg, PersonTyp.VBtg, PersonTyp.VBt
+                Sex = "m"
+            Case PersonTyp.Bt, PersonTyp.MBtg, PersonTyp.MBtg
+                Sex = "w"
+            Case PersonTyp.Z1, PersonTyp.Z2, PersonTyp.Z3, PersonTyp.Z4
+                Sex = txtSex.Text
+            Case PersonTyp.Leer
+                Sex = ""
+        End Select
+
+        If Sex <> "" Then
+            filter &= sep & String.Format(" Sex = '{0}'", Sex)
+            sep = " AND "
+        End If
+
+        If Not String.IsNullOrEmpty(filter) Then
+            Dim dv As New DataView(dtP)
+            dv.RowFilter = filter
+            dgPersonDetails.ItemsSource = dv
+        Else
+            dgPersonDetails.ItemsSource = dtP.DefaultView
+        End If
+
+
+        For Each rowView As DataRowView In dgPersonDetails.Items
+            If rowView("PS") = lblVTag.Text.Trim() Then
+                dgPersonDetails.SelectedItem = rowView
+                dgPersonDetails.ScrollIntoView(rowView)
+
+                Exit For
+            End If
+        Next
+
+        txtDatum.Text = txtHDatum.Text
+    End Sub
+
+    Private Sub LoadEventListe()
+        Try
+            Dim dtE As New DataTable()
+            Using conn As New OleDbConnection(connectionString)
+                conn.Open()
+                Dim cmd As New OleDbCommand("SELECT tblEreignisArtID, EreignisArt FROM tblEreignisArt WHERE PersonenEreignis = ? ORDER BY Reihenfolge", conn)
+                cmd.Parameters.Add("PersonenEreignis", OleDbType.Boolean).Value = True
+                Dim adapter As New OleDbDataAdapter(cmd)
+                adapter.Fill(dtE)
+            End Using
+
+            cbEreignis.ItemsSource = dtE.DefaultView
+
+        Catch ex As Exception
+            MessageBox.Show("Fehler beim Laden der Kreise: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub cbEreignis_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles cbEreignis.SelectionChanged
+        If cbEreignis.SelectedValue IsNot Nothing Then
+            Dim selectedID As Integer = CInt(cbEreignis.SelectedValue)
+        End If
+        txtEintragZusatz.Text = ""
+
+        Dim row As DataRowView = TryCast(cbEreignis.SelectedItem, DataRowView)
+        If row IsNot Nothing Then
+            Dim text = row("EreignisArt").ToString()
+            If text = "Sterbe" Then
+                txtDatum.Text = "< " & txtHDatum.Text
+            End If
+        End If
+    End Sub
+
+    Private Sub btnNewPEintrag_Click(sender As Object, e As RoutedEventArgs) Handles btnNewPEintrag.Click
+        Dim pid As Integer
+        If CurrentIDs.TryGetValue(PType, pid) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        Else
+            Exit Sub
+        End If
+
+        Dim args As New PersonenUebergabeEreignisEventArgs With {
+            .PID = pid,
+            .EventDatum = txtDatum.Text,
+            .EventArt = cbEreignis.Text,
+            .Referenz = "H " & txtNr.Text,
+            .OnlineRef = txtURL.Text,
+            .Ort = txtWO.Text,
+            .Zusatz = txtEintragZusatz.Text
+        }
+
+        RaiseEvent PersonenUebergabeEreignis(Me, args)
+    End Sub
+
+    Private Sub dgHeiratDetails_AutoGeneratedColumns(sender As Object, e As EventArgs) Handles dgHeiratDetails.AutoGeneratedColumns
+        For Each col In dgHeiratDetails.Columns
+            If col.Header IsNot Nothing Then
+                Select Case col.Header.ToString()
+                    Case "tblFamilieID", "tblPersonIDV", "tblPersonIDM"
+                        col.Visibility = Visibility.Collapsed
+                End Select
+            End If
+        Next
+
+        dgHeiratDetails.IsReadOnly = True
+        dgHeiratDetails.CanUserAddRows = False
+        dgHeiratDetails.CanUserDeleteRows = False
+    End Sub
+
+    Private Sub dgHeiratDetails_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs)
+        Dim rowView As DataRowView = CType(dgHeiratDetails.SelectedItem, DataRowView)
+        If rowView IsNot Nothing Then
+            Dim id As Integer = Convert.ToInt32(rowView("tblFamilieID"))
+            CurrentFIDs(FType) = id
+        End If
+        ResetAllButtonsBackground(Me)
+    End Sub
+
+    Private Sub HFilterSetzen(search As String)
+        Dim filter As String = vbNullString
+        Dim sep As String = vbNullString
+
+        If search.Trim() <> vbNullString Then
+            filter = String.Format("FS LIKE '{0}%'", search.Trim().Substring(0, 4))
+            sep = " AND "
+        End If
+
+        If Not String.IsNullOrEmpty(filter) Then
+            Dim dv As New DataView(dtH)
+            dv.RowFilter = filter
+            dgHeiratDetails.ItemsSource = dv
+        Else
+            dgHeiratDetails.ItemsSource = dtH.DefaultView
+        End If
+
+
+        For Each rowView As DataRowView In dgHeiratDetails.Items
+            If rowView("FS") = lblVTag.Text.Trim() Then
+                dgHeiratDetails.SelectedItem = rowView
+                dgHeiratDetails.ScrollIntoView(rowView)
+
+                Exit For
+            End If
+        Next
+    End Sub
+
+    Private Sub txtIndexH_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtIndexH.GotFocus, txtIndexBt.GotFocus, txtIndexBtg.GotFocus
+        HFilterSetzen(sender.text)
+        Select Case sender.name
+            Case "txtIndexH"
+                FType = PersonTyp.Btg
+            Case "txtIndexBt"
+                FType = PersonTyp.MBtg
+            Case "txtIndexBtg"
+                FType = PersonTyp.VBtg
+        End Select
+    End Sub
+
+    Private Sub btnNewHEintrag_Click(sender As Object, e As RoutedEventArgs) Handles btnNewHEintrag.Click
+        If FType <> PersonTyp.Btg Then
+            txtEhemann.Text = ""
+            txtEhefrau.Text = ""
+            Using conn As New OleDbConnection(connectionString)
+                conn.Open()
+                ResetAllButtonsBackground(Me)
+                DaT = "0000"
+                Dim sql As String = pSQL & " WHERE tblVKHID = ?"
+                Using cmd As New OleDbCommand(sql, conn)
+                    cmd.Parameters.AddWithValue("@p1", ID)
+
+                    Using reader As OleDbDataReader = cmd.ExecuteReader()
+                        If reader.Read() Then
+                            If Not IsDBNull(reader("VN_BR")) Then
+                                txtEhemann.Text = reader("VN_BR") & " "
+                            End If
+                            If Not IsDBNull(reader("FN_BR")) Then
+                                txtEhemann.Text &= reader("FN_BR").ToString.ToUpper
+                            End If
+                            If Not IsDBNull(reader("VN_BT")) Then
+                                txtEhefrau.Text = reader("VN_BT") & " "
+                            End If
+                            If Not IsDBNull(reader("FN_BT")) Then
+                                txtEhefrau.Text &= reader("FN_BT").ToString.ToUpper
+                            End If
+
+
+                            HFilterSetzen(txtIndexH.Text)
+                        Else
+                            MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
+                        End If
+                    End Using
+                End Using
+            End Using
+            FType = PersonTyp.Btg
+            Exit Sub
+        End If
+        FType = PersonTyp.Btg
+        Dim VID As Integer = 0
+        If CurrentIDs.TryGetValue(PersonTyp.Btg, VID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+
+        Dim MID As Integer = 0
+        If CurrentIDs.TryGetValue(PersonTyp.Bt, MID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+
+        Dim FID As Integer = 0
+        'If CurrentIDs.TryGetValue(PersonTyp.Btg, VID) Then
+        '    'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        'End If
+
+        Dim CID As Integer = 0
+
+        Dim args As New FamilyUebergabeEventArgs With {
+            .FID = 0,
+            .VID = VID,
+            .MID = MID,
+            .CID = 0,
+            .EventDatum = txtHDatum.Text,
+            .EventArt = "Heirat",
+            .Referenz = "H " & txtNr.Text,
+            .OnlineRef = txtURL.Text,
+            .Ort = txtWO.Text,
+            .Zusatz = txtInfo.Text
+        }
+        RaiseEvent FamilyUbergabe(Me, args)
+        HFilterSetzen(txtIndexH.Text)
+        btnNewHEintrag.Background = Brushes.LightGreen
+    End Sub
+
+    Private Sub btnNewHVEintrag_Click(sender As Object, e As RoutedEventArgs) Handles btnNewHVEintrag.Click
+        If FType <> PersonTyp.VBtg Then
+            txtEhemann.Text = ""
+            txtEhefrau.Text = ""
+            Using conn As New OleDbConnection(connectionString)
+                conn.Open()
+                ResetAllButtonsBackground(Me)
+                DaT = "0000"
+                Dim sql As String = pSQL & " WHERE tblVKHID = ?"
+                Using cmd As New OleDbCommand(sql, conn)
+                    cmd.Parameters.AddWithValue("@p1", ID)
+
+                    Using reader As OleDbDataReader = cmd.ExecuteReader()
+                        If reader.Read() Then
+                            If Not IsDBNull(reader("VN_VBR")) Then
+                                txtEhemann.Text = reader("VN_VBR") & " "
+                            End If
+                            If Not IsDBNull(reader("FN_VBR")) Then
+                                txtEhemann.Text &= reader("FN_VBR").ToString.ToUpper
+                            End If
+                            If Not IsDBNull(reader("VN_MBR")) Then
+                                txtEhefrau.Text = reader("VN_MBR") & " "
+                            End If
+                            If Not IsDBNull(reader("FN_VBR")) Then
+                                txtEhefrau.Text &= reader("FN_MBR").ToString.ToUpper
+                            End If
+
+
+                            HFilterSetzen(txtIndexBtg.Text)
+                        Else
+                            MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
+                        End If
+                    End Using
+                End Using
+            End Using
+            FType = PersonTyp.VBtg
+            Exit Sub
+        End If
+        FType = PersonTyp.VBtg
+        Dim VID As Integer = 0
+        If CurrentIDs.TryGetValue(PersonTyp.VBtg, VID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+
+        Dim MID As Integer = 0
+        If CurrentIDs.TryGetValue(PersonTyp.MBtg, MID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+
+        Dim FID As Integer = 0
+        If CurrentFIDs.TryGetValue(PersonTyp.VBtg, FID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+
+        Dim CID As Integer = 0
+        If CurrentIDs.TryGetValue(PersonTyp.Btg, CID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+        Dim args As New FamilyUebergabeEventArgs With {
+            .FID = FID,
+            .VID = VID,
+            .MID = MID,
+            .CID = CID,
+            .EventDatum = "",
+            .EventArt = "Heirat",
+            .Referenz = "H " & txtNr.Text,
+            .OnlineRef = txtURL.Text,
+            .Ort = txtWO.Text,
+            .Zusatz = txtInfo.Text
+        }
+        RaiseEvent FamilyUbergabe(Me, args)
+        HFilterSetzen(txtIndexBtg.Text)
+        btnNewHVEintrag.Background = Brushes.LightGreen
+    End Sub
+
+    Private Sub btnNewHMEintrag_Click(sender As Object, e As RoutedEventArgs) Handles btnNewHMEintrag.Click
+        If FType <> PersonTyp.VBt Then
+            txtEhemann.Text = ""
+            txtEhefrau.Text = ""
+            Using conn As New OleDbConnection(connectionString)
+                conn.Open()
+                ResetAllButtonsBackground(Me)
+                DaT = "0000"
+                Dim sql As String = pSQL & " WHERE tblVKHID = ?"
+                Using cmd As New OleDbCommand(sql, conn)
+                    cmd.Parameters.AddWithValue("@p1", ID)
+
+                    Using reader As OleDbDataReader = cmd.ExecuteReader()
+                        If reader.Read() Then
+                            If Not IsDBNull(reader("VN_VBT")) Then
+                                txtEhemann.Text = reader("VN_VBT") & " "
+                            End If
+                            If Not IsDBNull(reader("FN_VBT")) Then
+                                txtEhemann.Text &= reader("FN_VBT").ToString.ToUpper
+                            End If
+                            If Not IsDBNull(reader("VN_MBT")) Then
+                                txtEhefrau.Text = reader("VN_MBT") & " "
+                            End If
+                            If Not IsDBNull(reader("FN_MBT")) Then
+                                txtEhefrau.Text &= reader("FN_MBT").ToString.ToUpper
+                            End If
+
+
+                            HFilterSetzen(txtIndexBt.Text)
+                        Else
+                            MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
+                        End If
+                    End Using
+                End Using
+            End Using
+            FType = PersonTyp.VBt
+            Exit Sub
+        End If
+        FType = PersonTyp.VBt
+        Dim VID As Integer = 0
+        If CurrentIDs.TryGetValue(PersonTyp.VBt, VID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+
+        Dim MID As Integer = 0
+        If CurrentIDs.TryGetValue(PersonTyp.MBt, MID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+
+        Dim FID As Integer = 0
+        If CurrentFIDs.TryGetValue(PersonTyp.VBt, FID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+
+        Dim CID As Integer = 0
+        If CurrentIDs.TryGetValue(PersonTyp.Bt, CID) Then
+            'MessageBox.Show($"ID gefunden: {pid} Typ {btn.Name} ")
+        End If
+        Dim args As New FamilyUebergabeEventArgs With {
+            .FID = FID,
+            .VID = VID,
+            .MID = MID,
+            .CID = CID,
+            .EventDatum = "",
+            .EventArt = "Heirat",
+            .Referenz = "H " & txtNr.Text,
+            .OnlineRef = txtURL.Text,
+            .Ort = txtWO.Text,
+            .Zusatz = txtInfo.Text
+        }
+        RaiseEvent FamilyUbergabe(Me, args)
+        HFilterSetzen(txtIndexBt.Text)
+        btnNewHMEintrag.Background = Brushes.LightGreen
     End Sub
 End Class

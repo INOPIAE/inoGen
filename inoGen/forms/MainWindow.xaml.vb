@@ -272,6 +272,8 @@ Class MainWindow
     Private Sub VKH_Übernahme_Click(sender As Object, e As RoutedEventArgs)
         VKH_Übernahme = New VKH_Übernahme
         AddHandler VKH_Übernahme.PersonenUebergabe, AddressOf OnPersonenUebergabe
+        AddHandler VKH_Übernahme.PersonenUebergabeEreignis, AddressOf OnPersonenUebergabeEreignis
+        AddHandler VKH_Übernahme.FamilyUbergabe, AddressOf OnFamilieUebergabe
         VKH_Übernahme.Show()
     End Sub
 
@@ -296,13 +298,87 @@ Class MainWindow
         personenCtrl.SavePersonRecordSet()
 
         If e.EventDatum <> "" Then
-            personenCtrl.CreateAndSaveEvent(personenCtrl.ID, 0, e.EventDatum, e.EventArt, e.Referenz, e.OnlineRef, e.Ort)
+            personenCtrl.CreateAndSaveEvent(personenCtrl.ID, 0, e.EventDatum, e.EventArt, e.Referenz, e.OnlineRef, e.Ort, "")
         End If
 
-        personenCtrl.SavePersonRecordSet()
+        '  personenCtrl.SavePersonRecordSet()
 
         Dim win = DirectCast(sender, VKH_Übernahme)
         win.PersonReturn(True, personenCtrl.ID)
+
+    End Sub
+
+    Private Sub OnPersonenUebergabeEreignis(sender As Object, e As PersonenUebergabeEreignisEventArgs)
+
+        Dim personenCtrl As personen
+
+        If TypeOf MainContent.Content Is personen Then
+            personenCtrl = DirectCast(MainContent.Content, personen)
+        Else
+            personenCtrl = New personen()
+            MainContent.Content = personenCtrl
+        End If
+
+
+        personenCtrl.FillPerson(e.PID)
+        personenCtrl.ID = e.PID
+
+        personenCtrl.CreateAndSaveEvent(personenCtrl.ID, 0, e.EventDatum, e.EventArt, e.Referenz, e.OnlineRef, e.Ort, e.Zusatz)
+
+
+        'personenCtrl.SavePersonRecordSet()
+
+        'Dim win = DirectCast(sender, VKH_Übernahme)
+        'win.PersonReturn(True, personenCtrl.ID)
+
+    End Sub
+
+    Private Sub OnFamilieUebergabe(sender As Object, e As FamilyUebergabeEventArgs)
+
+        Dim familieCtrl As familien
+
+        If TypeOf MainContent.Content Is familien Then
+            familieCtrl = DirectCast(MainContent.Content, familien)
+        Else
+            familieCtrl = New familien()
+            MainContent.Content = familieCtrl
+        End If
+
+        familieCtrl.NewFamilyRecordSet()
+
+        If e.VID > 0 Then
+            familieCtrl.VID = e.VID
+        Else
+            familieCtrl.VID = Nothing
+        End If
+        If e.MID > 0 Then
+            familieCtrl.MID = e.MID
+        Else
+            familieCtrl.MID = Nothing
+        End If
+        If e.FID > 0 Then
+            familieCtrl.ID = e.FID
+            familieCtrl.isNewRecord = False
+        Else
+            familieCtrl.isNewRecord = True
+            familieCtrl.SaveFamilyRecordSet()
+        End If
+
+        familieCtrl.LoadFamily()
+
+        If e.EventDatum <> "" Then
+            familieCtrl.CreateAndSaveEvent(0, familieCtrl.ID, e.EventDatum, e.EventArt, e.Referenz, e.OnlineRef, e.Ort, e.Zusatz)
+        End If
+
+        If e.CID > 0 Then
+            familieCtrl.SaveNewChild(e.CID, e.CID)
+        End If
+
+        familieCtrl.isNewRecord = False
+        familieCtrl.SaveFamilyRecordSet()
+
+        Dim win = DirectCast(sender, VKH_Übernahme)
+        win.FamilyReturn(True, familieCtrl.ID)
 
     End Sub
 End Class

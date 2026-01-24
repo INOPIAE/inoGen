@@ -1,5 +1,6 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
+Imports inoGenDLL
 
 Public Class SuchePerson
 
@@ -14,6 +15,7 @@ Public Class SuchePerson
     Private connectionString As String =
         String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
     Private dt As New DataTable()
+    Private cGDB As New ClsGenDB(My.Settings.DBPath)
     Public Sub New()
         InitializeComponent()
         LoadData()
@@ -44,28 +46,29 @@ Public Class SuchePerson
         FilterSetzen()
     End Sub
     Private Sub LoadData()
-        Dim strSQL As String = "SELECT 
-                tblPerson.tblPersonID, 
-                tblPerson.PS, 
-                tblNachname.Nachname, 
-                tblPerson.Vorname, 
-                tblPerson.Sex, 
-                IIf([tblPerson]![tblFamilieID]>0,""X"","""") AS Kind, tblPerson.Info,
-                tblPerson.FSID
-            FROM tblPerson LEFT JOIN tblNachname ON tblPerson.tblNachnameID = tblNachname.tblNachnameID
-            ORDER BY tblPerson.PS;"
-        Try
-            Using conn As New OleDbConnection(connectionString)
-                conn.Open()
-                Dim cmd As New OleDbCommand(strSQL, conn)
-                Dim adapter As New OleDbDataAdapter(cmd)
-                dt.Clear()
-                adapter.Fill(dt)
-                dgPerson.ItemsSource = dt.DefaultView
-            End Using
-        Catch ex As Exception
-            MessageBox.Show("Fehler beim Laden der Daten: " & ex.Message)
-        End Try
+        'Dim strSQL As String = "SELECT 
+        '        tblPerson.tblPersonID, 
+        '        tblPerson.PS, 
+        '        tblNachname.Nachname, 
+        '        tblPerson.Vorname, 
+        '        tblPerson.Sex, 
+        '        IIf([tblPerson]![tblFamilieID]>0,""X"","""") AS Kind, tblPerson.Info,
+        '        tblPerson.FSID
+        '    FROM tblPerson LEFT JOIN tblNachname ON tblPerson.tblNachnameID = tblNachname.tblNachnameID
+        '    ORDER BY tblPerson.PS;"
+        'Try
+        '    Using conn As New OleDbConnection(connectionString)
+        '        conn.Open()
+        '        Dim cmd As New OleDbCommand(strSQL, conn)
+        '        Dim adapter As New OleDbDataAdapter(cmd)
+        'dt.Clear()
+        'adapter.Fill(dt)
+        dt = cGDB.GetSearchPersons
+        dgPerson.ItemsSource = dt.DefaultView
+        '    End Using
+        'Catch ex As Exception
+        '    MessageBox.Show("Fehler beim Laden der Daten: " & ex.Message)
+        'End Try
     End Sub
     Private Sub btnSearch_Click(sender As Object, e As RoutedEventArgs)
         FilterSetzen()
@@ -142,7 +145,7 @@ Public Class SuchePerson
         For Each col In dgPerson.Columns
             If col.Header IsNot Nothing Then
                 Select Case col.Header.ToString()
-                    Case "tblPersonID"
+                    Case "tblPersonID", "Datum"
                         col.Visibility = Visibility.Collapsed
                 End Select
             End If
