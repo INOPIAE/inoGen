@@ -16,5 +16,8 @@
 
     Public Ort As String
 
+    Public Zusatz As String
+
+    Public Info As String
 
 End Class

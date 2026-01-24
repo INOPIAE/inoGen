@@ -21,6 +21,8 @@ Public Class familien
     Private MT As String = "____"
     Private DaT As String = "0000"
 
+    Public Success As Boolean = False
+
     Public Sub New()
         InitializeComponent()
 
@@ -72,7 +74,7 @@ Public Class familien
                         End Using
 
 
-                        MessageBox.Show("Neuer Datensatz gespeichert!")
+                        ' MessageBox.Show("Neuer Datensatz gespeichert!")
                     ElseIf ID.HasValue Then
                         Dim updateCmd As New OleDbCommand("UPDATE tblFamilie SET FS = ?, tblPersonIDV = ?, tblPersonIDM=  ? WHERE tblFamilieID = ?", conn)
                         updateCmd.Parameters.AddWithValue("@FS", txtFS.Text.ToUpper)
@@ -89,13 +91,14 @@ Public Class familien
                         updateCmd.Parameters.AddWithValue("@ID", ID)
                         updateCmd.ExecuteNonQuery()
 
-                        MessageBox.Show("Änderungen gespeichert!")
+                        'MessageBox.Show("Änderungen gespeichert!")
                     End If
                 End Using
 
                 LoadData()
             Catch ex As Exception
                 MessageBox.Show("Fehler beim Speichern: " & ex.Message)
+                Success = False
             End Try
             My.Settings.LastFID = ID
             My.Settings.Save()
@@ -247,12 +250,14 @@ Public Class familien
 
         Catch ex As Exception
             MessageBox.Show("Fehler: " & ex.Message)
+            Success = False
         End Try
     End Sub
 
     Private Sub btnNewEvent_Click(sender As Object, e As RoutedEventArgs) Handles btnNewEvent.Click
         If ID Is Nothing Then
             MessageBox.Show("Der Datensatz muss zuerst gespeichert werden, bevor ein Ereignis angelegt werden kann.")
+            Success = False
             Exit Sub
         End If
         Dim details = New ereignis(False)
@@ -365,6 +370,7 @@ Public Class familien
     Private Sub btnNewChild_Click(sender As Object, e As RoutedEventArgs)
         If ID Is Nothing Then
             MessageBox.Show("Der Datensatz muss zuerst gespeichert werden, bevor ein Kind zugeordnet werden kann.")
+            Success = False
             Exit Sub
         End If
         Dim win As New SuchePerson(VT)
@@ -378,6 +384,7 @@ Public Class familien
     Public Sub SaveNewChild(pid As Integer, persontext As String)
         If pid = VID Or pid = MID Then
             MessageBox.Show("Die Person ist bereits als Vater oder Mutter zugeordnet.")
+            Success = False
             Exit Sub
         End If
 
@@ -392,9 +399,10 @@ Public Class familien
 
                 If result IsNot Nothing AndAlso Not IsDBNull(result) Then
                     MessageBox.Show(String.Format("Diese Person '{0}' ist bereits einer Familie zugeordnet (FamilieID={1}}).", persontext, result.ToString()))
+                    Success = False
                 Else
 
-                    MessageBox.Show("Ausgewählte Person: " & persontext)
+                    'MessageBox.Show("Ausgewählte Person: " & persontext)
                     Dim sqlUpdate As String = "UPDATE tblPerson SET tblFamilieID = ? WHERE tblPersonID = ?"
                     Using cmdUpdate As New OleDbCommand(sqlUpdate, conn)
                         cmdUpdate.Parameters.AddWithValue("@p1", ID)
@@ -402,7 +410,7 @@ Public Class familien
                         cmdUpdate.ExecuteNonQuery()
                     End Using
 
-                    MessageBox.Show("Familie wurde erfolgreich zugeordnet (FamilieID=" & ID & ").")
+                    'MessageBox.Show("Familie wurde erfolgreich zugeordnet (FamilieID=" & ID & ").")
                 End If
             End Using
         End Using

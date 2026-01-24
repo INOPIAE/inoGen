@@ -16,4 +16,6 @@
 
     Public Zusatz As String
 
+    Public Info As String
+
 End Class

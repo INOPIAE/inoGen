@@ -91,11 +91,10 @@
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
-                                        <TextBlock Text="Geb Datum:" Width="100" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Geb Datum:" Width="70" VerticalAlignment="Center"/>
                                         <TextBox x:Name="txtGeb" Width="70"/>
-                                       
-                                        <TextBlock Text="Zusatz:" Width="100" VerticalAlignment="Center"/>
-                                        <TextBox x:Name="txtZu" Width="200"/>
+                                        <TextBlock Text="Zusatz:" Width="60" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtZu" Width="300"/>
                                         <TextBlock Text="Sex Zg:" Width="60" VerticalAlignment="Center"/>
                                         <TextBox x:Name="txtSex" Width="20"/>
                                         <TextBlock x:Name="lblVTag" Text=" " Width="100" VerticalAlignment="Center" TextAlignment="Right"/>
@@ -103,11 +102,13 @@
 
                                     <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
                                         <Button x:Name="btnNewPerson" Content="Neu" Width="50" Margin="5"/>
+                                        <TextBlock Text="Info:" Width="60" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtZuInfo" Width="300"/>
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
                                         <TextBlock Text="Datum:" Width="50" VerticalAlignment="Center"/>
-                                        <TextBox x:Name="txtDatum" Width="70"/>
+                                        <TextBox x:Name="txtDatum" Width="80"/>
                                         <TextBlock Text="Ereignis:" Width="50" VerticalAlignment="Center"/>
                                         <ComboBox x:Name="cbEreignis"
                                               Width="200"
@@ -121,6 +122,10 @@
 
                                     <StackPanel Orientation="Horizontal" Margin="0 10 0 5">
                                         <Button x:Name="btnNewPEintrag" Content="Weiterer Eintrag" Width="100" Margin="5"/>
+                                        <Button x:Name="btnEntry4" Visibility="Hidden" Content="Weiterer Eintrag" Width="100" Margin="40,5,5,5"/>
+                                        <Button x:Name="btnEntry3" Visibility="Hidden" Content="Weiterer Eintrag" Width="100" Margin="5"/>
+                                        <Button x:Name="btnEntry2" Visibility="Hidden" Content="Weiterer Eintrag" Width="100" Margin="5"/>
+                                        <Button x:Name="btnEntry1" Visibility="Hidden" Content="Weiterer Eintrag" Width="100" Margin="5"/>
                                     </StackPanel>
                                 </StackPanel>
 

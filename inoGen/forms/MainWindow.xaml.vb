@@ -298,7 +298,7 @@ Class MainWindow
         personenCtrl.SavePersonRecordSet()
 
         If e.EventDatum <> "" Then
-            personenCtrl.CreateAndSaveEvent(personenCtrl.ID, 0, e.EventDatum, e.EventArt, e.Referenz, e.OnlineRef, e.Ort, "")
+            personenCtrl.CreateAndSaveEvent(personenCtrl.ID, 0, e.EventDatum, e.EventArt, e.Referenz, e.OnlineRef, e.Ort, e.Zusatz, e.Info)
         End If
 
         '  personenCtrl.SavePersonRecordSet()
@@ -323,7 +323,7 @@ Class MainWindow
         personenCtrl.FillPerson(e.PID)
         personenCtrl.ID = e.PID
 
-        personenCtrl.CreateAndSaveEvent(personenCtrl.ID, 0, e.EventDatum, e.EventArt, e.Referenz, e.OnlineRef, e.Ort, e.Zusatz)
+        personenCtrl.CreateAndSaveEvent(personenCtrl.ID, 0, e.EventDatum, e.EventArt, e.Referenz, e.OnlineRef, e.Ort, e.Zusatz, e.Info)
 
 
         'personenCtrl.SavePersonRecordSet()
@@ -343,6 +343,7 @@ Class MainWindow
             familieCtrl = New familien()
             MainContent.Content = familieCtrl
         End If
+        familieCtrl.Success = True
 
         familieCtrl.NewFamilyRecordSet()
 
@@ -378,7 +379,7 @@ Class MainWindow
         familieCtrl.SaveFamilyRecordSet()
 
         Dim win = DirectCast(sender, VKH_Übernahme)
-        win.FamilyReturn(True, familieCtrl.ID)
+        win.FamilyReturn(familieCtrl.Success, familieCtrl.ID)
 
     End Sub
 End Class

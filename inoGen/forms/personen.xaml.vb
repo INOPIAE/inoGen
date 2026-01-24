@@ -125,7 +125,7 @@ Public Class personen
 
                         cDB.VornameAnlegen(txtVorname.Text, ID, VT)
 
-                        MessageBox.Show("Neuer Datensatz gespeichert!")
+                        ' MessageBox.Show("Neuer Datensatz gespeichert!")
                     ElseIf ID.HasValue Then
                         rowView("Vorname") = txtVorname.Text
                         rowView("tblKonfessionID") = cbKonfession.SelectedValue
@@ -142,7 +142,7 @@ Public Class personen
                         updateCmd.Parameters.AddWithValue("@ID", ID)
                         updateCmd.ExecuteNonQuery()
 
-                        MessageBox.Show("Änderungen gespeichert!")
+                        ' MessageBox.Show("Änderungen gespeichert!")
                     End If
                 End Using
 
@@ -533,9 +533,10 @@ Public Class personen
                                     Referenz As String,
                                     OnlineRef As String,
                                     Ort As String,
-                                    Zusatz As String)
+                                    Zusatz As String,
+                                    Info As String)
 
-        isNewRecord=False
+        isNewRecord = False
         Dim details As New ereignis(True)
         AddHandler details.DataSaved, AddressOf OnDatenGespeichert
 
@@ -548,6 +549,7 @@ Public Class personen
         details.txtFSID.Text = OnlineRef
         details.cbOrt.Text = Ort
         details.txtZusatz.Text = Zusatz
+        details.txtInfo.Text = Info
 
 
         ' Optional anzeigen
