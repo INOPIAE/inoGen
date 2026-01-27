@@ -33,6 +33,7 @@ Public Class vkHeirat
             FillEntry(ID)
         Else
             btnNew_Click(Nothing, Nothing)
+            btnSave.ClearValue(Button.BackgroundProperty)
         End If
 
         LoadData()
@@ -41,6 +42,10 @@ Public Class vkHeirat
         AddHandler Me.Loaded, AddressOf OnLoaded
     End Sub
     Private Sub btnNew_Click(sender As Object, e As RoutedEventArgs) Handles btnNew.Click
+        NewEntry()
+    End Sub
+
+    Private Sub NewEntry()
         Dim Q As String = txtQuelle.Text
         Dim Seite As String = txtSeite.Text
         Dim Nr() As String = txtNr.Text.Split("/")
@@ -60,6 +65,8 @@ Public Class vkHeirat
         End If
 
         txtHDatum.Focus()
+
+        btnSave.Background = Brushes.LightGreen
 
     End Sub
 
@@ -265,6 +272,8 @@ Public Class vkHeirat
                 My.Settings.LastVKHID = ID
                 My.Settings.Save()
             End Using
+
+            btnSave.ClearValue(Button.BackgroundProperty)
 
         Catch ex As Exception
             MessageBox.Show("Fehler beim Speichern: " & ex.Message)
@@ -640,4 +649,17 @@ Public Class vkHeirat
 
     End Sub
 
+    Private Sub btnNewP_Click(sender As Object, e As RoutedEventArgs) Handles btnNewP.Click
+        NewEntry()
+        Dim Nr() As String = txtQuelleSeite.Text.Split({" "c}, StringSplitOptions.RemoveEmptyEntries)
+
+        If IsNumeric(txtSeite.Text) Then
+            txtSeite.Text = CStr(CInt(txtSeite.Text) + 1)
+        End If
+
+        If IsNumeric(Nr(Nr.Length - 1)) Then
+            Nr(Nr.Length - 1) = CInt(Nr(Nr.Length - 1)) + 1
+            txtQuelleSeite.Text = String.Join(" ", Nr)
+        End If
+    End Sub
 End Class
