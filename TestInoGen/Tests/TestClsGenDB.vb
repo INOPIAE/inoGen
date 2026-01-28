@@ -428,6 +428,36 @@ Namespace TestInoGen
         End Sub
 
         <Test>
+        Public Sub TestVKH_LocationsI()
+            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.StatisticsVKHLocations("Musterdorf", "")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo("Musterstadt"))
+            Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo(1))
+
+
+            dt = cGDB.StatisticsVKHLocations("Musterdorf", "D")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item(0), NUnit.Framework.Is.EqualTo("Musterstadt"))
+            Assert.That(dt.Rows(0).Item(1), NUnit.Framework.Is.EqualTo(1))
+
+
+            dt = cGDB.StatisticsVKHLocations("Musterdorf", "E")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+            dt = cGDB.StatisticsVKHLocations("Musterstadt", "")
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+        End Sub
+        <Test>
         Public Sub TestGetNachname()
             Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
             cGDB = New inoGenDLL.ClsGenDB(DBFileT)

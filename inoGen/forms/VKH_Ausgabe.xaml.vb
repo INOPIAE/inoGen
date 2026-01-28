@@ -13,9 +13,16 @@ Public Class VKH_Ausgabe
     End Sub
 
     Private Sub btnOSMMap_Click(sender As Object, e As RoutedEventArgs) Handles btnOSMMap.Click
-        cGeoD.ErstelleLocationList()
+        cGeoD.ErstelleLocationList(txtOrt.Text.Trim, cmbBuch.Text)
+        Dim win As OSMKarte
+        If txtOrt.Text.Trim = vbNullString Then
+            win = New OSMKarte(cGeoD.LocationList)
+        Else
+            Dim Grundort As New ClsOSMKarte.marker
+            Grundort = cGeoD.GetGeoData(txtOrt.Text.Trim, 10)
+            win = New OSMKarte(cGeoD.LocationList, Grundort)
+        End If
 
-        Dim win As New OSMKarte(cGeoD.LocationList)
         win.Show()
     End Sub
 

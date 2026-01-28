@@ -52,9 +52,9 @@ Public Class ClsGeoDaten
         Return marker
     End Function
 
-    Public Sub ErstelleLocationList()
+    Public Sub ErstelleLocationList(Ort As String, Buch As String)
         LocationList = New List(Of ClsOSMKarte.marker)
-        Dim dt As DataTable = cGenDB.StatisticsVKHLocations
+        Dim dt As DataTable = cGenDB.StatisticsVKHLocations(Ort, Buch)
 
         For Each r As DataRow In dt.Rows
             Dim newMarker As ClsOSMKarte.marker = GetGeoData(r.Item(0), r.Item(1))

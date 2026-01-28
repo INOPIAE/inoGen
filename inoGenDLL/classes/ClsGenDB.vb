@@ -662,9 +662,9 @@ Public Class ClsGenDB
 
     Public Function StatisticsVKHPages() As DataTable
         Dim strSQL As String =
-            "SELECT SEITE_H, Count(tblVKHID) AS Anzahl, BUCH_H
+            "SELECT SEITE_H, Count(tblVKHID) AS Anzahl, BUCH_H, ReferenceDetails
                 FROM tblVKH
-                GROUP BY SEITE_H, BUCH_H;"
+                GROUP BY SEITE_H, BUCH_H, ReferenceDetails;"
 
         Dim dt As New DataTable()
         Using conn As New OleDbConnection(connectionString)
@@ -755,6 +755,59 @@ Public Class ClsGenDB
         Return dt
     End Function
 
+
+    Public Function StatisticsVKHLocations(Ort As String, Buch As String) As DataTable
+        Dim Filter As String = ""
+        If Buch.Trim <> "" Then
+            Filter = " AND BUCH_H = ? "
+        End If
+        Dim strSQL As String =
+            String.Format("SELECT
+                Ort, Count(*) as Anzahl
+            FROM
+                (
+                SELECT
+                    BUCH_H, NR_H, Ort, Count(*) AS Anzahl
+                FROM
+                (
+                    SELECT BUCH_H, NR_H, W_BR  AS Ort FROM tblVKH WHERE W_BR  <> ''
+                    UNION ALL
+                    SELECT BUCH_H, NR_H, H_BR  AS Ort FROM tblVKH WHERE H_BR  <> ''
+                    UNION ALL
+                    SELECT BUCH_H, NR_H, W_EBR  AS Ort FROM tblVKH WHERE W_EBR  <> ''
+                    UNION ALL
+                    SELECT BUCH_H, NR_H, W_BT AS Ort FROM tblVKH WHERE W_BT <> ''
+                    UNION ALL
+                    SELECT BUCH_H, NR_H, H_BT AS Ort FROM tblVKH WHERE H_BT <> ''
+                    UNION ALL
+                    SELECT BUCH_H, NR_H, W_EBT AS Ort FROM tblVKH WHERE W_EBT <> ''
+                )
+                GROUP BY BUCH_H, NR_H, Ort
+                HAVING Ort <> ? {0}
+                ORDER BY BUCH_H, NR_H, Ort
+                )
+            GROUP BY Ort
+            ORDER BY
+                Count(*) DESC,
+                Ort;", Filter)
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                cmd.Parameters.AddWithValue("@Ort", Ort)
+                If Filter.Trim <> "" Then
+                    cmd.Parameters.AddWithValue("@BUCH_H", Buch)
+                End If
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
     Public Function GetNachname() As DataTable
         Dim strSQL As String =
             "SELECT * FROM tblNachname ORDER BY Nachname"

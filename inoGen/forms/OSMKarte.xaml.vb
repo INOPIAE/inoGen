@@ -38,6 +38,7 @@ Imports Mapsui.Providers
 Imports Mapsui.Styles
 Imports Mapsui.Tiling
 Imports Mapsui.UI.Wpf
+Imports NetTopologySuite.Geometries
 
 Public Class OSMKarte
 
@@ -61,6 +62,12 @@ Public Class OSMKarte
         PLocations = GenLocations
         InitializeMap(GenLocations)
     End Sub
+
+    Public Sub New(GenLocations As List(Of ClsOSMKarte.marker), Ort As ClsOSMKarte.marker)
+        InitializeComponent()
+        PLocations = GenLocations
+        InitializeMap(GenLocations, Ort)
+    End Sub
     Private Sub InitializeMap(GenLocations As List(Of ClsOSMKarte.marker))
         Dim map = New Mapsui.Map()
         map.Layers.Add(OpenStreetMap.CreateTileLayer())
@@ -70,8 +77,32 @@ Public Class OSMKarte
             Dim markerFeatures As New List(Of IFeature)
 
             For Each location In GenLocations
-                markerFeatures.Add(CreateMarker(location.lat, location.lon, location.title))
+                markerFeatures.Add(CreateMarker(location.lat, location.lon, location.title, 10))
             Next
+
+            Dim markerLayer As New MemoryLayer("Marker") With {
+                .Features = markerFeatures
+            }
+            map.Layers.Add(markerLayer)
+
+        End If
+        mapControl.Map = map
+        mapControl.Refresh()
+    End Sub
+
+    Private Sub InitializeMap(GenLocations As List(Of ClsOSMKarte.marker), Ort As ClsOSMKarte.marker)
+        Dim map = New Mapsui.Map()
+        map.Layers.Add(OpenStreetMap.CreateTileLayer())
+        mapControl.Map = map
+
+        If GenLocations IsNot Nothing AndAlso GenLocations.Count > 0 Then
+            Dim markerFeatures As New List(Of IFeature)
+
+            For Each location In GenLocations
+                markerFeatures.Add(CreateMarker(location.lat, location.lon, location.title, location.Count))
+            Next
+
+            markerFeatures.Add(CreateMarker(Ort.lat, Ort.lon, Ort.title, Ort.Count, Color.ForestGreen))
 
             Dim markerLayer As New MemoryLayer("Marker") With {
                 .Features = markerFeatures
@@ -95,23 +126,36 @@ Public Class OSMKarte
 
     End Sub
 
-    Private Function CreateMarker(lat As Double, lon As Double, label As String) As IFeature
+    Private Function CreateMarker(lat As Double, lon As Double, label As String, count As Integer, Optional basisColor As Color = Nothing) As IFeature
+        If basisColor = Nothing Then basisColor = Color.Red
         ' WGS84 -> WebMercator
         Dim sm = SphericalMercator.FromLonLat(lon, lat)
         Dim p = New MPoint(sm.x, sm.y)
         Dim f As New PointFeature(p)
 
-        ' SymbolStyle (roter Kreis)
+        Dim SymbolScaleValue As Double = 0.6
+        Select Case count
+            Case Is >= 50
+                SymbolScaleValue = 1.5
+            Case Is >= 20
+                SymbolScaleValue = 1.2
+            Case Is >= 10
+                SymbolScaleValue = 1.0
+            Case Is >= 5
+                SymbolScaleValue = 0.8
+            Case Else
+                SymbolScaleValue = 0.6
+        End Select
+
         f.Styles.Add(New SymbolStyle With {
-            .Fill = New Brush(Color.Red),
-            .Outline = New Pen(Color.White, 1),
-            .SymbolScale = 0.9
+            .Fill = New Brush(basisColor),
+            .Outline = New Pen(Color.Transparent, 0),
+            .SymbolScale = SymbolScaleValue
         })
 
-        ' Label
         f.Styles.Add(New LabelStyle With {
             .Text = label,
-            .BackColor = New Brush(Color.FromArgb(200, 255, 255, 255)),
+            .BackColor = New Brush(Color.FromArgb(150, 255, 255, 255)),
             .Halo = New Pen(Color.Black, 0),
             .Offset = New Offset(0, -20) ' Label oberhalb des Pins 
         })
