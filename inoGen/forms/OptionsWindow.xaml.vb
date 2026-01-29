@@ -17,9 +17,14 @@ Public Class OptionsWindow
         BerufView.SortDescriptions.Add(
             New SortDescription("", ListSortDirection.Ascending))
         If Not IsNothing(My.Settings.CurrentWork) Then
-            For Each beruf In My.Settings.CurrentWork
-                If Not BerufListe.Contains(beruf) Then
-                    BerufListe.Add(beruf)
+            For Each entry In My.Settings.CurrentWork
+                If entry.StartsWith("VKHOrt:") Then
+                    txtVKHOrt.Text = entry.Replace("VKHOrt:", "")
+                    Continue For
+                End If
+                entry = entry.Replace("Beruf:", "")
+                If Not BerufListe.Contains(entry) Then
+                    BerufListe.Add(entry)
                 End If
             Next
         End If
@@ -37,13 +42,16 @@ Public Class OptionsWindow
 
         txtBeruf.Clear()
     End Sub
+
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs)
         My.Settings.Email = Me.txtEmail.Text
 
         Dim sc As New System.Collections.Specialized.StringCollection()
         For Each beruf As String In BerufListe
-            sc.Add(beruf)
+            sc.Add(String.Format("Beruf:{0}", beruf))
         Next
+        sc.Add(String.Format("VKHOrt:{0}", txtVKHOrt.Text.Trim))
+
         My.Settings.CurrentWork = sc
 
         My.Settings.Save()

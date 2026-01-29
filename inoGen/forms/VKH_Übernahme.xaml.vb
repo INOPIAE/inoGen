@@ -74,9 +74,13 @@ Public Class VKH_Übernahme
 
         If Not IsNothing(My.Settings.CurrentWork) Then
             Dim i As Integer = 1
-            For Each beruf In My.Settings.CurrentWork
+            For Each entry In My.Settings.CurrentWork
+                If entry.StartsWith("VKHOrt:") Then
+                    Continue For
+                End If
+                entry = entry.Replace("Beruf:", "")
                 Dim btn As Button = DirectCast(Me.FindName("btnEntry" & i.ToString()), Button)
-                btn.Content = beruf
+                btn.Content = entry
                 btn.Visibility = Visibility.Visible
                 i += 1
             Next

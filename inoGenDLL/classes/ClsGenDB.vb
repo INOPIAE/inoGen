@@ -781,6 +781,8 @@ Public Class ClsGenDB
                     SELECT BUCH_H, NR_H, H_BT AS Ort FROM tblVKH WHERE H_BT <> ''
                     UNION ALL
                     SELECT BUCH_H, NR_H, W_EBT AS Ort FROM tblVKH WHERE W_EBT <> ''
+                    UNION ALL
+                    SELECT BUCH_H, NR_H, K_Ort AS Ort FROM tblVKH WHERE K_Ort <> ''
                 )
                 GROUP BY BUCH_H, NR_H, Ort
                 HAVING Ort <> ? {0}
@@ -808,6 +810,37 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Public Function StatisticsVKHLocationsExtern(Ort As String, Buch As String) As DataTable
+        Dim Filter As String = ""
+        If Buch.Trim <> "" Then
+            Filter = " AND BUCH_H = ? "
+        End If
+        Dim strSQL As String =
+            String.Format("
+                SELECT BUCH_H, NR_H, K_Ort AS Ort 
+                FROM tblVKH 
+                WHERE K_Ort <> '' AND K_Ort <> ? {0}
+                ORDER BY K_Ort, NR_H;", Filter)
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                cmd.Parameters.AddWithValue("@Ort", Ort)
+                If Filter.Trim <> "" Then
+                    cmd.Parameters.AddWithValue("@BUCH_H", Buch)
+                End If
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
     Public Function GetNachname() As DataTable
         Dim strSQL As String =
             "SELECT * FROM tblNachname ORDER BY Nachname"
@@ -973,7 +1006,7 @@ Public Class ClsGenDB
             FROM
                 tblVKH
             WHERE
-                H_BT IS NOT NULL AND W_BT <> ''
+                H_BT IS NOT NULL AND H_BT <> ''
             UNION
             SELECT
                 SEITE_H,
@@ -983,7 +1016,17 @@ Public Class ClsGenDB
             FROM
                 tblVKH
             WHERE
-                W_EBT IS NOT NULL AND H_BR <> ''
+                W_EBT IS NOT NULL AND W_EBT <> ''
+            UNION
+            SELECT
+                SEITE_H,
+                NR_H,
+                K_Ort AS Ort,
+                BUCH_H
+            FROM
+                tblVKH
+            WHERE
+                K_Ort IS NOT NULL AND K_Ort <> ''
             )
             {0}
             Order BY Ort, NR_H

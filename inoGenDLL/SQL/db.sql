@@ -157,6 +157,7 @@ CREATE TABLE tblVKH(
     NR_H VARCHAR(10),
     HDatum DATE,
     DimDatum DATE,
+    K_Ort VARCHAR(255),
     VN_BR VARCHAR(255),
     FN_BR VARCHAR(255),
     GebDatum_BR DATE,
@@ -239,4 +240,4 @@ INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis)
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Taufpate');
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Trauzeuge');
 
-UPDATE tblVersion SET Version = 6;
+UPDATE tblVersion SET Version = 7;

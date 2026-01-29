@@ -14,6 +14,7 @@ Public Class vkHeirat
     Private isNewRecord As Boolean = False
     Private ID As Integer? = Nothing
     Private testDate As String
+    Private VKHOrt As String
 
     Private pSQL As String = "SELECT
             *
@@ -37,6 +38,16 @@ Public Class vkHeirat
         End If
 
         LoadData()
+
+        If Not IsNothing(My.Settings.CurrentWork) Then
+            Dim i As Integer = 1
+            For Each entry In My.Settings.CurrentWork
+                If entry.StartsWith("VKHOrt:") Then
+                    VKHOrt = entry.Replace("VKHOrt:", "")
+                    Exit For
+                End If
+            Next
+        End If
 
         ckbAutoCorrect.IsChecked = True
         AddHandler Me.Loaded, AddressOf OnLoaded
@@ -63,6 +74,8 @@ Public Class vkHeirat
             Dim v As Integer = CInt(Nr(1)) + 1
             txtNr.Text = Nr(0) & "/" & v.ToString("000")
         End If
+
+        txtKirchort.Text = VKHOrt
 
         txtHDatum.Focus()
 
@@ -118,6 +131,8 @@ Public Class vkHeirat
         If NID = -1 Then Exit Sub
 
         Dim OID As Int16 = cDB.OrtID(txtWOBtg.Text.Trim)
+        OID = cDB.OrtID(txtKirchort.Text.Trim)
+        If OID = -1 Then Exit Sub
         If OID = -1 Then Exit Sub
         OID = cDB.OrtID(txtHOBtg.Text.Trim)
         If OID = -1 Then Exit Sub
@@ -163,17 +178,17 @@ Public Class vkHeirat
         End If
 
 
-        Dim strInsert As String = "INSERT INTO tblVKH (BUCH_H, SEITE_H, NR_H, HDatum, DimDatum, 
+        Dim strInsert As String = "INSERT INTO tblVKH (BUCH_H, SEITE_H, NR_H, HDatum, DimDatum, K_Ort,
             VN_BR, FN_BR, GebDatum_BR, W_BR, H_BR, Z_BR, VN_VBR, FN_VBR, Z_VBR, VN_MBR, FN_MBR, Z_MBR, W_EBR, 
             VN_BT, FN_BT, GebDatum_BT, W_BT, H_BT, Z_BT, VN_VBT, FN_VBT, Z_VBT, VN_MBT, FN_MBT, Z_MBT, W_EBT, 
             ANM_H, VN_HZ1, FN_HZ1, G_HZ1, Z_HZ1, VN_HZ2, FN_HZ2, G_HZ2, Z_HZ2, 
             VN_HZ3, FN_HZ3, G_HZ3, Z_HZ3, VN_HZ4, FN_HZ4, G_HZ4, Z_HZ4, CheckNeeded, OnlineReference, ReferenceDetails) 
-            VALUES (?, ?, ?, ?, ?,
+            VALUES (?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
             ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        Dim strUpdate As String = "UPDATE tblVKH SET BUCH_H = ?, SEITE_H = ?, NR_H = ?, HDatum = ?, DimDatum = ?, VN_BR = ?, FN_BR = ?, GebDatum_BR = ?, W_BR = ?, H_BR = ?, Z_BR = ?, VN_VBR = ?, FN_VBR = ?, Z_VBR = ?, VN_MBR = ?, FN_MBR = ?, Z_MBR = ?, W_EBR = ?, VN_BT = ?, FN_BT = ?, GebDatum_BT = ?, W_BT = ?, H_BT = ?, Z_BT = ?, VN_VBT = ?, FN_VBT = ?, Z_VBT = ?, VN_MBT = ?, FN_MBT = ?, Z_MBT = ?, W_EBT = ?, ANM_H = ?, VN_HZ1 = ?, FN_HZ1 = ?, G_HZ1 = ?, Z_HZ1 = ?, VN_HZ2 = ?, FN_HZ2 = ?, G_HZ2 = ?, Z_HZ2 = ?, VN_HZ3 = ?, FN_HZ3 = ?, G_HZ3 = ?, Z_HZ3 = ?, VN_HZ4 = ?, FN_HZ4 = ?, G_HZ4 = ?, Z_HZ4 = ?, CheckNeeded = ?, OnlineReference = ?, ReferenceDetails =? WHERE tblVKHID = ?"
+        Dim strUpdate As String = "UPDATE tblVKH SET BUCH_H = ?, SEITE_H = ?, NR_H = ?, HDatum = ?, DimDatum = ?, K_Ort = ?, VN_BR = ?, FN_BR = ?, GebDatum_BR = ?, W_BR = ?, H_BR = ?, Z_BR = ?, VN_VBR = ?, FN_VBR = ?, Z_VBR = ?, VN_MBR = ?, FN_MBR = ?, Z_MBR = ?, W_EBR = ?, VN_BT = ?, FN_BT = ?, GebDatum_BT = ?, W_BT = ?, H_BT = ?, Z_BT = ?, VN_VBT = ?, FN_VBT = ?, Z_VBT = ?, VN_MBT = ?, FN_MBT = ?, Z_MBT = ?, W_EBT = ?, ANM_H = ?, VN_HZ1 = ?, FN_HZ1 = ?, G_HZ1 = ?, Z_HZ1 = ?, VN_HZ2 = ?, FN_HZ2 = ?, G_HZ2 = ?, Z_HZ2 = ?, VN_HZ3 = ?, FN_HZ3 = ?, G_HZ3 = ?, Z_HZ3 = ?, VN_HZ4 = ?, FN_HZ4 = ?, G_HZ4 = ?, Z_HZ4 = ?, CheckNeeded = ?, OnlineReference = ?, ReferenceDetails =? WHERE tblVKHID = ?"
 
         Try
             Using conn As New OleDbConnection(connectionString)
@@ -193,6 +208,7 @@ Public Class vkHeirat
                 Else
                     cmd.Parameters.AddWithValue("@DimDatum", DBNull.Value)
                 End If
+                cmd.Parameters.AddWithValue("K_Ort", txtWOBtg.Text.Trim)
 
 
                 cmd.Parameters.AddWithValue("VN_BR", txtVBtg.Text.Trim)
@@ -396,6 +412,10 @@ Public Class vkHeirat
 
                         If Not IsDBNull(reader("DimDatum")) Then
                             txtDimDatum.Text = reader("DimDatum")
+                        End If
+
+                        If Not IsDBNull(reader("K_Ort")) Then
+                            txtKirchort.Text = reader("K_Ort")
                         End If
 
                         If Not IsDBNull(reader("VN_BR")) Then
@@ -641,7 +661,8 @@ Public Class vkHeirat
             txtNVtBt.LostFocus, txtNVtBtg.LostFocus, txtVVtBt.LostFocus, txtVVtBtg.LostFocus,
             txtNMtBt.LostFocus, txtNMtBtg.LostFocus, txtVMtBt.LostFocus, txtVMtBtg.LostFocus,
             txtNZ1.LostFocus, txtNZ2.LostFocus, txtNZ3.LostFocus, txtNZ4.LostFocus,
-            txtVZ1.LostFocus, txtVZ2.LostFocus, txtVZ3.LostFocus, txtVZ4.LostFocus
+            txtVZ1.LostFocus, txtVZ2.LostFocus, txtVZ3.LostFocus, txtVZ4.LostFocus,
+            txtKirchort.LostFocus
 
         If ckbAutoCorrect.IsChecked = True Then
             sender.text = cGDB.ToTitleCase(sender.text)

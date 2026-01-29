@@ -10,6 +10,8 @@ Public Class ClsDatabase
 
     Private sqlPath As String = IIf(AppDomain.CurrentDomain.BaseDirectory.Contains("Release"), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Release\net9.0-windows7.0\", ""), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Debug\net9.0-windows7.0\", "")) & "\inoGenDLL\SQL\"
 
+    Private currentVersion As Long = 7
+
     Public Sub New(dbFileString As String)
         connString = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";Persist Security Info=True", dbFileString)
         dbFile = dbFileString
@@ -69,26 +71,13 @@ Public Class ClsDatabase
             FillDatabase(strSQLFile)
         Else
             Dim dbVersion As Long = ReadDBVersion()
-            If dbVersion < 2 Then
-                strSQLFile = sqlPath & "from_1.sql"
-                FillDatabase(strSQLFile)
-            End If
-            If dbVersion < 3 Then
-                strSQLFile = sqlPath & "from_2.sql"
-                FillDatabase(strSQLFile)
-            End If
-            If dbVersion < 4 Then
-                strSQLFile = sqlPath & "from_3.sql"
-                FillDatabase(strSQLFile)
-            End If
-            If dbVersion < 5 Then
-                strSQLFile = sqlPath & "from_4.sql"
-                FillDatabase(strSQLFile)
-            End If
-            If dbVersion < 6 Then
-                strSQLFile = sqlPath & "from_5.sql"
-                FillDatabase(strSQLFile)
-            End If
+            
+            For updateVersion = 2 To currentVersion
+                If dbVersion < updateVersion Then
+                    strSQLFile = sqlPath & "from_" & (updateVersion - 1).ToString() & ".sql"
+                    FillDatabase(strSQLFile)
+                End If
+            Next
         End If
 
         Return ReadDBVersion()

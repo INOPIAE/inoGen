@@ -12,7 +12,7 @@ Namespace TestInoGen
         Private cDB As New ClsDatabase(DBFile)
         Private cHelper As New ClsHelper
         Private testFolder As String
-        Private currentDBVersion As Long = 6
+        Private currentDBVersion As Long = 7
 
         <SetUp>
         Public Sub Setup()

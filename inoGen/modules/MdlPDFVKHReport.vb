@@ -50,6 +50,8 @@ Public Class MdlPDFVKHReport
                     Dim CheckText As String = IIf(CheckData, " - Datenprüfung", "")
 
                     Dim dt As DataTable = cGenDB.VKH_ReportData(CheckData, Book)
+                    Dim dtOE As DataTable = cGenDB.StatisticsVKHLocationsExtern(Ort, "")
+
                     Dim line As String
                     line = String.Format("#{0} {1} {2}", "Kirchenbuch Verkartung aus", dt.Rows(0).Item("BUCH_H"), CheckText)
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
@@ -67,6 +69,7 @@ Public Class MdlPDFVKHReport
                             OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Mütter des Braut gesamt: " & Format(.Item(6), "#,##0"))
                             OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Personen gesamt: " & Format(.Item(1) + .Item(2) + .Item(3) + .Item(4) + .Item(5) + .Item(6), "#,##0"))
                             OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Zeugen gesamt: " & Format(.Item(7) + .Item(8) + .Item(9) + .Item(10), "#,##0"))
+                            OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "Heiraten in anderen Orten: " & Format(dtOE.Rows.Count, "#,##0"))
                         End With
                     End If
 
@@ -74,6 +77,7 @@ Public Class MdlPDFVKHReport
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§Bt: Braut")
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§Btgm: Bräutigam")
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§H: Heimatort der Person")
+                    OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§K: Kirchort, wenn nicht Ort des Kirchenbuches")
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§M: Mutter der Braut / des Bräutigams")
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§V: Vater der Braut / des Bräutigams")
                     OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§W: Wohnort der Person")
@@ -90,6 +94,9 @@ Public Class MdlPDFVKHReport
 
                     For Each dr As DataRow In dt.Rows
                         counter += 1
+                        If TestDataValid(dr.Item("Nr_H")) = False Then
+                            Continue For
+                        End If
                         If dr.Item("NR_H").ToString.Substring(0, 4) <> year Then
                             year = dr.Item("NR_H").ToString.Substring(0, 4)
                             line = String.Format("#{0}", year)
@@ -109,6 +116,11 @@ Public Class MdlPDFVKHReport
                         End If
                         If TestDataValid(dr.Item("DimDatum")) Then
                             line &= ", " & dr.Item("DimDatum")
+                        End If
+                        If TestDataValid(dr.Item("K_Ort")) Then
+                            If dr.Item("K_Ort") <> Ort Then
+                                line &= String.Format(", K: {0}", dr.Item("K_Ort"))
+                            End If
                         End If
                         If line <> "" Then OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
 
@@ -328,10 +340,6 @@ Public Class MdlPDFVKHReport
                                 LineN &= IIf(LineN = "", "", ", ") & dr.Item("NR_H")
                                 Nr_H = dr.Item("NR_H").ToString
                             End If
-
-                            'If counter > 100 Then
-                            '    Exit For
-                            'End If
                         Next
                         OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
 
@@ -360,13 +368,36 @@ Public Class MdlPDFVKHReport
                                 LineN &= IIf(LineN = "", "", ", ") & dr.Item("NR_H")
                                 Nr_H = dr.Item("NR_H").ToString
                             End If
-
-                            'If counter > 100 Then
-                            '    Exit For
-                            'End If
                         Next
                         OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
 
+
+                        document.Add(New AreaBreak(AreaBreakType.NEXT_PAGE))
+                        line = String.Format("#{0}", "Ortsverzeichnis nur der Heiraten in anderen Orten")
+                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
+
+                        counter = 0
+                        OutputObject = ""
+                        LineN = ""
+                        For Each dr As DataRow In dtOE.Rows
+                            counter += 1
+                            If dr.Item("Ort").ToString.Trim <> OutputObject Then
+                                If OutputObject <> "" Then
+                                    OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
+                                End If
+                                line = String.Format("{0}", dr.Item("Ort").ToString)
+                                OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, line)
+                                OutputObject = dr.Item("Ort").ToString.Trim
+                                LineN = ""
+                                Nr_H = ""
+                            End If
+
+                            If dr.Item("NR_H").ToString <> Nr_H Then
+                                LineN &= IIf(LineN = "", "", ", ") & dr.Item("NR_H")
+                                Nr_H = dr.Item("NR_H").ToString
+                            End If
+                        Next
+                        OutputLine(pdfDoc, document, normalFont, italicFont, linkPattern, rootOutline, "§" & LineN)
                     End If
                 End Using
             End Using

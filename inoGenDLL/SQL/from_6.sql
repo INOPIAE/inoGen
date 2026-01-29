@@ -1,0 +1,3 @@
+﻿ALTER TABLE tblVKH ADD COLUMN K_Ort VARCHAR(255);
+
+UPDATE tblVersion SET Version = 7;

@@ -10,11 +10,22 @@ Public Class Statistics
     Private VKHTotal As Integer
 
     Private cGDB As New ClsGenDB(My.Settings.DBPath)
+
+    Private VKHOrt As String
     Private Sub CloseButton_Click(sender As Object, e As RoutedEventArgs)
         Close()
     End Sub
 
     Private Sub Statistics_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
+        If Not IsNothing(My.Settings.CurrentWork) Then
+            Dim i As Integer = 1
+            For Each entry In My.Settings.CurrentWork
+                If entry.StartsWith("VKHOrt:") Then
+                    VKHOrt = entry.Replace("VKHOrt:", "")
+                    Exit For
+                End If
+            Next
+        End If
         CommonData()
         VKHData()
     End Sub
@@ -29,7 +40,9 @@ Public Class Statistics
 
     Private Sub VKHData()
         Dim dt As DataTable = cGDB.StatisicsVKHeirat
+        Dim dtOE As DataTable = cGDB.StatisticsVKHLocationsExtern(VKHOrt, "")
         With dt.Rows(0)
+            VKHTotal = .Item(0)
             H1.Content = "Einträge gesamt: " & Format(.Item(0), "#,##0")
             H2.Content = "Bräutigame gesamt: " & Format(.Item(1), "#,##0")
             H3.Content = "Väter des Bräutigams gesamt: " & Format(.Item(2), "#,##0")
@@ -39,7 +52,8 @@ Public Class Statistics
             H7.Content = "Mütter des Braut gesamt: " & Format(.Item(6), "#,##0")
             H8.Content = "Personen gesamt: " & Format(.Item(1) + .Item(2) + .Item(3) + .Item(4) + .Item(5) + .Item(6), "#,##0")
             H9.Content = "Zeugen gesamt: " & Format(.Item(7) + .Item(8) + .Item(9) + .Item(10), "#,##0")
-            VKHTotal = .Item(0)
+            H10.Content = String.Format("Heiraten in anderen Orten: {0} ({1})", Format(dtOE.Rows.Count, "#,##0"), Format(dtOE.Rows.Count / VKHTotal, "0.00%"))
+
         End With
 
         With dgVKHYears
