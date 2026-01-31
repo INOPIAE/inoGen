@@ -184,7 +184,7 @@ CREATE TABLE tblVKH(
     FN_MBT VARCHAR(255),
     Z_MBT VARCHAR(255),
     W_EBT VARCHAR(255),
-    ANM_H VARCHAR(255),
+    ANM_H MEMO,
     VN_HZ1 VARCHAR(255),
     FN_HZ1 VARCHAR(255),
     G_HZ1 VARCHAR(255),
@@ -240,4 +240,4 @@ INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis)
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Taufpate');
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Trauzeuge');
 
-UPDATE tblVersion SET Version = 7;
+UPDATE tblVersion SET Version = 8;

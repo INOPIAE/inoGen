@@ -298,33 +298,15 @@ Public Class vkHeirat
     End Sub
 
     Private Sub LoadData()
-        Dim strSQL As String = pSQL & " ORDER BY BUCH_H, SEITE_H, NR_H"
+        dt = cGDB.GetVKH_Table()
 
-
-        Try
-            Using conn As New OleDbConnection(connectionString)
-                conn.Open()
-                Dim cmd As New OleDbCommand(strSQL, conn)
-                Dim adapter As New OleDbDataAdapter(cmd)
-                dt.Clear()
-                adapter.Fill(dt)
-            End Using
-
-            dgEintrag.ItemsSource = dt.DefaultView
-
-        Catch ex As Exception
-            MessageBox.Show("Fehler: " & ex.Message)
-        End Try
+        dgEintrag.ItemsSource = dt.DefaultView
 
         If ID.HasValue Then
             For Each rowView As DataRowView In dgEintrag.Items
                 If CInt(rowView("tblVKHID")) = ID Then
-                    ' Selektion setzen
                     dgEintrag.SelectedItem = rowView
-
-                    ' Sichtbar machen
                     dgEintrag.ScrollIntoView(rowView)
-
                     Exit For
                 End If
             Next

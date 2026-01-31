@@ -1149,4 +1149,32 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Public Function GetVKH_Table(Optional Book As String = "") As DataTable
+        Dim SQLFilter As String = ""
+
+        If Book.Trim <> "" Then
+            SQLFilter = " WHERE BUCH_H = ? "
+        End If
+
+        Dim strSQL As String = String.Format(
+            "SELECT * FROM tblVKH {0}
+             ORDER BY BUCH_H, NR_H, SEITE_H
+            ;", SQLFilter)
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                If Book.Trim <> "" Then
+                    cmd.Parameters.AddWithValue("@BUCH_H", Book.Trim)
+                End If
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class

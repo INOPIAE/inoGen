@@ -1,6 +1,7 @@
+Imports System.Data
 Imports System.IO
-Imports NUnit.Framework
 Imports inoGenDLL
+Imports NUnit.Framework
 
 Namespace TestInoGen
     Public Class TestClsDatabase
@@ -12,7 +13,7 @@ Namespace TestInoGen
         Private cDB As New ClsDatabase(DBFile)
         Private cHelper As New ClsHelper
         Private testFolder As String
-        Private currentDBVersion As Long = 7
+        Private currentDBVersion As Long = 8
 
         <SetUp>
         Public Sub Setup()
@@ -92,6 +93,32 @@ Namespace TestInoGen
             Assert.That(version, NUnit.Framework.Is.EqualTo(currentDBVersion))
         End Sub
 
+        <Test>
+        Public Sub TestUpdateDBv7()
+            Dim DBFileT As String = testFolder & "\TestVKv7.inoGdb"
+            File.Copy(testPath & "\TestVKv7.inoGdb", DBFileT)
+            Dim cDBT As New ClsDatabase(DBFileT)
+
+
+            Dim version As Long = cDBT.ReadDBVersion
+
+            Assert.That(version, NUnit.Framework.Is.EqualTo(7))
+
+
+            Dim cGDB As New inoGenDLL.ClsGenDB(DBFileT)
+            Dim dt As DataTable = cGDB.GetVKH_Table()
+
+            Assert.That(dt.Rows(0).Item("ANM_H"), NUnit.Framework.Is.EqualTo("NB"))
+
+
+            version = cDBT.CheckDBVersion
+
+            Assert.That(version, NUnit.Framework.Is.EqualTo(8))
+
+            dt = cGDB.GetVKH_Table()
+
+            Assert.That(dt.Rows(0).Item("ANM_H"), NUnit.Framework.Is.EqualTo("NB"))
+        End Sub
     End Class
 
 End Namespace
