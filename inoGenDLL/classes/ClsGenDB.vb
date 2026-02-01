@@ -1177,4 +1177,25 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Public Function GetVKH_TableEntry(ID As Integer) As DataTable
+        Dim SQLFilter As String = ""
+
+        Dim strSQL As String = String.Format(
+            "SELECT * FROM tblVKH WHERE tblVKHID = ?")
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                cmd.Parameters.AddWithValue("@ID", ID)
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class

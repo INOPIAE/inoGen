@@ -7,7 +7,7 @@ Imports inoGenDLL
 
 Public Class vkHeirat
     Private connectionString As String =
-   String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
+        String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
 
     Private dt As New DataTable()
 
@@ -16,18 +16,16 @@ Public Class vkHeirat
     Private testDate As String
     Private VKHOrt As String
 
-    Private pSQL As String = "SELECT
-            *
-        FROM
-            tblVKH"
-
     Private cDB As New clsDB(My.Settings.DBPath)
     Private cGDB As New ClsGenDB(My.Settings.DBPath)
 
     Public Event RequestResizeMainWindow(width As Double)
 
-    Public Sub New()
+    Private ReadOnly _main As MainWindow
+
+    Public Sub New(main As MainWindow)
         InitializeComponent()
+        _main = main
 
         If My.Settings.LastVKHID > 0 Then
             ID = My.Settings.LastVKHID
@@ -366,189 +364,184 @@ Public Class vkHeirat
     End Sub
 
     Private Sub FillEntry(EID As Integer)
-        Using conn As New OleDbConnection(connectionString)
-            conn.Open()
-            ClearAllTextBoxes(Me)
-            Dim sql As String = pSQL & " WHERE tblVKHID = ?"
-            Using cmd As New OleDbCommand(sql, conn)
-                cmd.Parameters.AddWithValue("@p1", EID)
 
-                Using reader As OleDbDataReader = cmd.ExecuteReader()
-                    If reader.Read() Then
-                        ' Werte auslesen und prüfen auf DBNull
-                        If Not IsDBNull(reader("BUCH_H")) Then
-                            txtQuelle.Text = reader("BUCH_H")
-                        End If
+        ClearAllTextBoxes(Me)
+        Dim dtE As DataTable = cGDB.GetVKH_TableEntry(EID)
 
-                        If Not IsDBNull(reader("SEITE_H")) Then
-                            txtSeite.Text = reader("SEITE_H")
-                        End If
+        If dtE.Rows.Count = 0 Then
+            MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
+            Exit Sub
+        End If
+        With dtE.Rows(0)
+            If Not IsDBNull(.Item("BUCH_H")) Then
+                txtQuelle.Text = .Item("BUCH_H")
+            End If
 
-                        If Not IsDBNull(reader("NR_H")) Then
-                            txtNr.Text = reader("NR_H")
-                        End If
+            If Not IsDBNull(.Item("SEITE_H")) Then
+                txtSeite.Text = .Item("SEITE_H")
+            End If
 
-                        If Not IsDBNull(reader("HDatum")) Then
-                            txtHDatum.Text = reader("HDatum")
-                        End If
+            If Not IsDBNull(.Item("NR_H")) Then
+                txtNr.Text = .Item("NR_H")
+            End If
 
-                        If Not IsDBNull(reader("DimDatum")) Then
-                            txtDimDatum.Text = reader("DimDatum")
-                        End If
+            If Not IsDBNull(.Item("HDatum")) Then
+                txtHDatum.Text = .Item("HDatum")
+            End If
 
-                        If Not IsDBNull(reader("K_Ort")) Then
-                            txtKirchort.Text = reader("K_Ort")
-                        End If
+            If Not IsDBNull(.Item("DimDatum")) Then
+                txtDimDatum.Text = .Item("DimDatum")
+            End If
 
-                        If Not IsDBNull(reader("VN_BR")) Then
-                            txtVBtg.Text = reader("VN_BR")
-                        End If
+            If Not IsDBNull(.Item("K_Ort")) Then
+                txtKirchort.Text = .Item("K_Ort")
+            End If
 
-                        If Not IsDBNull(reader("FN_BR")) Then
-                            txtNBtg.Text = reader("FN_BR")
-                        End If
-                        If Not IsDBNull(reader("GebDatum_BR")) Then
-                            txtGebBtg.Text = reader("GebDatum_BR")
-                        End If
-                        If Not IsDBNull(reader("W_BR")) Then
-                            txtWOBtg.Text = reader("W_BR")
-                        End If
-                        If Not IsDBNull(reader("H_BR")) Then
-                            txtHOBtg.Text = reader("H_BR")
-                        End If
-                        If Not IsDBNull(reader("Z_BR")) Then
-                            txtZuBtg.Text = reader("Z_BR")
-                        End If
-                        If Not IsDBNull(reader("VN_VBR")) Then
-                            txtVVtBtg.Text = reader("VN_VBR")
-                        End If
-                        If Not IsDBNull(reader("FN_VBR")) Then
-                            txtNVtBtg.Text = reader("FN_VBR")
-                        End If
-                        If Not IsDBNull(reader("Z_VBR")) Then
-                            txtZuVtBtg.Text = reader("Z_VBR")
-                        End If
-                        If Not IsDBNull(reader("VN_MBR")) Then
-                            txtVMtBtg.Text = reader("VN_MBR")
-                        End If
-                        If Not IsDBNull(reader("FN_MBR")) Then
-                            txtNMtBtg.Text = reader("FN_MBR")
-                        End If
-                        If Not IsDBNull(reader("Z_MBR")) Then
-                            txtZuMtBtg.Text = reader("Z_MBR")
-                        End If
-                        If Not IsDBNull(reader("W_EBR")) Then
-                            txtWEBtg.Text = reader("W_EBR")
-                        End If
-                        If Not IsDBNull(reader("VN_BT")) Then
-                            txtVBt.Text = reader("VN_BT")
-                        End If
-                        If Not IsDBNull(reader("FN_BT")) Then
-                            txtNBt.Text = reader("FN_BT")
-                        End If
-                        If Not IsDBNull(reader("GebDatum_BT")) Then
-                            txtGebBt.Text = reader("GebDatum_BT")
-                        End If
-                        If Not IsDBNull(reader("W_BT")) Then
-                            txtWOBt.Text = reader("W_BT")
-                        End If
-                        If Not IsDBNull(reader("H_BT")) Then
-                            txtHOBt.Text = reader("H_BT")
-                        End If
-                        If Not IsDBNull(reader("Z_BT")) Then
-                            txtZuBt.Text = reader("Z_BT")
-                        End If
-                        If Not IsDBNull(reader("VN_VBT")) Then
-                            txtVVtBt.Text = reader("VN_VBT")
-                        End If
-                        If Not IsDBNull(reader("FN_VBT")) Then
-                            txtNVtBt.Text = reader("FN_VBT")
-                        End If
-                        If Not IsDBNull(reader("Z_VBT")) Then
-                            txtZuVtBt.Text = reader("Z_VBT")
-                        End If
-                        If Not IsDBNull(reader("VN_MBT")) Then
-                            txtVMtBt.Text = reader("VN_MBT")
-                        End If
-                        If Not IsDBNull(reader("FN_MBT")) Then
-                            txtNMtBt.Text = reader("FN_MBT")
-                        End If
-                        If Not IsDBNull(reader("Z_MBT")) Then
-                            txtZuMtBt.Text = reader("Z_MBT")
-                        End If
-                        If Not IsDBNull(reader("W_EBT")) Then
-                            txtWEBt.Text = reader("W_EBT")
-                        End If
-                        If Not IsDBNull(reader("ANM_H")) Then
-                            txtInfo.Text = reader("ANM_H")
-                        End If
-                        If Not IsDBNull(reader("VN_HZ1")) Then
-                            txtVZ1.Text = reader("VN_HZ1")
-                        End If
-                        If Not IsDBNull(reader("FN_HZ1")) Then
-                            txtNZ1.Text = reader("FN_HZ1")
-                        End If
-                        If Not IsDBNull(reader("G_HZ1")) Then
-                            txtSexZ1.Text = reader("G_HZ1")
-                        End If
-                        If Not IsDBNull(reader("Z_HZ1")) Then
-                            txtZuZ1.Text = reader("Z_HZ1")
-                        End If
-                        If Not IsDBNull(reader("VN_HZ2")) Then
-                            txtVZ2.Text = reader("VN_HZ2")
-                        End If
-                        If Not IsDBNull(reader("FN_HZ2")) Then
-                            txtNZ2.Text = reader("FN_HZ2")
-                        End If
-                        If Not IsDBNull(reader("G_HZ2")) Then
-                            txtSexZ2.Text = reader("G_HZ2")
-                        End If
-                        If Not IsDBNull(reader("Z_HZ2")) Then
-                            txtZuZ2.Text = reader("Z_HZ2")
-                        End If
-                        If Not IsDBNull(reader("VN_HZ3")) Then
-                            txtVZ3.Text = reader("VN_HZ3")
-                        End If
-                        If Not IsDBNull(reader("FN_HZ3")) Then
-                            txtNZ3.Text = reader("FN_HZ3")
-                        End If
-                        If Not IsDBNull(reader("G_HZ3")) Then
-                            txtSexZ3.Text = reader("G_HZ3")
-                        End If
-                        If Not IsDBNull(reader("Z_HZ3")) Then
-                            txtZuZ3.Text = reader("Z_HZ3")
-                        End If
-                        If Not IsDBNull(reader("VN_HZ4")) Then
-                            txtVZ4.Text = reader("VN_HZ4")
-                        End If
-                        If Not IsDBNull(reader("FN_HZ4")) Then
-                            txtNZ4.Text = reader("FN_HZ4")
-                        End If
-                        If Not IsDBNull(reader("G_HZ4")) Then
-                            txtSexZ4.Text = reader("G_HZ4")
-                        End If
-                        If Not IsDBNull(reader("Z_HZ4")) Then
-                            txtZuZ4.Text = reader("Z_HZ4")
-                        End If
+            If Not IsDBNull(.Item("VN_BR")) Then
+                txtVBtg.Text = .Item("VN_BR")
+            End If
 
-                        ckbCheck.IsChecked = reader(reader.GetOrdinal("CheckNeeded"))
+            If Not IsDBNull(.Item("FN_BR")) Then
+                txtNBtg.Text = .Item("FN_BR")
+            End If
+            If Not IsDBNull(.Item("GebDatum_BR")) Then
+                txtGebBtg.Text = .Item("GebDatum_BR")
+            End If
+            If Not IsDBNull(.Item("W_BR")) Then
+                txtWOBtg.Text = .Item("W_BR")
+            End If
+            If Not IsDBNull(.Item("H_BR")) Then
+                txtHOBtg.Text = .Item("H_BR")
+            End If
+            If Not IsDBNull(.Item("Z_BR")) Then
+                txtZuBtg.Text = .Item("Z_BR")
+            End If
+            If Not IsDBNull(.Item("VN_VBR")) Then
+                txtVVtBtg.Text = .Item("VN_VBR")
+            End If
+            If Not IsDBNull(.Item("FN_VBR")) Then
+                txtNVtBtg.Text = .Item("FN_VBR")
+            End If
+            If Not IsDBNull(.Item("Z_VBR")) Then
+                txtZuVtBtg.Text = .Item("Z_VBR")
+            End If
+            If Not IsDBNull(.Item("VN_MBR")) Then
+                txtVMtBtg.Text = .Item("VN_MBR")
+            End If
+            If Not IsDBNull(.Item("FN_MBR")) Then
+                txtNMtBtg.Text = .Item("FN_MBR")
+            End If
+            If Not IsDBNull(.Item("Z_MBR")) Then
+                txtZuMtBtg.Text = .Item("Z_MBR")
+            End If
+            If Not IsDBNull(.Item("W_EBR")) Then
+                txtWEBtg.Text = .Item("W_EBR")
+            End If
+            If Not IsDBNull(.Item("VN_BT")) Then
+                txtVBt.Text = .Item("VN_BT")
+            End If
+            If Not IsDBNull(.Item("FN_BT")) Then
+                txtNBt.Text = .Item("FN_BT")
+            End If
+            If Not IsDBNull(.Item("GebDatum_BT")) Then
+                txtGebBt.Text = .Item("GebDatum_BT")
+            End If
+            If Not IsDBNull(.Item("W_BT")) Then
+                txtWOBt.Text = .Item("W_BT")
+            End If
+            If Not IsDBNull(.Item("H_BT")) Then
+                txtHOBt.Text = .Item("H_BT")
+            End If
+            If Not IsDBNull(.Item("Z_BT")) Then
+                txtZuBt.Text = .Item("Z_BT")
+            End If
+            If Not IsDBNull(.Item("VN_VBT")) Then
+                txtVVtBt.Text = .Item("VN_VBT")
+            End If
+            If Not IsDBNull(.Item("FN_VBT")) Then
+                txtNVtBt.Text = .Item("FN_VBT")
+            End If
+            If Not IsDBNull(.Item("Z_VBT")) Then
+                txtZuVtBt.Text = .Item("Z_VBT")
+            End If
+            If Not IsDBNull(.Item("VN_MBT")) Then
+                txtVMtBt.Text = .Item("VN_MBT")
+            End If
+            If Not IsDBNull(.Item("FN_MBT")) Then
+                txtNMtBt.Text = .Item("FN_MBT")
+            End If
+            If Not IsDBNull(.Item("Z_MBT")) Then
+                txtZuMtBt.Text = .Item("Z_MBT")
+            End If
+            If Not IsDBNull(.Item("W_EBT")) Then
+                txtWEBt.Text = .Item("W_EBT")
+            End If
+            If Not IsDBNull(.Item("ANM_H")) Then
+                txtInfo.Text = .Item("ANM_H")
+            End If
+            If Not IsDBNull(.Item("VN_HZ1")) Then
+                txtVZ1.Text = .Item("VN_HZ1")
+            End If
+            If Not IsDBNull(.Item("FN_HZ1")) Then
+                txtNZ1.Text = .Item("FN_HZ1")
+            End If
+            If Not IsDBNull(.Item("G_HZ1")) Then
+                txtSexZ1.Text = .Item("G_HZ1")
+            End If
+            If Not IsDBNull(.Item("Z_HZ1")) Then
+                txtZuZ1.Text = .Item("Z_HZ1")
+            End If
+            If Not IsDBNull(.Item("VN_HZ2")) Then
+                txtVZ2.Text = .Item("VN_HZ2")
+            End If
+            If Not IsDBNull(.Item("FN_HZ2")) Then
+                txtNZ2.Text = .Item("FN_HZ2")
+            End If
+            If Not IsDBNull(.Item("G_HZ2")) Then
+                txtSexZ2.Text = .Item("G_HZ2")
+            End If
+            If Not IsDBNull(.Item("Z_HZ2")) Then
+                txtZuZ2.Text = .Item("Z_HZ2")
+            End If
+            If Not IsDBNull(.Item("VN_HZ3")) Then
+                txtVZ3.Text = .Item("VN_HZ3")
+            End If
+            If Not IsDBNull(.Item("FN_HZ3")) Then
+                txtNZ3.Text = .Item("FN_HZ3")
+            End If
+            If Not IsDBNull(.Item("G_HZ3")) Then
+                txtSexZ3.Text = .Item("G_HZ3")
+            End If
+            If Not IsDBNull(.Item("Z_HZ3")) Then
+                txtZuZ3.Text = .Item("Z_HZ3")
+            End If
+            If Not IsDBNull(.Item("VN_HZ4")) Then
+                txtVZ4.Text = .Item("VN_HZ4")
+            End If
+            If Not IsDBNull(.Item("FN_HZ4")) Then
+                txtNZ4.Text = .Item("FN_HZ4")
+            End If
+            If Not IsDBNull(.Item("G_HZ4")) Then
+                txtSexZ4.Text = .Item("G_HZ4")
+            End If
+            If Not IsDBNull(.Item("Z_HZ4")) Then
+                txtZuZ4.Text = .Item("Z_HZ4")
+            End If
 
-                        If Not IsDBNull(reader("OnlineReference")) Then
-                            txtURL.Text = reader("OnlineReference")
-                        End If
-                        If Not IsDBNull(reader("ReferenceDetails")) Then
-                            txtQuelleSeite.Text = reader("ReferenceDetails")
-                        End If
+            ckbCheck.IsChecked = Not IsDBNull(.Item("CheckNeeded")) AndAlso Convert.ToBoolean(.Item("CheckNeeded"))
+
+            If Not IsDBNull(.Item("OnlineReference")) Then
+                txtURL.Text = .Item("OnlineReference")
+            End If
+            If Not IsDBNull(.Item("ReferenceDetails")) Then
+                txtQuelleSeite.Text = .Item("ReferenceDetails")
+            End If
 
 
-                        ID = EID
-                        isNewRecord = False
-                    Else
-                        MessageBox.Show("Kein Eintrag mit dieser ID gefunden.")
-                    End If
-                End Using
-            End Using
-        End Using
+            ID = EID
+            isNewRecord = False
+        End With
+
         CalculateAge()
     End Sub
 
@@ -648,6 +641,7 @@ Public Class vkHeirat
 
         If ckbAutoCorrect.IsChecked = True Then
             sender.text = cGDB.ToTitleCase(sender.text)
+            _main.CAutoCorrect.CheckAutoCorrection(sender)
         End If
 
     End Sub
@@ -663,6 +657,16 @@ Public Class vkHeirat
         If IsNumeric(Nr(Nr.Length - 1)) Then
             Nr(Nr.Length - 1) = CInt(Nr(Nr.Length - 1)) + 1
             txtQuelleSeite.Text = String.Join(" ", Nr)
+        End If
+    End Sub
+
+    Private Sub txtInfo_LostFocus(sender As Object, e As RoutedEventArgs) Handles txtInfo.LostFocus, txtZuBtg.LostFocus, txtZuBt.LostFocus,
+            txtZuVtBtg.LostFocus, txtZuVtBt.LostFocus,
+            txtZuMtBtg.LostFocus, txtZuMtBt.LostFocus,
+            txtZuZ1.LostFocus, txtZuZ2.LostFocus, txtZuZ3.LostFocus, txtZuZ4.LostFocus
+
+        If ckbAutoCorrect.IsChecked = True Then
+            _main.CAutoCorrect.CheckAutoCorrection(sender)
         End If
     End Sub
 End Class

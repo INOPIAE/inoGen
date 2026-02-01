@@ -1,6 +1,7 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
 Imports System.Diagnostics.Metrics
+Imports inoGenDLL
 
 Public Class ereignis
     Private connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
@@ -18,6 +19,7 @@ Public Class ereignis
     Private EAID As Integer
 
     Private cGenDB As New inoGenDLL.ClsGenDB(My.Settings.DBPath)
+    Private ReadOnly _main As MainWindow
 
     Public Property PersonId As Integer
         Get
@@ -58,8 +60,9 @@ Public Class ereignis
         End Set
     End Property
 
-    Public Sub New(isPerson As Boolean)
+    Public Sub New(isPerson As Boolean, main As MainWindow)
         InitializeComponent()
+        _main = main
         isPers = isPerson
         LoadOrtData()
         LoadEventListe()
@@ -355,5 +358,10 @@ Public Class ereignis
         If autoSave Then
             SaveData()
         End If
+    End Sub
+
+    Private Sub txtZusatz_LostFocus(sender As Object, e As RoutedEventArgs) Handles txtZusatz.LostFocus, txtInfo.LostFocus
+        sender.text = cGenDB.ToTitleCase(sender.text)
+        _main.CAutoCorrect.CheckAutoCorrection(sender)
     End Sub
 End Class

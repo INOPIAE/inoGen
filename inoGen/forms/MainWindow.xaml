@@ -39,6 +39,7 @@
                 <MenuItem Header="_Franz Kalender" Click="FranzKalender_Click"/>
                 <MenuItem Header="_Sonntage im Kirchenjahr" Click="Kirchenjahr_Click"/>
                 <MenuItem Header="_Statistik" Click="Statistics_Click"/>
+                <MenuItem Header="_Autokorretur" Click="AutoCorrect_Click"/>
                 <MenuItem Header="_Optionen" Click="Options_Click"/>
             </MenuItem>
             <MenuItem Header="_?">

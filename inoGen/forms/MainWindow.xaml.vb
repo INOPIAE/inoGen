@@ -15,6 +15,7 @@ Class MainWindow
 
     Public Shared fsWindow As FamilySearchWeb = Nothing
 
+    Public CAutoCorrect As New ClsAutoCorrect
     Public Sub New()
 
         InitializeComponent()
@@ -37,13 +38,13 @@ Class MainWindow
     End Sub
 
     Private Sub Person_Click(sender As Object, e As RoutedEventArgs)
-        MainContent.Content = New personen()
+        MainContent.Content = New personen(Me)
         My.Settings.LastContent = "Person"
         My.Settings.Save()
     End Sub
 
     Private Sub Familie_Click(sender As Object, e As RoutedEventArgs)
-        MainContent.Content = New familien()
+        MainContent.Content = New familien(Me)
         My.Settings.LastContent = "Familie"
         My.Settings.Save()
     End Sub
@@ -221,7 +222,7 @@ Class MainWindow
 
     Private Sub VKH_Click(sender As Object, e As RoutedEventArgs)
 
-        Dim ctrl As New vkHeirat()
+        Dim ctrl As New vkHeirat(Me)
 
         AddHandler ctrl.RequestResizeMainWindow, AddressOf OnRequestResize
 
@@ -269,6 +270,11 @@ Class MainWindow
         MainContent.Content = New nachnamen()
     End Sub
 
+    Private Sub AutoCorrect_Click(sender As Object, e As RoutedEventArgs)
+        Dim Autocorrect as New AutoCorrection(Me)
+        Autocorrect.Show()
+    End Sub
+
     Private Sub VKH_Übernahme_Click(sender As Object, e As RoutedEventArgs)
         VKH_Übernahme = New VKH_Übernahme
         AddHandler VKH_Übernahme.PersonenUebergabe, AddressOf OnPersonenUebergabe
@@ -284,7 +290,7 @@ Class MainWindow
         If TypeOf MainContent.Content Is personen Then
             personenCtrl = DirectCast(MainContent.Content, personen)
         Else
-            personenCtrl = New personen()
+            personenCtrl = New personen(Me)
             MainContent.Content = personenCtrl
         End If
 
@@ -315,7 +321,7 @@ Class MainWindow
         If TypeOf MainContent.Content Is personen Then
             personenCtrl = DirectCast(MainContent.Content, personen)
         Else
-            personenCtrl = New personen()
+            personenCtrl = New personen(Me)
             MainContent.Content = personenCtrl
         End If
 
@@ -340,7 +346,7 @@ Class MainWindow
         If TypeOf MainContent.Content Is familien Then
             familieCtrl = DirectCast(MainContent.Content, familien)
         Else
-            familieCtrl = New familien()
+            familieCtrl = New familien(Me)
             MainContent.Content = familieCtrl
         End If
         familieCtrl.Success = True

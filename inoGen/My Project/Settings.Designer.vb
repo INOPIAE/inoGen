@@ -183,6 +183,17 @@ Namespace My
                 Me("CurrentWork") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property AutoCorrection() As Global.System.Collections.Specialized.StringCollection
+            Get
+                Return CType(Me("AutoCorrection"),Global.System.Collections.Specialized.StringCollection)
+            End Get
+            Set
+                Me("AutoCorrection") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

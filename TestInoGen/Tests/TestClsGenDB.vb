@@ -759,5 +759,29 @@ Namespace TestInoGen
             Assert.That(dt.Rows(2).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
             Assert.That(dt.Rows(2).Item("NR_H"), NUnit.Framework.Is.EqualTo("1901/001"))
         End Sub
+
+        <Test>
+        Public Sub TestGetVKH_TableEntry()
+            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetVKH_TableEntry(2)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
+            Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/1"))
+
+
+            dt = cGDB.GetVKH_TableEntry(3)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
+            Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/2"))
+
+        End Sub
     End Class
 End Namespace

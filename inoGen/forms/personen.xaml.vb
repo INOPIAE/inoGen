@@ -1,13 +1,15 @@
 ﻿Imports System.Data
 Imports System.Data.OleDb
+Imports System.Net
 Imports System.Security.Cryptography
 Imports System.Text.RegularExpressions
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement
+Imports inoGenDLL
 
 
 Public Class personen
     Private connectionString As String =
-   String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
+        String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
 
     Private dt As New DataTable()
     Private dtE As New DataTable()
@@ -38,6 +40,8 @@ Public Class personen
             LEFT JOIN tblNachname ON tblPerson.tblNachnameID = tblNachname.tblNachnameID"
 
     Private cDB As New clsDB(My.Settings.DBPath)
+    Private cGDB As New ClsGenDB(My.Settings.DBPath)
+    Private ReadOnly _main As MainWindow
 
     Public Property Vorname As String
         Get
@@ -67,8 +71,9 @@ Public Class personen
     End Property
 
 
-    Public Sub New()
+    Public Sub New(main As MainWindow)
         InitializeComponent()
+        _main = main
 
         LoadKonfessionListe()
 
@@ -316,7 +321,7 @@ Public Class personen
             Exit Sub
         End If
 
-        Dim details As New ereignis(True)
+        Dim details As New ereignis(True, _main)
         AddHandler details.DataSaved, AddressOf OnDatenGespeichert
 
         details.InitNew(
@@ -346,7 +351,7 @@ Public Class personen
         Dim rowView As DataRowView = CType(dgEreignis.SelectedItem, DataRowView)
         If rowView IsNot Nothing Then
 
-            Dim details = New ereignis(True)
+            Dim details = New ereignis(True, _main)
             details.EintragId = Convert.ToInt32(rowView("tblEreignisID"))
             AddHandler details.DataSaved, AddressOf OnDatenGespeichert
             AdditionalContent.Content = details
@@ -404,7 +409,7 @@ Public Class personen
         My.Settings.Save()
         Dim mw = TryCast(Application.Current.MainWindow, MainWindow)
         If mw IsNot Nothing Then
-            mw.ShowContent(New familien())
+            mw.ShowContent(New familien(_main))
         End If
     End Sub
 
@@ -537,7 +542,7 @@ Public Class personen
                                     Info As String)
 
         isNewRecord = False
-        Dim details As New ereignis(True)
+        Dim details As New ereignis(True, _main)
         AddHandler details.DataSaved, AddressOf OnDatenGespeichert
 
         ' Daten setzen
@@ -561,4 +566,8 @@ Public Class personen
         PSSpeichern()
     End Sub
 
+    Private Sub txtVorname_LostFocus(sender As Object, e As RoutedEventArgs) Handles txtVorname.LostFocus
+        sender.text = cGDB.ToTitleCase(sender.text)
+        _main.CAutoCorrect.CheckAutoCorrection(sender)
+    End Sub
 End Class

@@ -23,8 +23,11 @@ Public Class familien
 
     Public Success As Boolean = False
 
-    Public Sub New()
+    Private ReadOnly _main As MainWindow
+
+    Public Sub New(main As MainWindow)
         InitializeComponent()
+        _main = main
 
         isNewRecord = True
         If My.Settings.LastFID > 0 Then
@@ -260,7 +263,7 @@ Public Class familien
             Success = False
             Exit Sub
         End If
-        Dim details = New ereignis(False)
+        Dim details = New ereignis(False, _main)
         details.FamilieId = ID
         details.PersonId = 0
         AddHandler details.DataSaved, AddressOf OnDatenGespeichert
@@ -285,7 +288,7 @@ Public Class familien
         Dim rowView As DataRowView = CType(dgEreignis.SelectedItem, DataRowView)
         If rowView IsNot Nothing Then
 
-            Dim details = New ereignis(False)
+            Dim details = New ereignis(False, _main)
             details.EintragId = Convert.ToInt32(rowView("tblEreignisID"))
             AddHandler details.DataSaved, AddressOf OnDatenGespeichert
             AdditionalContent.Content = details
@@ -467,7 +470,7 @@ Public Class familien
             My.Settings.Save()
             Dim mw = TryCast(Window.GetWindow(Me), MainWindow)
             If mw IsNot Nothing Then
-                mw.ShowContent(New personen())
+                mw.ShowContent(New personen(_main))
             End If
         End If
     End Sub
@@ -507,7 +510,7 @@ Public Class familien
             My.Settings.Save()
             Dim mw = TryCast(Window.GetWindow(Me), MainWindow)
             If mw IsNot Nothing Then
-                mw.ShowContent(New personen())
+                mw.ShowContent(New personen(_main))
             End If
         End If
     End Sub
@@ -518,7 +521,7 @@ Public Class familien
             My.Settings.Save()
             Dim mw = TryCast(Window.GetWindow(Me), MainWindow)
             If mw IsNot Nothing Then
-                mw.ShowContent(New personen())
+                mw.ShowContent(New personen(_main))
             End If
         End If
     End Sub
@@ -530,7 +533,7 @@ Public Class familien
             My.Settings.Save()
             Dim mw = TryCast(Window.GetWindow(Me), MainWindow)
             If mw IsNot Nothing Then
-                mw.ShowContent(New personen())
+                mw.ShowContent(New personen(_main))
             End If
         End If
     End Sub
@@ -563,7 +566,7 @@ Public Class familien
                                    Zusatz As String)
 
         isNewRecord = False
-        Dim details As New ereignis(False)
+        Dim details As New ereignis(False, _main)
         AddHandler details.DataSaved, AddressOf OnDatenGespeichert
 
         ' Daten setzen
