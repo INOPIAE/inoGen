@@ -36,5 +36,33 @@ Namespace TestInoGen
 
 
         End Sub
+
+        <Test>
+        Public Sub TestNextChar()
+            Dim test As String = "A"
+            Dim result As String = cGH.NextChar(test)
+            Assert.That(result, NUnit.Framework.Is.EqualTo("B"))
+
+            test = "Z"
+            result = cGH.NextChar(test)
+            Assert.That(result, NUnit.Framework.Is.EqualTo("A"))
+
+            test = "a"
+            result = cGH.NextChar(test)
+            Assert.That(result, NUnit.Framework.Is.EqualTo("b"))
+
+            test = "z"
+            result = cGH.NextChar(test)
+            Assert.That(result, NUnit.Framework.Is.EqualTo("a"))
+
+            test = "%"
+            result = cGH.NextChar(test)
+            Assert.That(result, NUnit.Framework.Is.EqualTo("%"))
+
+            test = "ß"
+            result = cGH.NextChar(test)
+            Assert.That(result, NUnit.Framework.Is.EqualTo("ß"))
+
+        End Sub
     End Class
 End Namespace

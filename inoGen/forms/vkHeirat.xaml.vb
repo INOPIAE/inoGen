@@ -18,6 +18,7 @@ Public Class vkHeirat
 
     Private cDB As New clsDB(My.Settings.DBPath)
     Private cGDB As New ClsGenDB(My.Settings.DBPath)
+    Private cGH As New ClsGenHelper
 
     Public Event RequestResizeMainWindow(width As Double)
 
@@ -67,10 +68,19 @@ Public Class vkHeirat
         txtSeite.Text = Seite
         txtURL.Text = URL
         txtQuelleSeite.Text = QuelleSeite
+        txtNr.Text = ""
 
         If Nr.Length = 2 Then
-            Dim v As Integer = CInt(Nr(1)) + 1
-            txtNr.Text = Nr(0) & "/" & v.ToString("000")
+            If IsNumeric(Nr(1)) Then
+                Dim v As Integer = CInt(Nr(1)) + 1
+                txtNr.Text = Nr(0) & "/" & v.ToString("000")
+            ElseIf Nr(1).Length = 1 Then
+                Dim nextChar As Char = cGH.NextChar(Nr(1))
+                txtNr.Text = Nr(0) & "/" & nextChar
+            Else
+                txtNr.Text = Nr(0) & "/"
+            End If
+
         End If
 
         txtKirchort.Text = VKHOrt
