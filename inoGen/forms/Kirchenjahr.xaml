@@ -41,6 +41,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- Zeile 1 -->
@@ -69,7 +70,15 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                 <RadioButton x:Name="RbAdvent" Grid.Row="3" Grid.Column="0" GroupName="Calc"/>
                 <Label Grid.Row="3" Grid.Column="1" Content="Adventsonntag:"/>
                 <TextBox Grid.Row="3" Grid.Column="2" Name="TxtAdvent"/>
-
+                
+                <!-- Zeile 5 -->
+                
+                <Label Grid.Row="4" Grid.Column="1" Content="Wochentag:"/>
+                <ComboBox Grid.Row="4"
+                      Grid.Column="2"
+                      Name="CmbWeekday"
+                      SelectedIndex="0"
+                      />
             </Grid>
         </GroupBox>
 

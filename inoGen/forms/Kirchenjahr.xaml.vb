@@ -44,6 +44,16 @@ Public Class Kirchenjahr
             "Trinitatis",
             "Letzter Sonntag nach Trinitatis"
         }
+
+        CmbWeekday.ItemsSource = New List(Of String) From {
+            "Sonntag",
+            "Montag",
+            "Dienstag",
+            "Mittwoch",
+            "Donnerstag",
+            "Freitag",
+            "Samstag"
+        }
     End Sub
 
     Private Sub Calculate()
@@ -51,58 +61,62 @@ Public Class Kirchenjahr
         If RbNamedSunday.IsChecked Then
             Select Case CStr(CmbNamedSunday.SelectedItem)
                 Case "Septuagesimae / Circumdederunt"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -9)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -9).AddDays(CmbWeekday.SelectedIndex)
                 Case "Sexagesimae / Exsurge"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -8)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -8).AddDays(CmbWeekday.SelectedIndex)
                 Case "Quinquagesimae / Estomihi"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -7)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -7).AddDays(CmbWeekday.SelectedIndex)
                 Case "Quadragesimae / Invokavit"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -6)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -6).AddDays(CmbWeekday.SelectedIndex)
                 Case "Reminiszere"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -5)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -5).AddDays(CmbWeekday.SelectedIndex)
                 Case "Okuli"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -4)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -4).AddDays(CmbWeekday.SelectedIndex)
                 Case "Lätare"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -3)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -3).AddDays(CmbWeekday.SelectedIndex)
                 Case "Judika"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -2)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -2).AddDays(CmbWeekday.SelectedIndex)
                 Case "Palmsonntag"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -1)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -1).AddDays(CmbWeekday.SelectedIndex)
                 Case "Ostern"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 0)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 0).AddDays(CmbWeekday.SelectedIndex)
                 Case "Quasimodogeniti"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 1)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 1).AddDays(CmbWeekday.SelectedIndex)
                 Case "Misericordias Domini"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 2)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 2).AddDays(CmbWeekday.SelectedIndex)
                 Case "Jubilate"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 3)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 3).AddDays(CmbWeekday.SelectedIndex)
                 Case "Kantate"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 4)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 4).AddDays(CmbWeekday.SelectedIndex)
                 Case "Rogate"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 5)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 5).AddDays(CmbWeekday.SelectedIndex)
                 Case "Exaudi"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 6)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 6).AddDays(CmbWeekday.SelectedIndex)
                 Case "Pfingsten"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 7)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 7).AddDays(CmbWeekday.SelectedIndex)
                 Case "Trinitatis"
-                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 8)
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, 8).AddDays(CmbWeekday.SelectedIndex)
                 Case "Letzter Sonntag nach Trinitatis"
-                    TxtResult.Text = cKJ.GetLastSundayAfterTrinity(TxtYear.Text)
+                    TxtResult.Text = cKJ.GetLastSundayAfterTrinity(TxtYear.Text).AddDays(CmbWeekday.SelectedIndex)
             End Select
         End If
         If RbAdvent.IsChecked Then
             If IsNumeric(TxtAdvent.Text) Then
-                TxtResult.Text = cKJ.GetAdventSunday(TxtYear.Text, TxtAdvent.Text)
+                Try
+                    TxtResult.Text = cKJ.GetAdventSunday(TxtYear.Text, TxtAdvent.Text).AddDays(CmbWeekday.SelectedIndex)
+                Catch ex As ArgumentException
+                    TxtResult.Text = "Advent muss 1-4 sein"
+                End Try
             End If
         End If
         If RbEpi.IsChecked Then
             If IsNumeric(TxtEpi.Text) Then
-                TxtResult.Text = cKJ.GetSundayAfterEpiphany(TxtYear.Text, TxtEpi.Text)
+                TxtResult.Text = cKJ.GetSundayAfterEpiphany(TxtYear.Text, TxtEpi.Text).AddDays(CmbWeekday.SelectedIndex)
             End If
         End If
         If RbTrinit.IsChecked Then
             If IsNumeric(TxtTrinit.Text) Then
-                TxtResult.Text = cKJ.GetSundayAfterTrinity(TxtYear.Text, TxtTrinit.Text)
+                TxtResult.Text = cKJ.GetSundayAfterTrinity(TxtYear.Text, TxtTrinit.Text).AddDays(CmbWeekday.SelectedIndex)
             End If
         End If
         Clipboard.SetText(TxtResult.Text)
@@ -112,6 +126,7 @@ Public Class Kirchenjahr
         If CmbNamedSunday.SelectedItem IsNot Nothing Then
             RbNamedSunday.IsChecked = True
         End If
+        CmbWeekday.SelectedIndex = 0
         Calculate()
     End Sub
 
@@ -119,6 +134,7 @@ Public Class Kirchenjahr
         If IsNumeric(TxtAdvent.Text) Then
             RbAdvent.IsChecked = True
         End If
+        CmbWeekday.SelectedIndex = 0
         Calculate()
     End Sub
 
@@ -126,6 +142,7 @@ Public Class Kirchenjahr
         If IsNumeric(TxtEpi.Text) Then
             RbEpi.IsChecked = True
         End If
+        CmbWeekday.SelectedIndex = 0
         Calculate()
     End Sub
 
@@ -133,6 +150,11 @@ Public Class Kirchenjahr
         If IsNumeric(TxtTrinit.Text) Then
             RbTrinit.IsChecked = True
         End If
+        CmbWeekday.SelectedIndex = 0
+        Calculate()
+    End Sub
+
+    Private Sub CmbWeekday_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles CmbWeekday.SelectionChanged
         Calculate()
     End Sub
 End Class

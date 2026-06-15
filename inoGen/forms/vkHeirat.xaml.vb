@@ -642,6 +642,7 @@ Public Class vkHeirat
 
     Private Sub txtWOBt_LostFocus(sender As Object, e As RoutedEventArgs) Handles _
             txtWOBt.LostFocus, txtWOBtg.LostFocus, txtHOBt.LostFocus, txtHOBtg.LostFocus,
+            txtWEBt.LostFocus, txtWEBtg.LostFocus,
             txtNBt.LostFocus, txtNBtg.LostFocus, txtVBt.LostFocus, txtVBtg.LostFocus,
             txtNVtBt.LostFocus, txtNVtBtg.LostFocus, txtVVtBt.LostFocus, txtVVtBtg.LostFocus,
             txtNMtBt.LostFocus, txtNMtBtg.LostFocus, txtVMtBt.LostFocus, txtVMtBtg.LostFocus,
