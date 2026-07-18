@@ -99,6 +99,12 @@ Public Class personen
 
         Dim NID As Int16 = cDB.NachnamenID(txtNachname.Text)
         If NID = -1 Then Exit Sub
+
+        If CType(cbSex.SelectedItem, ComboBoxItem).Content.ToString() = " " Then
+            If MessageBox.Show("Das Geschlecht ist nicht ausgewählt. Möchten Sie trotzdem speichern?", "Warnung", MessageBoxButton.YesNo, MessageBoxImage.Warning) = MessageBoxResult.No Then
+                Exit Sub
+            End If
+        End If
         If txtNachname.Text.Trim() <> "" Then
             If txtNachname.Text.Trim().Length >= 4 Then
                 NT = txtNachname.Text.Trim().Substring(0, 4)
