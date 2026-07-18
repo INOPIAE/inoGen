@@ -100,7 +100,11 @@ Public Class personen
         Dim NID As Int16 = cDB.NachnamenID(txtNachname.Text)
         If NID = -1 Then Exit Sub
         If txtNachname.Text.Trim() <> "" Then
-            NT = txtNachname.Text.Trim().Substring(0, 4)
+            If txtNachname.Text.Trim().Length >= 4 Then
+                NT = txtNachname.Text.Trim().Substring(0, 4)
+            Else
+                NT = txtNachname.Text.Trim().PadRight(4, "_"c)
+            End If
         End If
 
         If rowView IsNot Nothing Or isNewRecord Then
