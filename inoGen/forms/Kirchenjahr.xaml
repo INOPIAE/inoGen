@@ -42,6 +42,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- Zeile 1 -->
@@ -79,6 +80,15 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       Name="CmbWeekday"
                       SelectedIndex="0"
                       />
+                <!-- Zeile 6 -->
+                <RadioButton x:Name="RbNamedDay" Grid.Row="5" Grid.Column="0" GroupName="Calc"
+                    Margin="0,0,10,5"/>
+                <Label Grid.Row="5" Grid.Column="1" Content="Benannter Tag:"/>
+                <ComboBox Grid.Row="5"
+                      Grid.Column="2"
+                      Name="CmbNamedDay"
+                      SelectedIndex="0"
+      />
             </Grid>
         </GroupBox>
 

@@ -54,6 +54,17 @@ Public Class Kirchenjahr
             "Freitag",
             "Samstag"
         }
+        CmbNamedDay.ItemsSource = New List(Of String) From {
+            "Epiphanias",
+            "Aschermittwoch",
+            "Tag der Darstellung Jesu im Tempel",
+            "Tag der Verkündigung Marias",
+            "Tag der Heimsuchung Mariä",
+            "Michaelistag",
+            "Reformationsfest",
+            "Buß- und Bettag",
+            "Totensonntag"
+        }
     End Sub
 
     Private Sub Calculate()
@@ -100,6 +111,30 @@ Public Class Kirchenjahr
                     TxtResult.Text = cKJ.GetLastSundayAfterTrinity(TxtYear.Text).AddDays(CmbWeekday.SelectedIndex)
             End Select
         End If
+        If RbNamedDay.IsChecked Then
+            Select Case CStr(CmbNamedDay.SelectedItem)
+                Case "Epiphanias"
+                    TxtResult.Text = DateSerial(TxtYear.Text, 1, 6)
+                Case "Aschermittwoch"
+                    TxtResult.Text = cKJ.GetSundayAroundEaster(TxtYear.Text, -7).AddDays(3)
+                Case "Tag der Darstellung Jesu im Tempel"
+                    TxtResult.Text = DateSerial(TxtYear.Text, 2, 2)
+                Case "Tag der Verkündigung Marias"
+                    TxtResult.Text = DateSerial(TxtYear.Text, 3, 25)
+                Case "Johannisfest"
+                    TxtResult.Text = DateSerial(TxtYear.Text, 6, 24)
+                Case "Tag der Heimsuchung Mariä"
+                    TxtResult.Text = DateSerial(TxtYear.Text, 7, 2)
+                Case "Michaelistag"
+                    TxtResult.Text = DateSerial(TxtYear.Text, 9, 29)
+                Case "Reformationsfest"
+                    TxtResult.Text = DateSerial(TxtYear.Text, 10, 31)
+                Case "Buß- und Bettag"
+                    TxtResult.Text = cKJ.GetLastSundayAfterTrinity(TxtYear.Text).AddDays(-4)
+                Case "Totensonntag"
+                    TxtResult.Text = cKJ.GetLastSundayAfterTrinity(TxtYear.Text)
+            End Select
+        End If
         If RbAdvent.IsChecked Then
             If IsNumeric(TxtAdvent.Text) Then
                 Try
@@ -130,6 +165,13 @@ Public Class Kirchenjahr
         Calculate()
     End Sub
 
+    Private Sub CmbNamedDay_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles CmbNamedDay.SelectionChanged
+        If CmbNamedDay.SelectedItem IsNot Nothing Then
+            RbNamedDay.IsChecked = True
+        End If
+        CmbWeekday.SelectedIndex = 0
+        Calculate()
+    End Sub
     Private Sub TxtAdvent_TextChanged(sender As Object, e As TextChangedEventArgs) Handles TxtAdvent.TextChanged
         If IsNumeric(TxtAdvent.Text) Then
             RbAdvent.IsChecked = True
