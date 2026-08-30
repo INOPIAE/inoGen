@@ -201,6 +201,11 @@ Public Class ereignis
         txtReferenz.Clear()
         txtFSID.Clear()
         txtInfo.Clear()
+        txtGeb.Clear()
+        txtJahr.Clear()
+        txtMonate.Clear()
+        txtWochen.Clear()
+        txtTage.Clear()
         ID = Nothing
         isNewRecord = True
         cbEreignis.Focus()
@@ -298,6 +303,11 @@ Public Class ereignis
                             txtReferenz.Text = reader("Referenz").ToString()
                             txtFSID.Text = reader("FSID").ToString()
                             txtInfo.Text = reader("Info").ToString()
+                            txtGeb.Clear()
+                            txtJahr.Clear()
+                            txtMonate.Clear()
+                            txtWochen.Clear()
+                            txtTage.Clear()
                         End If
                     End Using
                 End Using
@@ -363,5 +373,13 @@ Public Class ereignis
     Private Sub txtZusatz_LostFocus(sender As Object, e As RoutedEventArgs) Handles txtZusatz.LostFocus, txtInfo.LostFocus
         sender.text = cGenDB.ToTitleCase(sender.text)
         _main.CAutoCorrect.CheckAutoCorrection(sender)
+    End Sub
+
+    Private Sub btnCalcAge_Click(sender As Object, e As RoutedEventArgs) Handles btnCalcAge.Click
+        Dim cA As New inoGenDLL.ClsAlter
+        txtGeb.Text = cA.CalculateBirthday(txtDatum.Text, txtJahr.Text, txtMonate.Text, txtWochen.Text, txtTage.Text)
+        If txtGeb.Text.StartsWith("err") Then
+            Clipboard.SetText(txtGeb.Text)
+        End If
     End Sub
 End Class

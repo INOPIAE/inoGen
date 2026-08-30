@@ -388,4 +388,9 @@ Class MainWindow
         win.FamilyReturn(familieCtrl.Success, familieCtrl.ID)
 
     End Sub
+
+    Private Sub GEDCOM_Click(sender As Object, e As RoutedEventArgs)
+        Dim GEDCOM = New GEDCOM_Export
+        GEDCOM.Show()
+    End Sub
 End Class

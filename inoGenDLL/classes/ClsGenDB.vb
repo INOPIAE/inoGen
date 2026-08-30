@@ -1198,4 +1198,177 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Public Function GetGedcomPersonenEreignisse() As DataTable
+        Dim SQLFilter As String = ""
+
+        Dim strSQL As String = String.Format(
+            "SELECT
+                tblPerson.tblPersonID,
+                tblPerson.Sex,
+                tblPerson.Vorname,
+                tblNachname.Nachname,
+                tblEreignis.DatumText,
+                tblEreignis.BisDatumText,
+                tblEreignis.tblEreignisArtID,
+                tblOrt.Info,
+                tblOrt.Ort,
+                tblPerson.tblFamilieID
+            FROM
+                (
+                    (
+                        tblPerson
+                        LEFT JOIN tblEreignis ON tblPerson.tblPersonID = tblEreignis.tblPersonID
+                    )
+                    LEFT JOIN tblNachname ON tblPerson.tblNachnameID = tblNachname.tblNachnameID
+                )
+                LEFT JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
+            WHERE
+                (
+                    (
+                        tblEreignis.tblEreignisArtID = 1
+                        OR tblEreignis.tblEreignisArtID = 2
+                        OR tblEreignis.tblEreignisArtID = 6
+                        OR tblEreignis.tblEreignisArtID = 7
+                        OR tblEreignis.tblEreignisArtID = 9
+                        OR tblEreignis.tblEreignisArtID = 10
+                        OR tblEreignis.tblEreignisArtID IS NULL
+                    )
+                )
+            ORDER BY
+                tblPerson.tblPersonID,
+                tblEreignis.tblEreignisArtID;")
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                ' cmd.Parameters.AddWithValue("@ID", ID)
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function GetGedcomPersonFamilie(ID As Integer) As DataTable
+        Dim SQLFilter As String = ""
+
+        Dim strSQL As String = String.Format(
+            "SELECT
+                tblFamilieID,
+                tblPersonIDV,
+                tblPersonIDM
+            FROM
+                tblFamilie
+            WHERE
+             tblPersonIDV = ?
+                Or tblPersonIDM = ?;")
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                cmd.Parameters.AddWithValue("@tblPersonIDV", ID)
+                cmd.Parameters.AddWithValue("@tblPersonIDM", ID)
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+
+    Public Function GetGedcomFamilie() As DataTable
+        Dim SQLFilter As String = ""
+
+        Dim strSQL As String = String.Format(
+            "SELECT
+                tblFamilie.tblFamilieID,
+                tblFamilie.tblPersonIDV,
+                tblFamilie.tblPersonIDM,
+                tblPerson.tblPersonID,
+                Min(tblEreignis.Datum) AS MinvonDatum,
+                Min(tblEreignis.BisDatum) AS MinvonBisDatum
+            FROM
+                (
+                    tblFamilie
+                    LEFT JOIN tblPerson ON tblFamilie.tblFamilieID = tblPerson.tblFamilieID
+                )
+                LEFT JOIN tblEreignis ON tblPerson.tblPersonID = tblEreignis.tblPersonID
+            GROUP BY
+                tblFamilie.tblFamilieID,
+                tblFamilie.tblPersonIDV,
+                tblFamilie.tblPersonIDM,
+                tblPerson.tblPersonID,
+                tblPerson.tblPersonID
+            ORDER BY
+                tblFamilie.tblFamilieID,
+                Min(tblEreignis.Datum),
+                tblPerson.tblPersonID;")
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function GetGedcomFamilieEreignisse(ID As Integer) As DataTable
+        Dim SQLFilter As String = ""
+
+        Dim strSQL As String = String.Format(
+            "SELECT
+                tblFamilie.tblFamilieID,
+                tblEreignis.DatumText,
+                tblEreignis.BisDatumText,
+                tblEreignis.tblEreignisArtID,
+                tblOrt.Info,
+                tblOrt.Ort
+            FROM
+                (
+                    tblFamilie
+                    INNER JOIN tblEreignis ON tblFamilie.tblFamilieID = tblEreignis.tblFamilieID
+                )
+                LEFT JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
+            WHERE
+                tblFamilie.tblFamilieID = ?
+                AND (
+                    tblEreignis.tblEreignisArtID = 3
+                    OR tblEreignis.tblEreignisArtID = 4
+                    OR tblEreignis.tblEreignisArtID = 7
+                    OR tblEreignis.tblEreignisArtID = 8
+                    OR tblEreignis.tblEreignisArtID IS NULL
+                )
+            ORDER BY
+                tblFamilie.tblFamilieID,
+                tblEreignis.Datum,
+                tblEreignis.BisDatum;")
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                cmd.Parameters.AddWithValue("@tblFamilieID", ID)
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class

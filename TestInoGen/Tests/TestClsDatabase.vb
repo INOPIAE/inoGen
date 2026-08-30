@@ -119,6 +119,8 @@ Namespace TestInoGen
 
             Assert.That(dt.Rows(0).Item("ANM_H"), NUnit.Framework.Is.EqualTo("NB"))
         End Sub
+
+
     End Class
 
 End Namespace

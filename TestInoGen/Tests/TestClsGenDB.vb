@@ -783,5 +783,67 @@ Namespace TestInoGen
             Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/2"))
 
         End Sub
+
+        <Test>
+        Public Sub TestGetGedcomPersonenEreignisse()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetGedcomPersonenEreignisse
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(206))
+
+            'Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
+            'Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
+            'Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/1"))
+
+
+            'dt = cGDB.GetVKH_TableEntry(3)
+
+            'Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            'Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
+            'Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
+            'Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/2"))
+
+        End Sub
+
+        <Test>
+        Public Sub TestGetGedcomPersonFamilie()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetGedcomPersonFamilie(2)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item("tblFamilieID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item("tblPersonIDV"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item("tblPersonIDM"), NUnit.Framework.Is.EqualTo(7))
+        End Sub
+
+        <Test>
+        Public Sub TestGetGedcomFamilie()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetGedcomFamilie
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(74))
+
+            'Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
+            'Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
+            'Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/1"))
+
+
+            'dt = cGDB.GetVKH_TableEntry(3)
+
+            'Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            'Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
+            'Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
+            'Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/2"))
+
+        End Sub
     End Class
 End Namespace
