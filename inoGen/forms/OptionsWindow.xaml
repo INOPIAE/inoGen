@@ -9,115 +9,309 @@
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="120"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <!-- TabControl -->
+        <TabControl Grid.Row="0">
+            <!-- Tab 1: Allgemeines -->
+            <TabItem Header="Allgemeines">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-        <!-- Sprache -->
-        <TextBlock Grid.Row="0" Grid.Column="0"
-                   Text="Sprache:"
-                   VerticalAlignment="Center"/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-        <ComboBox Grid.Row="0" Grid.Column="1"
-                  Height="25"
-                  SelectedIndex="0">
-            <ComboBoxItem Content="Deutsch"/>
-            <ComboBoxItem Content="English"/>
-        </ComboBox>
+                    <!-- Sprache -->
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Sprache:"
+                           VerticalAlignment="Center"/>
 
-        <!-- E-Mail -->
-        <TextBlock Grid.Row="1" Grid.Column="0"
-                   Text="E-Mail:"
-                   VerticalAlignment="Center"
-                   Margin="0,10,0,0"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1"
+                          x:Name="cmbSprache"
+                          Height="25"
+                          SelectedIndex="0">
+                        <ComboBoxItem Content="Deutsch"/>
+                        <ComboBoxItem Content="English"/>
+                    </ComboBox>
 
-        <TextBox Grid.Row="1" Grid.Column="1"
-                 Name="txtEmail"
-                 Height="25"
-                 Margin="0,10,0,0"/>
+                    <!-- E-Mail -->
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="E-Mail:"
+                           VerticalAlignment="Center"
+                           Margin="0,10,0,0"/>
 
-        <TextBlock Grid.Row="2" Grid.Column="0"
-           Text="VK Heirat Kirchort:"
-           VerticalAlignment="Center"
-           Margin="0,10,0,0"/>
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                         x:Name="txtEmail"
+                         Height="25"
+                         Margin="0,10,0,0"/>
 
-        <TextBox Grid.Row="2" Grid.Column="1"
-         Name="txtVKHOrt"
-         Height="25"
-         Margin="0,10,0,0"/>
+                    <!-- VK Heirat Kirchort -->
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                           Text="VK Heirat Kirchort:"
+                           VerticalAlignment="Center"
+                           Margin="0,10,0,0"/>
 
-        <!-- NEUER BEREICH -->
-        <Grid Grid.Row="3" Grid.ColumnSpan="2"
-              Margin="0,20,0,0">
+                    <TextBox Grid.Row="2" Grid.Column="1"
+                         x:Name="txtVKHOrt"
+                         Height="25"
+                         Margin="0,10,0,0"/>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="250"/>
-            </Grid.ColumnDefinitions>
+                    <!-- Beruf-Bereich -->
+                    <Grid Grid.Row="3" Grid.ColumnSpan="2"
+                      Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="250"/>
+                        </Grid.ColumnDefinitions>
 
-            <!-- LINKS: Labels + Textboxen -->
-            <Grid Grid.Column="0" Margin="0,0,10,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                        <!-- LINKS: Labels + Textboxen + Buttons -->
+                        <Grid Grid.Column="0" Margin="0,0,10,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                <!-- Zeile 1 -->
-                <TextBlock Text="Beruf:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox Name="txtBeruf" Grid.Row="0" Grid.Column="1"/>
+                            <!-- Zeile 1: Beruf -->
+                            <TextBlock Text="Beruf:" 
+                                   Grid.Row="0" 
+                                   Grid.Column="0" 
+                                   VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtBeruf" 
+                                 Grid.Row="0" 
+                                 Grid.Column="1"/>
 
+                            <!-- Zeile 2: Hinzufügen -->
+                            <Button Grid.Row="1" 
+                                Grid.Column="1" 
+                                Content="Hinzufügen"
+                                x:Name="btnBAdd"
+                                Width="90"
+                                HorizontalAlignment="Left"
+                                Margin="0,5,0,0"
+                                Click="btnBAdd_Click"/>
 
+                            <!-- Zeile 3: Löschen -->
+                            <Button Grid.Row="2" 
+                                Grid.Column="1" 
+                                Content="Löschen"
+                                x:Name="btnBRemove"
+                                Width="90"
+                                HorizontalAlignment="Left"
+                                Margin="0,5,0,0"
+                                Click="btnBRemove_Click"/>
+                        </Grid>
 
-                <!-- Zeile 2 -->
-                <Button Grid.Row="1" Grid.Column="1" Content="Hinzu"
-                        x:Name="btnBAdd"
-                    Width="90"
-                    Margin="0,5,10,0"/>
+                        <!-- RECHTS: ListBox -->
+                        <ListBox Grid.Column="1"
+                             x:Name="lstBeruf"
+                             ItemsSource="{Binding BerufListe}" />
+                    </Grid>
+                </Grid>
+            </TabItem>
 
+            <!-- Tab 2: Farben -->
+            <TabItem Header="Farben">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="6,0,-6,0">
+                    <StackPanel Margin="10">
+                        <GroupBox Header="Zweig-Farben" Margin="0,5">
+                            <StackPanel>
+                                <!-- Zeile 1: Farbe 1, 2, 3 -->
+                                <StackPanel Orientation="Horizontal" Margin="5">
+                                    <!-- Farbe 1 -->
+                                    <StackPanel Margin="0,0,15,0">
+                                        <TextBlock Text="Farbe 1:" Margin="0,0,0,5"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle x:Name="rectColor1" 
+                                               Width="30" 
+                                               Height="30" 
+                                               Stroke="Black" 
+                                               StrokeThickness="1"
+                                               Fill="#00008B"
+                                               Margin="0,0,5,0"/>
+                                           
+                                        </StackPanel>
+                                    </StackPanel>
 
+                                    <!-- Farbe 2 -->
+                                    <StackPanel Margin="0,0,15,0">
+                                        <TextBlock Text="Farbe 2:" Margin="0,0,0,5"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle x:Name="rectColor2" 
+                                               Width="30" 
+                                               Height="30" 
+                                               Stroke="Black" 
+                                               StrokeThickness="1"
+                                               Fill="#0000CD"
+                                               Margin="0,0,5,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
 
-                <!-- Zeile 3 -->
-                <Button Grid.Row="2" Grid.Column="1" Content="Löschen"
-                        x:Name="btnBRemove"
-                    Width="90"
-                    Margin="0,5,10,0"/>
-            </Grid>
+                                    <!-- Farbe 3 -->
+                                    <StackPanel Margin="0,0,15,0">
+                                        <TextBlock Text="Farbe 3:" Margin="0,0,0,5"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle x:Name="rectColor3" 
+                                               Width="30" 
+                                               Height="30" 
+                                               Stroke="Black" 
+                                               StrokeThickness="1"
+                                               Fill="#4169E1"
+                                               Margin="0,0,5,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
 
-            <!-- RECHTS: ListBox -->
-            <ListBox Grid.Column="1"
-                     x:Name="lstBeruf"
-                     ItemsSource="{Binding BerufListe}" />
-        </Grid>
+                                <!-- Zeile 2: Farbe 4 von und Ende -->
+                                <StackPanel Orientation="Horizontal" Margin="5,10,5,5">
+                                    <!-- Farbe 4 von -->
+                                    <StackPanel Margin="0,0,15,0">
+                                        <TextBlock Text="Farbe 4 von:" Margin="0,0,0,5"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle x:Name="rectColor4S" 
+                                               Width="30" 
+                                               Height="30" 
+                                               Stroke="Black" 
+                                               StrokeThickness="1"
+                                               Fill="#6495ED"
+                                               Margin="0,0,5,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
 
-        <!-- Buttons -->
-        <StackPanel Grid.Row="4" Grid.ColumnSpan="2"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,20,0,0">
+                                    <!-- Farbe 4 Ende -->
+                                    <StackPanel Margin="0,0,15,0">
+                                        <TextBlock Text="Farbe 4 Ende:" Margin="0,0,0,5"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle x:Name="rectColor4E" 
+                                               Width="30" 
+                                               Height="30" 
+                                               Stroke="Black" 
+                                               StrokeThickness="1"
+                                               Fill="#ADD8E6"
+                                               Margin="0,0,5,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
 
+                                    <StackPanel Margin="0,0,15,0">
+                                        <TextBlock Text="Farbe 5 von:" Margin="0,0,0,5"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle x:Name="rectColor5S" 
+                                              Width="30" 
+                                              Height="30" 
+                                              Stroke="Black" 
+                                              StrokeThickness="1"
+                                              Fill="#6495ED"
+                                              Margin="0,0,5,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Farbe 4 Ende -->
+                                    <StackPanel Margin="0,0,15,0">
+                                        <TextBlock Text="Farbe 5 Ende:" Margin="0,0,0,5"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle x:Name="rectColor5E" 
+                                              Width="30" 
+                                              Height="30" 
+                                              Stroke="Black" 
+                                              StrokeThickness="1"
+                                              Fill="#ADD8E6"
+                                              Margin="0,0,5,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="5,10,5,5">
+                                    <!-- Farbe 4 von -->
+                                    <StackPanel Margin="0,0,15,0">
+                                        <TextBlock Text="Farbe 6 von:" Margin="0,0,0,5"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle x:Name="rectColor6S" 
+                                               Width="30" 
+                                               Height="30" 
+                                               Stroke="Black" 
+                                               StrokeThickness="1"
+                                               Fill="#6495ED"
+                                               Margin="0,0,5,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Farbe 4 Ende -->
+                                    <StackPanel Margin="0,0,15,0">
+                                        <TextBlock Text="Farbe 6 Ende:" Margin="0,0,0,5"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle x:Name="rectColor6E" 
+                                               Width="30" 
+                                               Height="30" 
+                                               Stroke="Black" 
+                                               StrokeThickness="1"
+                                               Fill="#ADD8E6"
+                                               Margin="0,0,5,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,15,0">
+                                            <TextBlock Text="Farbe 7 von:" Margin="0,0,0,5"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Rectangle x:Name="rectColor7S" 
+                                              Width="30" 
+                                              Height="30" 
+                                              Stroke="Black" 
+                                              StrokeThickness="1"
+                                              Fill="#6495ED"
+                                              Margin="0,0,5,0"/>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <!-- Farbe 4 Ende -->
+                                        <StackPanel Margin="0,0,15,0">
+                                            <TextBlock Text="Farbe 7 Ende:" Margin="0,0,0,5"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Rectangle x:Name="rectColor7E" 
+                                              Width="30" 
+                                              Height="30" 
+                                              Stroke="Black" 
+                                              StrokeThickness="1"
+                                              Fill="#ADD8E6"
+                                              Margin="0,0,5,0"/>
+                                            </StackPanel>
+                                        
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- Buttons unten -->
+        <StackPanel Grid.Row="1"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Margin="0,20,0,0">
             <Button Content="Abbrechen"
-                    Width="90"
-                    Margin="0,0,10,0"
-                    Click="Cancel_Click" />
+                Width="90"
+                Margin="0,0,10,0"
+                Click="Cancel_Click" />
 
             <Button Content="Speichern"
-                    Width="90"
-                    IsDefault="True"
-                    Click="Save_Click"/>
+                Width="90"
+                IsDefault="True"
+                Click="Save_Click"/>
         </StackPanel>
     </Grid>
 </Window>

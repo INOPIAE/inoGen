@@ -194,6 +194,163 @@ Namespace My
                 Me("AutoCorrection") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Gen4")>  _
+        Public Property LastGenPrintout() As String
+            Get
+                Return CType(Me("LastGenPrintout"),String)
+            End Get
+            Set
+                Me("LastGenPrintout") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("DIN1")>  _
+        Public Property LastGenPapersize() As String
+            Get
+                Return CType(Me("LastGenPapersize"),String)
+            End Get
+            Set
+                Me("LastGenPapersize") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ohne")>  _
+        Public Property LastGenColortype() As String
+            Get
+                Return CType(Me("LastGenColortype"),String)
+            End Get
+            Set
+                Me("LastGenColortype") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen71() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen71"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen71") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen72() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen72"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen72") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen73() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen73"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen73") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen74S() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen74S"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen74S") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen74E() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen74E"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen74E") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen75S() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen75S"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen75S") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen75E() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen75E"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen75E") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen76S() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen76S"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen76S") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen76E() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen76E"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen76E") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen77S() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen77S"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen77S") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property Gen77E() As Global.System.Drawing.Color
+            Get
+                Return CType(Me("Gen77E"),Global.System.Drawing.Color)
+            End Get
+            Set
+                Me("Gen77E") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

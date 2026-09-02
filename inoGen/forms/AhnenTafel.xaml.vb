@@ -17,17 +17,26 @@ Public Class AhnenTafel
         btnChart.IsEnabled = False
         btnMap.IsEnabled = False
     End Sub
-    Private Sub btnOK_Click(sender As Object, e As RoutedEventArgs)
-        cAT.RootPersonID = PID
-        cAT.NewList()
-        If ckbCompress.IsChecked Then
-            cAT.WriteCompTreeToFile(mdFilePath)
-        Else
-            cAT.WriteTreeToFile(mdFilePath)
-        End If
+    Private Async Sub btnOK_Click(sender As Object, e As RoutedEventArgs)
+        btnOK.IsEnabled = False
+        Dim blnCheck As Boolean = ckbCompress.IsChecked
+        ShowProgress("Daten werden zusammengestellt...", True)
+        Await Task.Run(Sub()
+                           cAT.RootPersonID = PID
+                           cAT.NewList()
+
+                           If blnCheck Then
+                               cAT.WriteCompTreeToFile(mdFilePath)
+                           Else
+                               cAT.WriteTreeToFile(mdFilePath)
+                           End If
+                       End Sub)
+        HideProgress()
 
         Dim md As String = File.ReadAllText(mdFilePath)
         MdView.Markdown = md
+
+        btnOK.IsEnabled = True
         btnCSV.IsEnabled = True
         btnReport.IsEnabled = True
         btnChart.IsEnabled = True
@@ -62,17 +71,51 @@ Public Class AhnenTafel
     End Sub
 
     Private Sub btnChart_Click(sender As Object, e As RoutedEventArgs)
+
+        Dim Ergebnis As Boolean = True
+
         Dim saveFileDialog As New SaveFileDialog()
         saveFileDialog.Filter = "PDF-Dateien (*.pdf)|*.pdf"
         saveFileDialog.Title = "PDF speichern"
         saveFileDialog.DefaultExt = "pdf"
         saveFileDialog.AddExtension = True
 
+
+
         ' Dialog anzeigen
         If saveFileDialog.ShowDialog() = Forms.DialogResult.OK Then
+            If rbA1.IsChecked = True Then
+                My.Settings.LastGenPapersize = "A1"
+            ElseIf rbA2.IsChecked = True Then
+                My.Settings.LastGenPapersize = "A2"
+            ElseIf rbA3.IsChecked = True Then
+                My.Settings.LastGenPapersize = "A3"
+            Else
+                My.Settings.LastGenPapersize = "A4"
+            End If
+            If rbFO.IsChecked = True Then
+                My.Settings.LastGenColortype = "ohne"
+            ElseIf rbFG.IsChecked = True Then
+                My.Settings.LastGenColortype = "Geschlecht"
+            Else
+                My.Settings.LastGenColortype = "Zweig"
+            End If
+            If rbGen4.IsChecked = True Then
+                My.Settings.LastGenPrintout = "Gen4"
+            Else
+                My.Settings.LastGenPrintout = "Gen7"
+            End If
+            My.Settings.Save()
             Try
-                MdlPdfAhnentafel.AT(cAT.Persons, saveFileDialog.FileName)
-                MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                If rbGen4.IsChecked = True Then
+                    MdlPdfAhnentafel.AT(cAT.Persons, saveFileDialog.FileName)
+                Else
+                    Ergebnis = mdlPDFAhnentafelGen.PrintAhnentafelGen7(cAT.Persons, saveFileDialog.FileName)
+                End If
+
+                If Ergebnis = True Then
+                    MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                End If
             Catch ex As Exception
                 MessageBox.Show("Fehler beim Speichern der PDF: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
@@ -97,4 +140,65 @@ Public Class AhnenTafel
             End Try
         End If
     End Sub
+
+    Private Sub AhnenTafel_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
+        Select Case My.Settings.LastGenPapersize
+            Case "A4"
+                rbA4.IsChecked = True
+            Case "A3"
+                rbA3.IsChecked = True
+            Case "A2"
+                rbA2.IsChecked = True
+            Case "A1"
+                rbA1.IsChecked = True
+            Case Else
+                rbA4.IsChecked = True
+        End Select
+        Select Case My.Settings.LastGenPrintout
+            Case "Gen4"
+                rbGen4.IsChecked = True
+            Case "Gen7"
+                rbGen7.IsChecked = True
+            Case Else
+                rbGen4.IsChecked = True
+        End Select
+        Select Case My.Settings.LastGenColortype
+            Case "ohne"
+                rbFO.IsChecked = True
+            Case "Geschlecht"
+                rbFG.IsChecked = True
+            Case "Zweig"
+                rbFZ.IsChecked = True
+            Case Else
+                rbFO.IsChecked = True
+        End Select
+    End Sub
+    ' Code-Behind: Steuert Anzeige und Inhalt der Fortschrittsanzeige
+
+    Private Sub ShowProgress(message As String, Optional indeterminate As Boolean = True, Optional value As Double = 0)
+        ' UI-Updates auf UI-Thread ausführen
+        Dispatcher.Invoke(Sub()
+                              txtProgressLabel.Text = message
+                              pbProgress.IsIndeterminate = indeterminate
+                              If Not indeterminate Then
+                                  pbProgress.Value = value
+                              End If
+                              progressBorder.Visibility = Visibility.Visible
+                          End Sub)
+    End Sub
+
+    Private Sub UpdateProgress(value As Double, Optional message As String = Nothing)
+        Dispatcher.Invoke(Sub()
+                              pbProgress.IsIndeterminate = False
+                              pbProgress.Value = value
+                              If Not String.IsNullOrEmpty(message) Then txtProgressLabel.Text = message
+                          End Sub)
+    End Sub
+
+    Private Sub HideProgress()
+        Dispatcher.Invoke(Sub()
+                              progressBorder.Visibility = Visibility.Collapsed
+                          End Sub)
+    End Sub
+
 End Class
