@@ -19,6 +19,8 @@ Public Class ereignis
     Private EAID As Integer
 
     Private cGenDB As New inoGenDLL.ClsGenDB(My.Settings.DBPath)
+    Private cGH As New ClsGenHelper
+
     Private ReadOnly _main As MainWindow
 
     Public Property PersonId As Integer
@@ -91,6 +93,21 @@ Public Class ereignis
             cbEreignis.Focus()
             Exit Sub
         End If
+
+        txtDatum.Text = cGH.CleanupDateString(txtDatum.Text)
+        txtBisDatum.Text = cGH.CleanupDateString(txtBisDatum.Text)
+
+        If cGH.IsValidDateString(txtDatum.Text) = False Then
+            MessageBox.Show("Bitte ein gültiges Datum eingeben.")
+            txtDatum.Focus()
+            Exit Sub
+        End If
+        If cGH.IsValidDateString(txtBisDatum.Text) = False Then
+            MessageBox.Show("Bitte ein gültiges Bis-Datum eingeben.")
+            txtBisDatum.Focus()
+            Exit Sub
+        End If
+
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
 
