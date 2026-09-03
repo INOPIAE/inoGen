@@ -3,6 +3,7 @@ Imports System.Data.OleDb
 Imports System.Globalization
 Imports System.Text.RegularExpressions
 Imports ADODB
+Imports iText.StyledXmlParser.Jsoup.Select.Evaluator
 
 Public Class ClsGenDB
 
@@ -1371,4 +1372,294 @@ Public Class ClsGenDB
         End Using
         Return dt
     End Function
+
+    Public Function GetQuellen() As DataTable
+        Dim strSQL As String =
+            "SELECT *
+             FROM tblQuelle
+             WHERE active = true
+             ORDER BY QuelleKurz ASC"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function GetQuelleByID(ID As Integer) As DataTable
+        Dim strSQL As String =
+            "SELECT *
+             FROM tblQuelle
+             WHERE tblQuelleID = ?"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblQuelleID", ID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function SetQuelle(Quelle As String, QuelleKurz As String, QuelleBeschreibung As String) As Long
+        Dim ID As Long
+        Dim strSQL As String =
+            "INSERT INTO tblQuelle (Quelle, QuelleKurz, QuelleBeschreibung)
+             VALUES (?, ?, ?)"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@Quelle", Quelle)
+                cmd.Parameters.AddWithValue("@QuelleKurz", QuelleKurz)
+                cmd.Parameters.AddWithValue("@QuelleBeschreibung", QuelleBeschreibung)
+                cmd.ExecuteNonQuery()
+            End Using
+            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
+                ID = Convert.ToInt32(cmdId.ExecuteScalar())
+            End Using
+        End Using
+        Return ID
+    End Function
+
+    Public Function UpdateQuelle(ID As Integer, Quelle As String, QuelleKurz As String, QuelleBeschreibung As String) As Boolean
+        Dim strSQL As String =
+            "UPDATE tblQuelle
+             SET Quelle = ?, QuelleKurz = ?, QuelleBeschreibung = ?
+             WHERE tblQuelleID = ?"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@Quelle", Quelle)
+                cmd.Parameters.AddWithValue("@QuelleKurz", QuelleKurz)
+                cmd.Parameters.AddWithValue("@QuelleBeschreibung", QuelleBeschreibung)
+                cmd.Parameters.AddWithValue("@tblQuelleID", ID)
+                Dim rowsAffected As Integer = cmd.ExecuteNonQuery()
+                Return rowsAffected > 0
+            End Using
+        End Using
+    End Function
+
+    Public Function DeleteQuelle(ID As Integer) As Boolean
+        Dim strSQL As String =
+            "DELETE FROM tblQuelle
+             WHERE tblQuelleID = ?"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblQuelleID", ID)
+                Dim rowsAffected As Integer = cmd.ExecuteNonQuery()
+                Return rowsAffected > 0
+            End Using
+        End Using
+    End Function
+
+    Public Function GetQuellZitate() As DataTable
+        Dim strSQL As String =
+            "SELECT
+                t.*,
+                IIF(e.Anzahl IS NULL, 0, e.Anzahl) AS Anzahl
+            FROM
+                tblQuellZitat AS t
+                LEFT JOIN
+                (
+                    SELECT
+                        tblQuellZitatID,
+                        Count(*) AS Anzahl
+                    FROM
+                        tblEreignisZitat
+                    WHERE
+                        active = True
+                    GROUP BY
+                        tblQuellZitatID
+                ) AS e
+                ON t.tblQuellZitatID = e.tblQuellZitatID
+            WHERE
+                t.active = True
+            ORDER BY
+                t.Jahr,
+                t.Seite,
+                t.Nummer;"
+
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function SetQuellZitat(QuelleID As Integer, EreignisArtID As Integer, Jahr As String, Seite As String, Bd As String,
+                                  Nummer As String, Datum As String, URL As String, URLBeschreibung As String, ZitatBeschreibung As String) As Long
+
+        Dim ID As Long
+        Dim strSQL As String =
+            "INSERT INTO tblQuellZitat (tblQuelleID, tblEreignisArtID, Jahr, Seite, Bd, Nummer, Datum, InternetAdresse, URLBeschreibung, ZitatBeschreibung)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblQuel leID", QuelleID)
+                cmd.Parameters.AddWithValue("@tblEreignisArtID", EreignisArtID)
+                If IsNumeric(Jahr) Then
+                    cmd.Parameters.AddWithValue("@Jahr", Jahr)
+                Else
+                    cmd.Parameters.AddWithValue("@Jahr", DBNull.Value)
+                End If
+                cmd.Parameters.AddWithValue("@Seite", Seite)
+                cmd.Parameters.AddWithValue("@Bd", Bd)
+                cmd.Parameters.AddWithValue("@Nummer", Nummer)
+                Dim testdate As Nullable(Of Date) = CalculateDatum(Datum)
+                If IsDate(testdate) Then
+                    cmd.Parameters.AddWithValue("@Datum", testdate)
+                Else
+                    cmd.Parameters.AddWithValue("@Datum", DBNull.Value)
+                End If
+                cmd.Parameters.AddWithValue("@InternetAdresse", URL)
+                cmd.Parameters.AddWithValue("@URLBeschreibung", URLBeschreibung)
+                cmd.Parameters.AddWithValue("@ZitatBeschreibung", ZitatBeschreibung)
+                cmd.ExecuteNonQuery()
+            End Using
+            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
+                ID = Convert.ToInt32(cmdId.ExecuteScalar())
+            End Using
+        End Using
+        Return ID
+    End Function
+
+    Public Function UpdateQuellZitat(ID As Integer, QuelleID As Integer, EreignisArtID As Integer, Jahr As String, Seite As String, Bd As String,
+                                  Nummer As String, Datum As String, URL As String, URLBeschreibung As String, ZitatBeschreibung As String) As Boolean
+        Dim strSQL As String =
+            "UPDATE tblQuellZitat
+             SET tblQuelleID = ?, tblEreignisArtID = ?, Jahr = ?, Seite = ?, Nummer = ?, Bd = ?, Datum = ?, InternetAdresse = ?, URLBeschreibung = ?, ZitatBeschreibung = ?
+             WHERE tblQuellZitatID = ?"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblQuelleID", QuelleID)
+                cmd.Parameters.AddWithValue("@tblEreignisArtID", EreignisArtID)
+                If IsNumeric(Jahr) Then
+                    cmd.Parameters.AddWithValue("@Jahr", Jahr)
+                Else
+                    cmd.Parameters.AddWithValue("@Jahr", DBNull.Value)
+                End If
+                cmd.Parameters.AddWithValue("@Seite", Seite)
+                cmd.Parameters.AddWithValue("@Nummer", Nummer)
+                cmd.Parameters.AddWithValue("@Bd", Bd)
+                Dim testdate As Nullable(Of Date) = CalculateDatum(Datum)
+                If IsDate(testdate) Then
+                    cmd.Parameters.AddWithValue("@Datum", testdate)
+                Else
+                    cmd.Parameters.AddWithValue("@Datum", DBNull.Value)
+                End If
+                cmd.Parameters.AddWithValue("@InternetAdresse", URL)
+                cmd.Parameters.AddWithValue("@URLBeschreibung", URLBeschreibung)
+                cmd.Parameters.AddWithValue("@ZitatBeschreibung", ZitatBeschreibung)
+                cmd.Parameters.AddWithValue("@tblQuellZitatID", ID)
+                Dim rowsAffected As Integer = cmd.ExecuteNonQuery()
+                Return rowsAffected > 0
+            End Using
+        End Using
+    End Function
+
+    Public Function DeleteQuellZitat(ID As Integer) As Boolean
+        Dim strSQL As String =
+            "DELETE FROM tblQuellZitat
+             WHERE tblQuellZitatID = ?"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblQuellZitatID", ID)
+                Dim rowsAffected As Integer = cmd.ExecuteNonQuery()
+                Return rowsAffected > 0
+            End Using
+        End Using
+    End Function
+
+    Public Function GetEreignisZitat() As DataTable
+        Dim strSQL As String =
+            "SELECT *
+             FROM tblEreignisZitat
+             WHERE active = true"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function SetEreignisZitat(QuellZitatID As Integer, EreignisID As Integer, PersonID As Integer, EventTag As String) As Long
+        Dim ID As Long
+        Dim strSQL As String =
+            "INSERT INTO tblEreignisZitat (tblQuellZitatID, tblEreignisID, tblPersonID, EventTag)
+             VALUES (?, ?, ?, ?)"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblQuellZitatID", QuellZitatID)
+                cmd.Parameters.AddWithValue("@tblEreignisID", EreignisID)
+                cmd.Parameters.AddWithValue("@tblPersonID", PersonID)
+                cmd.Parameters.AddWithValue("@EventTag", EventTag)
+                cmd.ExecuteNonQuery()
+            End Using
+            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
+                ID = Convert.ToInt32(cmdId.ExecuteScalar())
+            End Using
+        End Using
+        Return ID
+    End Function
+
+    Public Function UpdateEreignisZitat(ID As Integer, QuellZitatID As Integer, EreignisID As Integer, PersonID As Integer, EventTag As String) As Boolean
+        Dim strSQL As String =
+            "UPDATE tblEreignisZitat
+             SET tblQuellZitatID = ?, tblEreignisID = ?, tblPersonID = ?, EventTag = ?
+             WHERE tblEreignisZitatID = ?"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblQuellZitatID", QuellZitatID)
+                cmd.Parameters.AddWithValue("@tblEreignisID", EreignisID)
+                cmd.Parameters.AddWithValue("@tblPersonID", PersonID)
+                cmd.Parameters.AddWithValue("@EventTag", EventTag)
+                cmd.Parameters.AddWithValue("@tblEreignisZitatID", ID)
+                Dim rowsAffected As Integer = cmd.ExecuteNonQuery()
+                Return rowsAffected > 0
+            End Using
+        End Using
+    End Function
+
+    Public Function DeleteEreignisZitat(ID As Integer) As Boolean
+        Dim strSQL As String =
+            "DELETE FROM tblEreignisZitat
+             WHERE tblEreignisZitatID = ?"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblEreignisZitatID", ID)
+                Dim rowsAffected As Integer = cmd.ExecuteNonQuery()
+                Return rowsAffected > 0
+            End Using
+        End Using
+    End Function
+
 End Class

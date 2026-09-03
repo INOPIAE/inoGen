@@ -13,7 +13,7 @@ Namespace TestInoGen
         Private cDB As New ClsDatabase(DBFile)
         Private cHelper As New ClsHelper
         Private testFolder As String
-        Private currentDBVersion As Long = 8
+        Private currentDBVersion As Long = 9
 
         <SetUp>
         Public Sub Setup()
@@ -113,7 +113,7 @@ Namespace TestInoGen
 
             version = cDBT.CheckDBVersion
 
-            Assert.That(version, NUnit.Framework.Is.EqualTo(8))
+            Assert.That(version, NUnit.Framework.Is.EqualTo(9))
 
             dt = cGDB.GetVKH_Table()
 

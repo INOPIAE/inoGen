@@ -791,7 +791,7 @@ Namespace TestInoGen
 
             Dim dt As DataTable = cGDB.GetGedcomPersonenEreignisse
 
-            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(206))
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(214))
 
             'Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
             'Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
@@ -843,6 +843,249 @@ Namespace TestInoGen
             'Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
             'Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
             'Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/2"))
+
+        End Sub
+
+        <Test>
+        Public Sub TestGetQuellen()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetQuellen
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+
+            Assert.That(dt.Rows(0).Item("Quelle"), NUnit.Framework.Is.EqualTo("Bonn Münster"))
+            Assert.That(dt.Rows(0).Item("QuelleKurz"), NUnit.Framework.Is.EqualTo("BN Münster"))
+            Assert.That(dt.Rows(1).Item("Quelle"), NUnit.Framework.Is.EqualTo("Bonn St. Remigius"))
+            Assert.That(dt.Rows(1).Item("QuelleKurz"), NUnit.Framework.Is.EqualTo("BN Remigius"))
+
+            'dt = cGDB.GetVKH_TableEntry(3)
+
+            'Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            'Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
+            'Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
+            'Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/2"))
+
+        End Sub
+
+        <Test>
+        Public Sub TestWorkQuellen()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetQuellen
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+
+            Dim ID As Integer = cGDB.SetQuelle("Koblenz St. Kastor", "KO Kastor", "Hinweis")
+
+            dt = cGDB.GetQuellen
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(3))
+
+            dt = cGDB.GetQuelleByID(ID)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item("Quelle"), NUnit.Framework.Is.EqualTo("Koblenz St. Kastor"))
+            Assert.That(dt.Rows(0).Item("QuelleKurz"), NUnit.Framework.Is.EqualTo("KO Kastor"))
+            Assert.That(dt.Rows(0).Item("QuelleBeschreibung"), NUnit.Framework.Is.EqualTo("Hinweis"))
+
+            Dim check As Boolean = cGDB.UpdateQuelle(ID, "Koblenz St. Kastor Updated", "KO Kastor Updated", "Hinweis Updated")
+            Assert.That(check, NUnit.Framework.Is.EqualTo(True))
+
+            dt = cGDB.GetQuelleByID(ID)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item("Quelle"), NUnit.Framework.Is.EqualTo("Koblenz St. Kastor Updated"))
+            Assert.That(dt.Rows(0).Item("QuelleKurz"), NUnit.Framework.Is.EqualTo("KO Kastor Updated"))
+            Assert.That(dt.Rows(0).Item("QuelleBeschreibung"), NUnit.Framework.Is.EqualTo("Hinweis Updated"))
+
+
+            check = cGDB.DeleteQuelle(2)
+
+            Assert.That(check, NUnit.Framework.Is.EqualTo(True))
+
+            dt = cGDB.GetQuellen
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            Assert.That(dt.Rows(0).Item("Quelle"), NUnit.Framework.Is.EqualTo("Bonn St. Remigius"))
+            Assert.That(dt.Rows(0).Item("QuelleKurz"), NUnit.Framework.Is.EqualTo("BN Remigius"))
+
+        End Sub
+
+
+        <Test>
+        Public Sub TestGetQuellZitate()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetQuellZitate
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+
+
+            Assert.That(dt.Rows(0).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(4))
+            Assert.That(dt.Rows(0).Item("Jahr"), NUnit.Framework.Is.EqualTo(1767))
+            Assert.That(dt.Rows(0).Item("Anzahl"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(1).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(1).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(1).Item("Jahr"), NUnit.Framework.Is.EqualTo(1769))
+            Assert.That(dt.Rows(1).Item("Anzahl"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(4).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(4).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(4).Item("Jahr"), NUnit.Framework.Is.EqualTo(1786))
+            Assert.That(dt.Rows(4).Item("Anzahl"), NUnit.Framework.Is.EqualTo(0))
+
+        End Sub
+
+        <Test>
+        Public Sub TestWorkQuellZitate()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetQuellZitate
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+
+            Dim ID As Integer = cGDB.SetQuellZitat(1, 2, 1790, "3", "1", "7", New Date(1790, 1, 1), "URL", "URLB", "ZitatB")
+
+            dt = cGDB.GetQuellZitate
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(5).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(5).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(5).Item("Jahr"), NUnit.Framework.Is.EqualTo(1790))
+            Assert.That(dt.Rows(5).Item("Seite"), NUnit.Framework.Is.EqualTo("3"))
+            Assert.That(dt.Rows(5).Item("Bd"), NUnit.Framework.Is.EqualTo("1"))
+            Assert.That(dt.Rows(5).Item("Datum"), NUnit.Framework.Is.EqualTo(New Date(1790, 1, 1)))
+            Assert.That(dt.Rows(5).Item("InternetAdresse"), NUnit.Framework.Is.EqualTo("URL"))
+            Assert.That(dt.Rows(5).Item("URLBeschreibung"), NUnit.Framework.Is.EqualTo("URLB"))
+            Assert.That(dt.Rows(5).Item("ZitatBeschreibung"), NUnit.Framework.Is.EqualTo("ZitatB"))
+            Assert.That(dt.Rows(5).Item("Anzahl"), NUnit.Framework.Is.EqualTo(0))
+
+            Dim check As Boolean = cGDB.UpdateQuellZitat(ID, 1, 2, 1791, "4", "2", "8", New Date(1791, 1, 1), "URL2", "URLB2", "ZitatB2")
+            Assert.That(check, NUnit.Framework.Is.EqualTo(True))
+            dt = cGDB.GetQuellZitate
+            Assert.That(dt.Rows(5).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(5).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(5).Item("Jahr"), NUnit.Framework.Is.EqualTo(1791))
+            Assert.That(dt.Rows(5).Item("Seite"), NUnit.Framework.Is.EqualTo("4"))
+            Assert.That(dt.Rows(5).Item("Bd"), NUnit.Framework.Is.EqualTo("2"))
+            Assert.That(dt.Rows(5).Item("Datum"), NUnit.Framework.Is.EqualTo(New Date(1791, 1, 1)))
+            Assert.That(dt.Rows(5).Item("InternetAdresse"), NUnit.Framework.Is.EqualTo("URL2"))
+            Assert.That(dt.Rows(5).Item("URLBeschreibung"), NUnit.Framework.Is.EqualTo("URLB2"))
+            Assert.That(dt.Rows(5).Item("ZitatBeschreibung"), NUnit.Framework.Is.EqualTo("ZitatB2"))
+
+            check = cGDB.DeleteQuellZitat(ID)
+            Assert.That(check, NUnit.Framework.Is.EqualTo(True))
+            dt = cGDB.GetQuellZitate
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+
+            ID = cGDB.SetQuellZitat(1, 2, "a", "3", "1", "7", Nothing, "URL", "URLB", "ZitatB")
+
+            dt = cGDB.GetQuellZitate
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(0).Item("tblQuellZitatID"), NUnit.Framework.Is.EqualTo(ID))
+            Assert.That(dt.Rows(0).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item("Jahr"), NUnit.Framework.Is.EqualTo(DBNull.Value))
+            Assert.That(dt.Rows(0).Item("Seite"), NUnit.Framework.Is.EqualTo("3"))
+            Assert.That(dt.Rows(0).Item("Bd"), NUnit.Framework.Is.EqualTo("1"))
+            Assert.That(dt.Rows(0).Item("Datum"), NUnit.Framework.Is.EqualTo(DBNull.Value))
+            Assert.That(dt.Rows(0).Item("InternetAdresse"), NUnit.Framework.Is.EqualTo("URL"))
+            Assert.That(dt.Rows(0).Item("URLBeschreibung"), NUnit.Framework.Is.EqualTo("URLB"))
+            Assert.That(dt.Rows(0).Item("ZitatBeschreibung"), NUnit.Framework.Is.EqualTo("ZitatB"))
+
+            check = cGDB.UpdateQuellZitat(ID, 1, 2, "b", "4", "2", "8", Nothing, "URL2", "URLB2", "ZitatB2")
+            Assert.That(check, NUnit.Framework.Is.EqualTo(True))
+            dt = cGDB.GetQuellZitate
+            Assert.That(dt.Rows(0).Item("tblQuellZitatID"), NUnit.Framework.Is.EqualTo(ID))
+            Assert.That(dt.Rows(0).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item("Jahr"), NUnit.Framework.Is.EqualTo(DBNull.Value))
+            Assert.That(dt.Rows(0).Item("Seite"), NUnit.Framework.Is.EqualTo("4"))
+            Assert.That(dt.Rows(0).Item("Bd"), NUnit.Framework.Is.EqualTo("2"))
+            Assert.That(dt.Rows(0).Item("Datum"), NUnit.Framework.Is.EqualTo(DBNull.Value))
+            Assert.That(dt.Rows(0).Item("InternetAdresse"), NUnit.Framework.Is.EqualTo("URL2"))
+            Assert.That(dt.Rows(0).Item("URLBeschreibung"), NUnit.Framework.Is.EqualTo("URLB2"))
+            Assert.That(dt.Rows(0).Item("ZitatBeschreibung"), NUnit.Framework.Is.EqualTo("ZitatB2"))
+
+        End Sub
+
+
+        <Test>
+        Public Sub TestGetEreignisZitat()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetEreignisZitat
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+
+
+            Assert.That(dt.Rows(0).Item("tblQuellZitatID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("tblPersonID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("EventTag"), NUnit.Framework.Is.EqualTo("_PROB"))
+            Assert.That(dt.Rows(1).Item("tblQuellZitatID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(1).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(16))
+            Assert.That(dt.Rows(1).Item("tblPersonID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(1).Item("EventTag"), NUnit.Framework.Is.EqualTo("HUSB"))
+            Assert.That(dt.Rows(4).Item("tblQuellZitatID"), NUnit.Framework.Is.EqualTo(4))
+            Assert.That(dt.Rows(4).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(259))
+            Assert.That(dt.Rows(4).Item("tblPersonID"), NUnit.Framework.Is.EqualTo(130))
+            Assert.That(dt.Rows(4).Item("EventTag"), NUnit.Framework.Is.EqualTo(DBNull.Value))
+            'dt = cGDB.GetVKH_TableEntry(3)
+
+            'Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            'Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
+            'Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
+            'Assert.That(dt.Rows(0).Item("NR_H"), NUnit.Framework.Is.EqualTo("1900/2"))
+
+        End Sub
+
+        <Test>
+        Public Sub TestWorkEreignisZitat()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetEreignisZitat
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+
+            Dim ID As Integer = cGDB.SetEreignisZitat(6, 7, 8, "WIFE")
+
+            dt = cGDB.GetEreignisZitat
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+
+            Assert.That(dt.Rows(5).Item("tblQuellZitatID"), NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(5).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(7))
+            Assert.That(dt.Rows(5).Item("tblPersonID"), NUnit.Framework.Is.EqualTo(8))
+            Assert.That(dt.Rows(5).Item("EventTag"), NUnit.Framework.Is.EqualTo("WIFE"))
+
+            Dim check As Boolean = cGDB.UpdateEreignisZitat(ID, 9, 10, 11, "HUSB")
+
+            dt = cGDB.GetEreignisZitat
+            Assert.That(dt.Rows(5).Item("tblQuellZitatID"), NUnit.Framework.Is.EqualTo(9))
+            Assert.That(dt.Rows(5).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(10))
+            Assert.That(dt.Rows(5).Item("tblPersonID"), NUnit.Framework.Is.EqualTo(11))
+            Assert.That(dt.Rows(5).Item("EventTag"), NUnit.Framework.Is.EqualTo("HUSB"))
+
+            check = cGDB.DeleteEreignisZitat(ID)
+
+            dt = cGDB.GetEreignisZitat
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
 
         End Sub
     End Class
