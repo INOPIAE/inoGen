@@ -1466,6 +1466,7 @@ Public Class ClsGenDB
     Public Function GetQuellZitate() As DataTable
         Dim strSQL As String =
             "SELECT
+                TOP 300
                 t.*,
                 IIF(e.Anzahl IS NULL, 0, e.Anzahl) AS Anzahl
             FROM
@@ -1662,4 +1663,159 @@ Public Class ClsGenDB
         End Using
     End Function
 
+    Public Function GetQuellZitateF(
+    Optional filter As Dictionary(Of String, Object) = Nothing
+) As DataTable
+
+        Dim strSQL As String =
+            "SELECT
+                TOP 300
+                t.*,
+                IIF(e.Anzahl IS NULL, 0, e.Anzahl) AS Anzahl
+            FROM
+                tblQuellZitat AS t
+                LEFT JOIN
+                (
+                    SELECT
+                        tblQuellZitatID,
+                        Count(*) AS Anzahl
+                    FROM
+                        tblEreignisZitat
+                    WHERE
+                        active = True
+                    GROUP BY
+                        tblQuellZitatID
+                ) AS e
+                ON t.tblQuellZitatID = e.tblQuellZitatID
+            WHERE
+                t.active = True"
+
+        ' ============================================================
+        ' Filter
+        ' ============================================================
+
+        Dim filterBedingungen As New List(Of String)
+
+        If filter IsNot Nothing Then
+
+            For Each item In filter
+
+                Select Case item.Key.ToLower()
+
+                    Case "tblquelleid"
+                        filterBedingungen.Add("t.tblQuelleID = ?")
+
+                    Case "tblereignisartid"
+                        filterBedingungen.Add("t.tblEreignisArtID = ?")
+
+                    Case "jahr"
+                        filterBedingungen.Add("t.Jahr = ?")
+
+                    Case "seite"
+                        filterBedingungen.Add("t.Seite LIKE ?")
+
+                    Case "bd"
+                        filterBedingungen.Add("t.Bd LIKE ?")
+
+                    Case "nummer"
+                        filterBedingungen.Add("t.Nummer LIKE ?")
+
+                    Case "internetadresse"
+                        filterBedingungen.Add("t.InternetAdresse LIKE ?")
+
+                    Case Else
+                        Throw New ArgumentException(
+                            "Unbekannter Filter: " & item.Key)
+
+                End Select
+
+            Next
+
+            If filterBedingungen.Count > 0 Then
+                strSQL &= " AND " &
+                          String.Join(" AND ", filterBedingungen)
+            End If
+
+        End If
+
+        strSQL &=
+            " ORDER BY
+            t.Jahr,
+            t.Seite,
+            t.Nummer;"
+
+        ' ============================================================
+        ' Datenbank
+        ' ============================================================
+
+        Dim dt As New DataTable()
+
+        Using conn As New OleDbConnection(connectionString)
+
+            conn.Open()
+
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                ' ====================================================
+                ' WICHTIG:
+                ' OleDb verwendet ? als Parameter-Platzhalter.
+                ' Die Reihenfolge muss deshalb exakt der Reihenfolge
+                ' der Dictionary-Einträge entsprechen.
+                ' ====================================================
+
+                If filter IsNot Nothing Then
+
+                    For Each item In filter
+
+                        Dim value As Object = item.Value
+
+                        Select Case item.Key.ToLower()
+
+                            Case "tblquelleid",
+                                 "tblereignisartid",
+                                 "jahr"
+
+                                cmd.Parameters.AddWithValue("?", value)
+
+                            Case "seite",
+                                 "bd",
+                                 "nummer",
+                                 "internetadresse"
+
+                                Dim text As String =
+                                    If(value Is Nothing OrElse
+                                       value Is DBNull.Value,
+                                       "",
+                                       value.ToString())
+
+                                ' Access-Platzhalter:
+                                ' * = beliebig viele Zeichen
+                                ' ? = genau ein Zeichen
+                                '
+                                ' Für SQL LIKE werden diese umgesetzt:
+                                ' * -> %
+                                ' ? -> _
+
+                                text = text.Replace("*", "%")
+                                text = text.Replace("?", "_")
+
+                                cmd.Parameters.AddWithValue("?", text)
+
+                        End Select
+
+                    Next
+
+                End If
+
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+
+            End Using
+
+        End Using
+
+        Return dt
+
+    End Function
 End Class

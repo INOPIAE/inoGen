@@ -351,6 +351,78 @@ Namespace My
                 Me("Gen77E") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property QZQuelle() As Long
+            Get
+                Return CType(Me("QZQuelle"),Long)
+            End Get
+            Set
+                Me("QZQuelle") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property QZEreignis() As Long
+            Get
+                Return CType(Me("QZEreignis"),Long)
+            End Get
+            Set
+                Me("QZEreignis") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property QZJahr() As String
+            Get
+                Return CType(Me("QZJahr"),String)
+            End Get
+            Set
+                Me("QZJahr") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property QZBd() As String
+            Get
+                Return CType(Me("QZBd"),String)
+            End Get
+            Set
+                Me("QZBd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property QZNummer() As String
+            Get
+                Return CType(Me("QZNummer"),String)
+            End Get
+            Set
+                Me("QZNummer") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property QZSeite() As String
+            Get
+                Return CType(Me("QZSeite"),String)
+            End Get
+            Set
+                Me("QZSeite") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

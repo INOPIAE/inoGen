@@ -393,4 +393,14 @@ Class MainWindow
         Dim GEDCOM = New GEDCOM_Export
         GEDCOM.Show()
     End Sub
+
+    Private Sub Quellen_Click(sender As Object, e As RoutedEventArgs)
+        Dim Quellen = New Quellen
+        Quellen.Show()
+    End Sub
+
+    Private Sub Quellzitate_Click(sender As Object, e As RoutedEventArgs)
+        Dim QuellenZitate = New QuellenZitatDefinition
+        QuellenZitate.Show()
+    End Sub
 End Class

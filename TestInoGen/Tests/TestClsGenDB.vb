@@ -947,6 +947,51 @@ Namespace TestInoGen
         End Sub
 
         <Test>
+        Public Sub TestGetQuellZitateF()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetQuellZitateF()
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+
+
+            Assert.That(dt.Rows(0).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(4))
+            Assert.That(dt.Rows(0).Item("Jahr"), NUnit.Framework.Is.EqualTo(1767))
+            Assert.That(dt.Rows(0).Item("Anzahl"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(1).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(1).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(1).Item("Jahr"), NUnit.Framework.Is.EqualTo(1769))
+            Assert.That(dt.Rows(1).Item("Anzahl"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(4).Item("tblQuelleID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(4).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(4).Item("Jahr"), NUnit.Framework.Is.EqualTo(1786))
+            Assert.That(dt.Rows(4).Item("Anzahl"), NUnit.Framework.Is.EqualTo(0))
+
+            Dim filter As New Dictionary(Of String, Object) From {
+                    {"tblEreignisArtID", 2}
+                }
+
+            dt = cGDB.GetQuellZitateF(filter)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(3))
+
+            filter = New Dictionary(Of String, Object) From {
+                {"Jahr", 1769}
+            }
+
+            dt = cGDB.GetQuellZitateF(filter)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+            filter = New Dictionary(Of String, Object) From {
+                {"tblEreignisArtID", 6},
+                {"Jahr", 1769}
+            }
+
+            dt = cGDB.GetQuellZitateF(filter)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+        End Sub
+
+        <Test>
         Public Sub TestWorkQuellZitate()
             Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
             cGDB = New inoGenDLL.ClsGenDB(DBFileT)
