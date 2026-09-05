@@ -1818,4 +1818,243 @@ Public Class ClsGenDB
         Return dt
 
     End Function
+
+    Public Function GetQuelleZitatePerson(ID As Integer) As DataTable
+        Dim strSQL As String =
+            "SELECT
+                tblEreignisZitat.tblPersonID,
+                tblEreignisZitat.tblEreignisZitatID,
+                tblEreignisZitat.tblEreignisID,
+                tblQuellZitat.tblQuellZitatID,
+                tblEreignisArt_1.EreignisArt as EreignisArt_1,
+                tblEventTag.TagD,
+                tblEreignis.Datum as EreignisDatum,
+                tblQuelle.QuelleKurz,
+                tblEreignisArt.EreignisArt as EreignisArt,
+                tblQuellZitat.Jahr,
+                tblQuellZitat.Bd,
+                tblQuellZitat.Seite,
+                tblQuellZitat.Nummer,
+                tblQuellZitat.Datum as QuellZitatDatum,
+                tblQuellZitat.InternetAdresse
+            From
+                tblEreignisArt As tblEreignisArt_1
+                INNER JOIN (
+                    tblEventTag
+                    RIGHT JOIN (
+                        (
+                            (
+                                (
+                                    tblEreignisZitat
+                                    INNER JOIN tblQuellZitat ON tblEreignisZitat.tblQuellZitatID = tblQuellZitat.tblQuellZitatID
+                                )
+                                INNER JOIN tblQuelle ON tblQuellZitat.tblQuelleID = tblQuelle.tblQuelleID
+                            )
+                            INNER JOIN tblEreignis ON tblEreignisZitat.tblEreignisID = tblEreignis.tblEreignisID
+                        )
+                        INNER JOIN tblEreignisArt ON tblQuellZitat.tblEreignisArtID = tblEreignisArt.tblEreignisArtID
+                    ) ON tblEventTag.Tag = tblEreignisZitat.EventTag
+                ) ON tblEreignisArt_1.tblEreignisArtID = tblEreignis.tblEreignisArtID
+            WHERE
+                tblEreignisZitat.active = True AND tblEreignisZitat.tblPersonID = ?;"
+
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblPersonID", ID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function GetEventTag() As DataTable
+        Dim strSQL As String =
+            "SELECT *
+             FROM tblEventTag"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+
+    Public Function GetQuellzitatEvent(EreignisID As Integer, PersonID As Integer) As DataTable
+        Dim strSQL As String =
+            "SELECT
+                *
+            FROM
+                tblEreignisZitat
+            WHERE
+                tblEreignisZitat.tblEreignisID = ?
+                AND tblEreignisZitat.tblPersonID = ?
+                AND tblEreignisZitat.active = True;"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblEreignisID", EreignisID)
+                cmd.Parameters.AddWithValue("@tblPersonID", PersonID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function GetParentIDFromFamily(FamilyID As Integer, isHusband As Boolean) As String
+        Dim strSQL As String =
+            "SELECT
+                tblFamilie.tblFamilieID,
+                tblFamilie.tblPersonIDV,
+                tblFamilie.tblPersonIDM
+            FROM
+                tblFamilie
+            WHERE
+                tblFamilie.tblFamilieID = ?;"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblFamilieID", FamilyID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        If dt.Rows.Count = 0 Then
+            Return ""
+        End If
+        If isHusband Then
+            Return dt.Rows(0)("tblPersonIDV").ToString()
+        Else
+            Return dt.Rows(0)("tblPersonIDM").ToString()
+        End If
+        Return ""
+    End Function
+
+
+    Public Function GetQuelleZitateFamily(ID As Integer) As DataTable
+        Dim VID As String = GetParentIDFromFamily(ID, True)
+        Dim MID As String = GetParentIDFromFamily(ID, False)
+        Dim strSQLV As String =
+            "SELECT
+                tblEreignisZitat.tblPersonID,
+                tblEreignisZitat.tblEreignisZitatID,
+                tblEreignisZitat.tblEreignisID,
+                'M' as PersonType,
+                tblQuellZitat.tblQuellZitatID,
+                tblEreignisArt_1.EreignisArt as EreignisArt_1,
+                tblEventTag.TagD,
+                tblEreignis.Datum as EreignisDatum,
+                tblQuelle.QuelleKurz,
+                tblEreignisArt.EreignisArt as EreignisArt,
+                tblQuellZitat.Jahr,
+                tblQuellZitat.Bd,
+                tblQuellZitat.Seite,
+                tblQuellZitat.Nummer,
+                tblQuellZitat.Datum as QuellZitatDatum,
+                tblQuellZitat.InternetAdresse
+            From
+                tblEreignisArt As tblEreignisArt_1
+                INNER JOIN (
+                    tblEventTag
+                    RIGHT JOIN (
+                        (
+                            (
+                                (
+                                    tblEreignisZitat
+                                    INNER JOIN tblQuellZitat ON tblEreignisZitat.tblQuellZitatID = tblQuellZitat.tblQuellZitatID
+                                )
+                                INNER JOIN tblQuelle ON tblQuellZitat.tblQuelleID = tblQuelle.tblQuelleID
+                            )
+                            INNER JOIN tblEreignis ON tblEreignisZitat.tblEreignisID = tblEreignis.tblEreignisID
+                        )
+                        INNER JOIN tblEreignisArt ON tblQuellZitat.tblEreignisArtID = tblEreignisArt.tblEreignisArtID
+                    ) ON tblEventTag.Tag = tblEreignisZitat.EventTag
+                ) ON tblEreignisArt_1.tblEreignisArtID = tblEreignis.tblEreignisArtID
+            WHERE
+                tblEreignisZitat.active = True AND tblEreignisZitat.tblPersonID = ?;"
+
+        Dim strSQLM As String =
+            "SELECT
+                tblEreignisZitat.tblPersonID,
+                tblEreignisZitat.tblEreignisZitatID,
+                tblEreignisZitat.tblEreignisID,
+                'F' as PersonType,
+                tblQuellZitat.tblQuellZitatID,
+                tblEreignisArt_1.EreignisArt as EreignisArt_1,
+                tblEventTag.TagD,
+                tblEreignis.Datum as EreignisDatum,
+                tblQuelle.QuelleKurz,
+                tblEreignisArt.EreignisArt as EreignisArt,
+                tblQuellZitat.Jahr,
+                tblQuellZitat.Bd,
+                tblQuellZitat.Seite,
+                tblQuellZitat.Nummer,
+                tblQuellZitat.Datum as QuellZitatDatum,
+                tblQuellZitat.InternetAdresse
+            From
+                tblEreignisArt As tblEreignisArt_1
+                INNER JOIN (
+                    tblEventTag
+                    RIGHT JOIN (
+                        (
+                            (
+                                (
+                                    tblEreignisZitat
+                                    INNER JOIN tblQuellZitat ON tblEreignisZitat.tblQuellZitatID = tblQuellZitat.tblQuellZitatID
+                                )
+                                INNER JOIN tblQuelle ON tblQuellZitat.tblQuelleID = tblQuelle.tblQuelleID
+                            )
+                            INNER JOIN tblEreignis ON tblEreignisZitat.tblEreignisID = tblEreignis.tblEreignisID
+                        )
+                        INNER JOIN tblEreignisArt ON tblQuellZitat.tblEreignisArtID = tblEreignisArt.tblEreignisArtID
+                    ) ON tblEventTag.Tag = tblEreignisZitat.EventTag
+                ) ON tblEreignisArt_1.tblEreignisArtID = tblEreignis.tblEreignisArtID
+            WHERE
+                tblEreignisZitat.active = True AND tblEreignisZitat.tblPersonID = ?;"
+
+        Dim strSQL As String
+
+        If VID = "" Then
+            strSQL = strSQLM
+        ElseIf MID = "" Then
+            strSQL = strSQLV
+        Else
+            strSQL = strSQLV & " UNION ALL " & strSQLM
+        End If
+
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                If VID <> "" Then
+                    cmd.Parameters.AddWithValue("@tblPersonID", VID)
+                End If
+                If MID <> "" Then
+                    cmd.Parameters.AddWithValue("@tblPersonID", MID)
+                End If
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 End Class

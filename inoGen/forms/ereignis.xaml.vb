@@ -10,13 +10,19 @@ Public Class ereignis
     Private dtE As New DataTable()
     Private dtO As New DataTable()
     Private dtK As New DataTable()
+    Private dtEventtag As New DataTable()
 
     Private isNewRecord As Boolean = False
     Private ID As Integer? = Nothing
     Private PID As Integer = 1
     Private FID As Integer
+    Private VID As String
+    Private MID As String
     Private isPers As Boolean = True
     Private EAID As Integer
+    Private QuellZitatEreignisID As Integer
+    Private QuellZitatEreignisVID As Integer
+    Private QuellZitatEreignisMID As Integer
 
     Private cGenDB As New inoGenDLL.ClsGenDB(My.Settings.DBPath)
     Private cGH As New ClsGenHelper
@@ -69,6 +75,7 @@ Public Class ereignis
         LoadOrtData()
         LoadEventListe()
         LoadKonfessionListe()
+        LoadEventTag()
     End Sub
 
     Public Event DataSaved(sender As Object, e As EventArgs)
@@ -226,6 +233,9 @@ Public Class ereignis
         ID = Nothing
         isNewRecord = True
         cbEreignis.Focus()
+        QuellZitatEreignisID = 0
+        QuellZitatEreignisMID = 0
+        QuellZitatEreignisVID = 0
     End Sub
 
     Private Sub cbOrt_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles cbOrt.SelectionChanged
@@ -330,6 +340,60 @@ Public Class ereignis
                 End Using
             End Using
 
+            If isPers Then
+                Dim dtEventPerson As DataTable = cGenDB.GetQuellzitatEvent(id, PID)
+                If dtEventPerson.Rows.Count > 0 Then
+                    Dim row As DataRow = dtEventPerson.Rows(0)
+                    QuellZitatEreignisID = row("tblEreignisZitatID")
+                    txtQuellZitat.Text = row("tblQuellZitatID").ToString()
+                    If row("EventTag") IsNot DBNull.Value Then
+                        cbEventTag.SelectedValue = row("EventTag")
+                    Else
+                        cbEventTag.SelectedValue = "-"
+                    End If
+                Else
+                    QuellZitatEreignisID = 0
+                    cbEventTag.SelectedValue = "-"
+                    txtQuellZitat.Clear()
+                End If
+            Else
+                VID = cGenDB.GetParentIDFromFamily(FID, True)
+                MID = cGenDB.GetParentIDFromFamily(FID, False)
+                If VID <> "" Then
+                    Dim dtEventVater As DataTable = cGenDB.GetQuellzitatEvent(id, CInt(VID))
+                    If dtEventVater.Rows.Count > 0 Then
+                        Dim row As DataRow = dtEventVater.Rows(0)
+                        QuellZitatEreignisVID = row("tblEreignisZitatID")
+                        txtQuellZitatM.Text = row("tblQuellZitatID").ToString()
+                        If row("EventTag") IsNot DBNull.Value Then
+                            cbEventTagM.SelectedValue = row("EventTag")
+                        Else
+                            cbEventTagM.SelectedValue = "-"
+                        End If
+                    Else
+                        QuellZitatEreignisVID = 0
+                        cbEventTagM.SelectedValue = "-"
+                        txtQuellZitatM.Clear()
+                    End If
+                End If
+                If MID <> "" Then
+                    Dim dtEventMutter As DataTable = cGenDB.GetQuellzitatEvent(id, CInt(MID))
+                    If dtEventMutter.Rows.Count > 0 Then
+                        Dim row As DataRow = dtEventMutter.Rows(0)
+                        QuellZitatEreignisMID = row("tblEreignisZitatID")
+                        txtQuellZitatV.Text = row("tblQuellZitatID").ToString()
+                        If row("EventTag") IsNot DBNull.Value Then
+                            cbEventTagV.SelectedValue = row("EventTag")
+                        Else
+                            cbEventTagV.SelectedValue = "-"
+                        End If
+                    Else
+                        QuellZitatEreignisMID = 0
+                        cbEventTagV.SelectedValue = "-"
+                        txtQuellZitatV.Clear()
+                    End If
+                End If
+            End If
         Catch ex As Exception
             MessageBox.Show("Fehler beim Laden: " & ex.Message)
         End Try
@@ -397,6 +461,102 @@ Public Class ereignis
         txtGeb.Text = cA.CalculateBirthday(txtDatum.Text, txtJahr.Text, txtMonate.Text, txtWochen.Text, txtTage.Text)
         If txtGeb.Text.StartsWith("err") Then
             Clipboard.SetText(txtGeb.Text)
+        End If
+    End Sub
+
+    Private Sub cbEventTag_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles cbEventTag.SelectionChanged
+        'If cbOrt.SelectedValue IsNot Nothing Then
+        '    Dim selectedID As Integer = CInt(cbOrt.SelectedValue)
+        'End If
+    End Sub
+
+    Private Sub cbEventTagV_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles cbEventTagV.SelectionChanged
+        'If cbOrt.SelectedValue IsNot Nothing Then
+        '    Dim selectedID As Integer = CInt(cbOrt.SelectedValue)
+        'End If
+    End Sub
+
+    Private Sub cbEventTagM_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles cbEventTagM.SelectionChanged
+        'If cbOrt.SelectedValue IsNot Nothing Then
+        '    Dim selectedID As Integer = CInt(cbOrt.SelectedValue)
+        'End If
+    End Sub
+    Private Sub LoadEventTag()
+        dtEventtag.Clear()
+        dtEventtag = cGenDB.GetEventTag()
+
+        Dim row As DataRow = dtEventtag.NewRow()
+        row("Tag") = "-"
+        row("TagD") = "   "
+        dtEventtag.Rows.InsertAt(row, 0)
+
+        cbEventTag.ItemsSource = dtEventtag.DefaultView
+        cbEventTag.DisplayMemberPath = "TagD"
+        cbEventTag.SelectedValuePath = "Tag"
+        cbEventTagV.ItemsSource = dtEventtag.DefaultView
+        cbEventTagV.DisplayMemberPath = "TagD"
+        cbEventTagV.SelectedValuePath = "Tag"
+        cbEventTagM.ItemsSource = dtEventtag.DefaultView
+        cbEventTagM.DisplayMemberPath = "TagD"
+        cbEventTagM.SelectedValuePath = "Tag"
+
+    End Sub
+
+    Public Sub setQuellZitatID(QuellZitatID As Integer)
+        If isPers Then
+            txtQuellZitat.Text = QuellZitatID.ToString()
+        Else
+            If VID <> "" Then
+                txtQuellZitatV.Text = QuellZitatID.ToString()
+            End If
+            If MID <> "" Then
+                txtQuellZitatM.Text = QuellZitatID.ToString()
+            End If
+        End If
+    End Sub
+
+    Private Sub btnSaveSource_Click(sender As Object, e As RoutedEventArgs) Handles btnSaveSource.Click
+        If isPers Then
+            If IsNumeric(txtQuellZitat.Text) = False Then
+                MessageBox.Show("Bitte eine gültige Quell-Zitat-ID eingeben.")
+                Exit Sub
+            End If
+            If QuellZitatEreignisID = 0 Then
+                QuellZitatEreignisID = cGenDB.SetEreignisZitat(CInt(txtQuellZitat.Text), ID, PID, IIf(cbEventTag.SelectedValue.ToString() = "-", "", cbEventTag.SelectedValue))
+            Else
+                cGenDB.UpdateEreignisZitat(QuellZitatEreignisID, CInt(txtQuellZitat.Text), ID, PID, IIf(cbEventTag.SelectedValue.ToString() = "-", "", cbEventTag.SelectedValue))
+            End If
+            RaiseEvent DataSaved(Me, EventArgs.Empty)
+        End If
+    End Sub
+
+    Private Sub btnSaveSource_ClickV(sender As Object, e As RoutedEventArgs) Handles btnSaveSourceV.Click
+        If isPers = False And VID <> "" Then
+            If IsNumeric(txtQuellZitatV.Text) = False Then
+                MessageBox.Show("Bitte eine gültige Quell-Zitat-ID eingeben.")
+                Exit Sub
+            End If
+            If QuellZitatEreignisVID = 0 Then
+                QuellZitatEreignisVID = cGenDB.SetEreignisZitat(CInt(txtQuellZitatV.Text), ID, CInt(VID), IIf(cbEventTagV.SelectedValue.ToString() = "-", "", cbEventTagV.SelectedValue))
+            Else
+                cGenDB.UpdateEreignisZitat(QuellZitatEreignisVID, CInt(txtQuellZitatV.Text), ID, CInt(VID), IIf(cbEventTagV.SelectedValue.ToString() = "-", "", cbEventTagV.SelectedValue))
+            End If
+            RaiseEvent DataSaved(Me, EventArgs.Empty)
+        End If
+    End Sub
+
+    Private Sub btnSaveSource_ClickM(sender As Object, e As RoutedEventArgs) Handles btnSaveSourceM.Click
+        If isPers = False And MID <> "" Then
+            If IsNumeric(txtQuellZitatM.Text) = False Then
+                MessageBox.Show("Bitte eine gültige Quell-Zitat-ID eingeben.")
+                Exit Sub
+            End If
+            If QuellZitatEreignisMID = 0 Then
+                QuellZitatEreignisMID = cGenDB.SetEreignisZitat(CInt(txtQuellZitatM.Text), ID, CInt(MID), IIf(cbEventTagM.SelectedValue.ToString() = "-", "", cbEventTagM.SelectedValue))
+            Else
+                cGenDB.UpdateEreignisZitat(QuellZitatEreignisMID, CInt(txtQuellZitatM.Text), ID, CInt(MID), IIf(cbEventTagM.SelectedValue.ToString() = "-", "", cbEventTagM.SelectedValue))
+            End If
+            RaiseEvent DataSaved(Me, EventArgs.Empty)
         End If
     End Sub
 End Class

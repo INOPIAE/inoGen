@@ -16,6 +16,9 @@ Class QuellenZitate
     Private isUCLoaded As Boolean = False
 
     Private cGenDB As New ClsGenDB(My.Settings.DBPath)
+
+    Public Property EreignisControl As ereignis
+
     Private Sub btnFilter_Click(sender As Object, e As RoutedEventArgs)
         LoadData()
         My.Settings.QZQuelle = cbQuelle.SelectedValue
@@ -25,6 +28,25 @@ Class QuellenZitate
         My.Settings.QZSeite = txtSeite.Text
         My.Settings.QZNummer = txtNummer.Text
         My.Settings.Save()
+    End Sub
+
+    Private Sub btnCurrent_Click(sender As Object, e As RoutedEventArgs)
+        If dgQuellZitate.SelectedItem Is Nothing Then
+            MessageBox.Show("Bitte eine Zeile auswählen.")
+            Return
+        End If
+        If EreignisControl IsNot Nothing Then
+            EreignisControl.setQuellZitatID(CType(dgQuellZitate.SelectedItem, DataRowView)("tblQuellZitatID"))
+            My.Settings.LastQuellZitat = CType(dgQuellZitate.SelectedItem, DataRowView)("tblQuellZitatID")
+            My.Settings.Save()
+        End If
+
+    End Sub
+
+    Private Sub btnLastCitation_Click(sender As Object, e As RoutedEventArgs)
+        If EreignisControl IsNot Nothing Then
+            EreignisControl.setQuellZitatID(My.Settings.LastQuellZitat)
+        End If
     End Sub
 
     Private Sub LoadData()
@@ -265,67 +287,70 @@ Class QuellenZitate
                 ' =========================================================
                 ' DATUM
                 ' =========================================================
-            ElseIf String.Equals(header, "Datum", StringComparison.OrdinalIgnoreCase) And isUCLoaded = False Then
+            ElseIf String.Equals(header, "Datum", StringComparison.OrdinalIgnoreCase) Then
+                If isUCLoaded = False Then
+                    Dim index As Integer = i
 
-                Dim index As Integer = i
+                    dgQuellZitate.Columns.RemoveAt(i)
 
-                dgQuellZitate.Columns.RemoveAt(i)
+                    Dim datumColumn As New DataGridTemplateColumn()
+                    datumColumn.Header = "Datum "
 
-                Dim datumColumn As New DataGridTemplateColumn()
-                datumColumn.Header = "Datum"
-
-                ' -----------------------------------------------------
-                ' Anzeige
-                ' -----------------------------------------------------
-                Dim textFactory As New FrameworkElementFactory(
+                    ' -----------------------------------------------------
+                    ' Anzeige
+                    ' -----------------------------------------------------
+                    Dim textFactory As New FrameworkElementFactory(
                 GetType(TextBlock))
 
-                textFactory.SetBinding(
+                    textFactory.SetBinding(
                 TextBlock.TextProperty,
                 New Binding("Datum") With {
                     .StringFormat = "dd.MM.yyyy"
                 })
 
-                textFactory.SetValue(
+                    textFactory.SetValue(
                 TextBlock.VerticalAlignmentProperty,
                 VerticalAlignment.Center)
 
-                textFactory.SetValue(
+                    textFactory.SetValue(
                 TextBlock.MarginProperty,
                 New Thickness(4, 0, 4, 0))
 
-                Dim displayTemplate As New DataTemplate()
-                displayTemplate.VisualTree = textFactory
+                    Dim displayTemplate As New DataTemplate()
+                    displayTemplate.VisualTree = textFactory
 
-                datumColumn.CellTemplate = displayTemplate
+                    datumColumn.CellTemplate = displayTemplate
 
-                ' -----------------------------------------------------
-                ' Bearbeiten → DatePicker
-                ' -----------------------------------------------------
-                Dim datePickerFactory As New FrameworkElementFactory(
+                    ' -----------------------------------------------------
+                    ' Bearbeiten → DatePicker
+                    ' -----------------------------------------------------
+                    Dim datePickerFactory As New FrameworkElementFactory(
                 GetType(DatePicker))
 
-                datePickerFactory.SetBinding(
+                    datePickerFactory.SetBinding(
                 DatePicker.SelectedDateProperty,
                 New Binding("Datum") With {
                     .Mode = BindingMode.TwoWay,
                     .UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                 })
 
-                datePickerFactory.SetValue(
+                    datePickerFactory.SetValue(
                 DatePicker.VerticalAlignmentProperty,
                 VerticalAlignment.Center)
 
-                datePickerFactory.SetValue(
+                    datePickerFactory.SetValue(
                 DatePicker.MarginProperty,
                 New Thickness(0))
 
-                Dim editTemplate As New DataTemplate()
-                editTemplate.VisualTree = datePickerFactory
+                    Dim editTemplate As New DataTemplate()
+                    editTemplate.VisualTree = datePickerFactory
 
-                datumColumn.CellEditingTemplate = editTemplate
+                    datumColumn.CellEditingTemplate = editTemplate
 
-                dgQuellZitate.Columns.Insert(index, datumColumn)
+                    dgQuellZitate.Columns.Insert(index, datumColumn)
+                Else
+                    col.Visibility = Visibility.Collapsed
+                End If
 
 
                 ' =========================================================
@@ -333,7 +358,7 @@ Class QuellenZitate
                 ' =========================================================
             ElseIf String.Equals(header, "InternetAdresse", StringComparison.OrdinalIgnoreCase) And isUCLoaded = False Then
 
-                Dim index As Integer = i
+                    Dim index As Integer = i
 
                 dgQuellZitate.Columns.RemoveAt(i)
 

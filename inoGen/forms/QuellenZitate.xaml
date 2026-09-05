@@ -145,6 +145,20 @@
                         Margin="5"
                         Click="btnNeu_Click" />
 
+                <Button x:Name="btnCurrent"
+                        Content="Current"
+                        Width="100"
+                        Height="30"
+                        Margin="5"
+                        Click="btnCurrent_Click" />
+                
+                <Button x:Name="btnLetzteZitat"
+                        Content="Letztes Zitat"
+                        Width="100"
+                        Height="30"
+                        Margin="5"
+                        Click="btnLastCitation_Click"  />
+
                 <Button x:Name="btnKopieren"
                         Content="Kopieren"
                         Width="100"

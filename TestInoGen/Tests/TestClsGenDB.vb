@@ -1,7 +1,8 @@
-﻿Imports System.IO
-Imports NUnit.Framework
+﻿Imports System.Data
+Imports System.IO
 Imports inoGenDLL
-Imports System.Data
+Imports NUnit.Framework
+Imports NUnit.Framework.Internal
 
 Namespace TestInoGen
     Public Class TestClsGenDB
@@ -1132,6 +1133,112 @@ Namespace TestInoGen
             dt = cGDB.GetEreignisZitat
             Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
 
+            cGDB.SetEreignisZitat(6, 7, 8, "")
+
+            dt = cGDB.GetEreignisZitat
+            Assert.That(dt.Rows(5).Item("tblQuellZitatID"), NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(5).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(7))
+            Assert.That(dt.Rows(5).Item("tblPersonID"), NUnit.Framework.Is.EqualTo(8))
+            Assert.That(dt.Rows(5).Item("EventTag"), NUnit.Framework.Is.EqualTo(""))
+
         End Sub
+
+
+        <Test>
+        Public Sub TestGetQuelleZitatePerson()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetQuelleZitatePerson(130)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+
+            Assert.That(dt.Rows(0).Item("TagD"), NUnit.Framework.Is.EqualTo("Proband"))
+            Assert.That(If(dt.Rows(1)("TagD") Is DBNull.Value, "", dt.Rows(1)("TagD").ToString()), NUnit.Framework.Is.EqualTo(""))
+
+
+            dt = cGDB.GetQuelleZitatePerson(7)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+
+            dt = cGDB.GetQuelleZitatePerson(4)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+        End Sub
+
+        <Test>
+        Public Sub TestGetQuellzitatEvent()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetQuellzitatEvent(1, 1)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("EventTag"), NUnit.Framework.Is.EqualTo("_PROB"))
+
+            dt = cGDB.GetQuellzitatEvent(1, 2)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+            dt = cGDB.GetQuellzitatEvent(10, 9)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+
+        End Sub
+
+        <Test>
+        Public Sub TestGetParentIDFromFamily()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim IDString As String = cGDB.GetParentIDFromFamily(1, True)
+
+            Assert.That(IDString, NUnit.Framework.Is.EqualTo("3"))
+
+            IDString = cGDB.GetParentIDFromFamily(1, False)
+
+            Assert.That(IDString, NUnit.Framework.Is.EqualTo("4"))
+
+            IDString = cGDB.GetParentIDFromFamily(25, True)
+
+            Assert.That(IDString, NUnit.Framework.Is.EqualTo("50"))
+
+            IDString = cGDB.GetParentIDFromFamily(25, False)
+
+            Assert.That(IDString, NUnit.Framework.Is.EqualTo(""))
+
+
+        End Sub
+
+
+        <Test>
+        Public Sub TestGetQuelleZitateFamily()
+            Dim DBFileT As String = testFolder & "\Beethoven.inoGdb"
+            cGDB = New inoGenDLL.ClsGenDB(DBFileT)
+
+            Dim dt As DataTable = cGDB.GetQuelleZitateFamily(2)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+
+            Assert.That(dt.Rows(0).Item("PersonType"), NUnit.Framework.Is.EqualTo("M"))
+            Assert.That(dt.Rows(1).Item("PersonType"), NUnit.Framework.Is.EqualTo("F"))
+
+
+            dt = cGDB.GetQuelleZitatePerson(7)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+
+            dt = cGDB.GetQuelleZitatePerson(4)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+
+        End Sub
+
     End Class
 End Namespace

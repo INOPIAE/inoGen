@@ -73,11 +73,46 @@
                 <TextBox x:Name="txtMonate" Width="50"/>
                 <TextBox x:Name="txtWochen" Width="50"/>
                 <TextBox x:Name="txtTage" Width="50"/>
-                <Button x:Name="btnCalcAge" Content="Berechnen" Width="100" Margin="0 10 0 0" />
+                <Button x:Name="btnCalcAge" Content="Berechnen" Width="100" Margin="0 0 0 0" />
             </StackPanel>
             <Button x:Name="btnSave" Content="Speichern" Width="100" Margin="0 10 0 0" HorizontalAlignment="Center"/>
             <Button x:Name="btnNew" Content="Neu" Width="100" Margin="0 10 0 0" Click="btnNew_Click"/>
-            
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Quellzitat:" Width="60" VerticalAlignment="Center"/>
+                <TextBlock Text="Vorkommen als:" Width="100" VerticalAlignment="Center"/>
+       
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 5 5">
+                <TextBox x:Name="txtQuellZitat" Width="60"/>
+                <ComboBox x:Name="cbEventTag"
+                          Width="150"
+                          SelectionChanged="cbEventTag_SelectionChanged"/>
+                <Button x:Name="btnSaveSource" Content="Person" Width="100" Margin="0 0 5 0" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Quellzitat:" Width="60" VerticalAlignment="Center"/>
+                <TextBlock Text="Vorkommen als:" Width="100" VerticalAlignment="Center"/>
+
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 5 5">
+                <TextBox x:Name="txtQuellZitatV" Width="60"/>
+                <ComboBox x:Name="cbEventTagV"
+                          Width="150"
+                          SelectionChanged="cbEventTagV_SelectionChanged"/>
+                <Button x:Name="btnSaveSourceV" Content="Vater" Width="100" Margin="0 0 5 0" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                <TextBlock Text="Quellzitat:" Width="60" VerticalAlignment="Center"/>
+                <TextBlock Text="Vorkommen als:" Width="100" VerticalAlignment="Center"/>
+
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 5 5">
+                <TextBox x:Name="txtQuellZitatM" Width="60"/>
+                <ComboBox x:Name="cbEventTagM"
+                          Width="150"
+                          SelectionChanged="cbEventTagM_SelectionChanged"/>
+                <Button x:Name="btnSaveSourceM" Content="Mutter" Width="100" Margin="0 0 5 0" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>
