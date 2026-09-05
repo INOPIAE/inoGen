@@ -39,7 +39,9 @@ Public Class personen
             tblPerson.FSID
         FROM
             tblPerson
-            LEFT JOIN tblNachname ON tblPerson.tblNachnameID = tblNachname.tblNachnameID"
+            LEFT JOIN tblNachname ON tblPerson.tblNachnameID = tblNachname.tblNachnameID
+        WHERE 
+            tblPerson.active = True"
 
     Private cDB As New clsDB(My.Settings.DBPath)
     Private cGDB As New ClsGenDB(My.Settings.DBPath)
@@ -129,7 +131,7 @@ Public Class personen
                 Using conn As New OleDbConnection(connectionString)
                     conn.Open()
                     If isNewRecord Then
-                        Dim insertCmd As New OleDbCommand("INSERT INTO tblPerson (PS, Sex, FSID, tblFamilieID, tblNachnameID, tblKonfessionID, Vorname, Info) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", conn)
+                        Dim insertCmd As New OleDbCommand("INSERT INTO tblPerson (PS, Sex, FSID, tblFamilieID, tblNachnameID, tblKonfessionID, Vorname, Info, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, true)", conn)
                         insertCmd.Parameters.AddWithValue("@PS", txtPS.Text.ToUpper)
                         insertCmd.Parameters.AddWithValue("@Sex", CType(cbSex.SelectedItem, ComboBoxItem).Content.ToString())
                         insertCmd.Parameters.AddWithValue("@FSID", txtFSID.Text)
@@ -310,7 +312,7 @@ Public Class personen
                     INNER JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
                 )
                 LEFT JOIN tblKreis ON tblOrt.tblKreisID = tblKreis.tblKreisID
-            WHERE tblPersonID = ? and tblFamilieID = 0
+            WHERE tblPersonID = ? AND tblFamilieID = 0 AND tblEreignis.active = True
             ORDER BY
                 tblEreignisArt.Reihenfolge,
                 tblEreignis.Datum;"
@@ -403,7 +405,7 @@ Public Class personen
             GROUP BY
                 tblEreignis.tblPersonID
             HAVING
-                tblEreignis.tblPersonID = ?"
+                tblEreignis.tblPersonID = ? AND tblEreignis.active = True"
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
             Using cmd As New OleDbCommand(strSQL, conn)
@@ -516,7 +518,7 @@ Public Class personen
             Using conn As New OleDbConnection(connectionString)
                 conn.Open()
 
-                Dim sql As String = "SELECT tblPersonIDV, tblPersonIDM FROM tblFamilie WHERE tblFamilieID = ?"
+                Dim sql As String = "SELECT tblPersonIDV, tblPersonIDM FROM tblFamilie WHERE tblFamilieID = ? AND tblFamilie.active = True"
                 Using cmd As New OleDbCommand(sql, conn)
                     cmd.Parameters.AddWithValue("@p1", FID)
 

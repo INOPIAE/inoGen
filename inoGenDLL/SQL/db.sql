@@ -52,6 +52,7 @@ CREATE TABLE tblPerson(
     tblKonfessionID INTEGER,
     Vorname VARCHAR(255),
     Info MEMO,
+    active YESNO,
 	CONSTRAINT PrimaryKey PRIMARY KEY (tblPersonID));
 
 DROP TABLE tblVorname;
@@ -86,6 +87,7 @@ CREATE TABLE tblFamilie(
     FS VARCHAR(12),
     tblPersonIDV INTEGER,
     tblPersonIDM INTEGER,
+    active YESNO,
 	CONSTRAINT PrimaryKey PRIMARY KEY (tblFamilieID));
 
 DROP TABLE tblEreignis;
@@ -105,6 +107,7 @@ CREATE TABLE tblEreignis(
     Referenz VARCHAR(255),
     FSID VARCHAR(255),
     Info MEMO,
+    active YESNO,
 	CONSTRAINT PrimaryKey PRIMARY KEY (tblEreignisID));
 
 DROP TABLE tblEreignisDokument;
@@ -320,4 +323,4 @@ INSERT INTO tblEventTag (Tag, TagD) VALUES ('_BRIDEGROOM', 'Bräutigam');
 INSERT INTO tblEventTag (Tag, TagD) VALUES ('_BRIDE', 'Braut');
 INSERT INTO tblEventTag (Tag, TagD) VALUES ('_TWIN', 'Zwilling');
 
-UPDATE tblVersion SET Version = 9;
+UPDATE tblVersion SET Version = 10;

@@ -61,7 +61,7 @@ Public Class familien
                 Using conn As New OleDbConnection(connectionString)
                     conn.Open()
                     If isNewRecord Then
-                        Dim insertCmd As New OleDbCommand("INSERT INTO tblFamilie (FS, tblPersonIDV, tblPersonIDM) VALUES (?, ?, ?)", conn)
+                        Dim insertCmd As New OleDbCommand("INSERT INTO tblFamilie (FS, tblPersonIDV, tblPersonIDM, active) VALUES (?, ?, ?, True)", conn)
                         insertCmd.Parameters.AddWithValue("@FS", txtFS.Text.ToUpper)
                         If IsNothing(VID) Then
                             insertCmd.Parameters.AddWithValue("@tblPersonIDV", DBNull.Value)
@@ -241,7 +241,7 @@ Public Class familien
                     INNER JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
                 )
                 LEFT JOIN tblKreis ON tblOrt.tblKreisID = tblKreis.tblKreisID
-            WHERE tblFamilieID = ? and tblPersonID = 0
+            WHERE tblFamilieID = ? AND tblPersonID = 0 AND tblEreignis.active = True
             ORDER BY
                 tblEreignisArt.Reihenfolge,
                 tblEreignis.Datum;"
@@ -328,7 +328,7 @@ Public Class familien
             GROUP BY
                 tblEreignis.tblFamilieID
             HAVING
-                tblEreignis.tblFamilieID = ?"
+                tblEreignis.tblFamilieID = ? AND tblEreignis.active = True"
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
             Using cmd As New OleDbCommand(strSQL, conn)
@@ -410,7 +410,7 @@ Public Class familien
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
 
-            Dim sqlCheck As String = "SELECT tblFamilieID FROM tblPerson WHERE tblPersonID = ? AND tblFamilieID > 0 "
+            Dim sqlCheck As String = "SELECT tblFamilieID FROM tblPerson WHERE tblPersonID = ? AND tblFamilieID > 0 AND tblPerson.active = True"
             Using cmdCheck As New OleDbCommand(sqlCheck, conn)
                 cmdCheck.Parameters.AddWithValue("@p1", pid)
 
@@ -444,7 +444,7 @@ Public Class familien
                 Vorname
             FROM
                 tblPerson
-            WHERE tblFamilieID = ?
+            WHERE tblFamilieID = ? AND tblPerson.active = True
             ORDER BY Right(PS, 4);"
 
         Try
@@ -495,7 +495,7 @@ Public Class familien
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
 
-            Dim sql As String = "SELECT * FROM tblFamilie WHERE tblFamilieID = ?"
+            Dim sql As String = "SELECT * FROM tblFamilie WHERE tblFamilieID = ? AND tblFamilie.active = True"
             Using cmd As New OleDbCommand(sql, conn)
                 cmd.Parameters.AddWithValue("@p1", familieID)
 

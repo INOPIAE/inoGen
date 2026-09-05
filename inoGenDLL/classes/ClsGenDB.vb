@@ -27,7 +27,7 @@ Public Class ClsGenDB
                     LEFT JOIN tblNachname ON tblPerson.tblNachnameID = tblNachname.tblNachnameID
                 )
                 LEFT JOIN tblKonfession ON tblPerson.tblKonfessionID = tblKonfession.tblKonfessionID
-            WHERE tblPersonID = ?"
+            WHERE tblPersonID = ? and tblPerson.active = True"
         Dim PNAme As String = ""
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
@@ -54,7 +54,7 @@ Public Class ClsGenDB
                 tblFamilie.*
             FROM
                 tblFamilie
-            WHERE tblFamilieID = ?"
+            WHERE tblFamilieID = ? AND tblFamilie.active = True"
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
             Using cmd As New OleDbCommand(strSQL, conn)
@@ -105,7 +105,7 @@ Public Class ClsGenDB
                     INNER JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
                 )
                 LEFT JOIN tblKreis ON tblOrt.tblKreisID = tblKreis.tblKreisID
-            WHERE tblPersonID = ? and tblFamilieID = 0
+            WHERE tblPersonID = ? AND tblFamilieID = 0 AND tblEreignis.active = True
             ORDER BY
                 tblEreignisArt.Reihenfolge,
                 tblEreignis.Datum"
@@ -179,7 +179,7 @@ Public Class ClsGenDB
                     INNER JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
                 )
                 LEFT JOIN tblKreis ON tblOrt.tblKreisID = tblKreis.tblKreisID
-            WHERE tblPersonID = 0 and tblFamilieID = ?
+            WHERE tblPersonID = 0 AND tblFamilieID = ? AND tblEreignis.active = True
             ORDER BY
                 tblEreignisArt.Reihenfolge,
                 tblEreignis.Datum"
@@ -226,7 +226,7 @@ Public Class ClsGenDB
             FROM
                 tblPerson
                 LEFT JOIN tblNachname ON tblPerson.tblNachnameID = tblNachname.tblNachnameID
-            WHERE tblPersonID = ?"
+            WHERE tblPersonID = ? and tblPerson.active = True"
         Dim PNAme As String = ""
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
@@ -354,10 +354,12 @@ Public Class ClsGenDB
                 tblFamilie.tblFamilieID,
                 tblFamilie.FS,
                 tblFamilie.tblPersonIDV,
-                tblFamilie.tblPersonIDM
+                tblFamilie.tblPersonIDM,
+                tblFamilie.active
             HAVING
-                tblFamilie.tblPersonIDV = ? 
-                OR tblFamilie.tblPersonIDM = ?
+                (tblFamilie.tblPersonIDV = ? 
+                OR tblFamilie.tblPersonIDM = ?)
+                AND tblFamilie.active = True
             ORDER BY
                 Min(tblEreignis.Datum)"
         Dim FL As New List(Of clsAhnentafelDaten.FamilyData)
@@ -453,7 +455,7 @@ Public Class ClsGenDB
 
     Public Function StatisicsPersonen() As Integer
         Dim strSQL As String =
-            "SELECT COUNT(*) FROM tblPerson"
+            "SELECT COUNT(*) FROM tblPerson WHERE tblPerson.active = True"
         Dim count As Integer
 
         Using conn As New OleDbConnection(connectionString)
@@ -467,7 +469,7 @@ Public Class ClsGenDB
 
     Public Function StatisicsFamilien() As Integer
         Dim strSQL As String =
-            "SELECT COUNT(*) FROM tblFamilie"
+            "SELECT COUNT(*) FROM tblFamilie WHERE tblFamilie.active = True"
         Dim count As Integer
 
         Using conn As New OleDbConnection(connectionString)
@@ -1112,6 +1114,8 @@ Public Class ClsGenDB
                             tblEreignis.tblPersonID
                     ) AS e
                 ON p.tblPersonID = e.tblPersonID
+            WHERE
+                p.active = True
             ORDER BY
                 p.PS;"
 
@@ -1137,6 +1141,8 @@ Public Class ClsGenDB
                 [qryPerson]![Vorname] & ' ' & UCase([qryPerson]![Nachname]) AS Vater, 
                 m.Vorname & ' ' & UCase(m.Nachname) AS Mutter
             FROM qryPerson As m RIGHT Join (qryPerson RIGHT Join tblFamilie On qryPerson.tblPersonID = tblFamilie.tblPersonIDV) ON m.tblPersonID = tblFamilie.tblPersonIDM
+            WHERE
+                tblFamilie.active = True
             ORDER BY FS;"
 
         Dim dt As New DataTable()
@@ -1226,16 +1232,15 @@ Public Class ClsGenDB
                 LEFT JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
             WHERE
                 (
-                    (
-                        tblEreignis.tblEreignisArtID = 1
-                        OR tblEreignis.tblEreignisArtID = 2
-                        OR tblEreignis.tblEreignisArtID = 6
-                        OR tblEreignis.tblEreignisArtID = 7
-                        OR tblEreignis.tblEreignisArtID = 9
-                        OR tblEreignis.tblEreignisArtID = 10
-                        OR tblEreignis.tblEreignisArtID IS NULL
-                    )
+                    tblEreignis.tblEreignisArtID = 1
+                    OR tblEreignis.tblEreignisArtID = 2
+                    OR tblEreignis.tblEreignisArtID = 6
+                    OR tblEreignis.tblEreignisArtID = 7
+                    OR tblEreignis.tblEreignisArtID = 9
+                    OR tblEreignis.tblEreignisArtID = 10
+                    OR tblEreignis.tblEreignisArtID IS NULL
                 )
+                AND tblPerson.active = True
             ORDER BY
                 tblPerson.tblPersonID,
                 tblEreignis.tblEreignisArtID;")
@@ -1266,9 +1271,9 @@ Public Class ClsGenDB
             FROM
                 tblFamilie
             WHERE
-             tblPersonIDV = ?
-                Or tblPersonIDM = ?;")
-
+             (tblPersonIDV = ?
+                Or tblPersonIDM = ?)
+                AND tblFamilie.active = True;")
         Dim dt As New DataTable()
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
@@ -1308,7 +1313,12 @@ Public Class ClsGenDB
                 tblFamilie.tblPersonIDV,
                 tblFamilie.tblPersonIDM,
                 tblPerson.tblPersonID,
-                tblPerson.tblPersonID
+                tblPerson.tblPersonID,
+                tblPerson.active,
+                tblFamilie.active
+            HAVING
+                tblPerson.active = True
+                AND tblFamilie.active = True
             ORDER BY
                 tblFamilie.tblFamilieID,
                 Min(tblEreignis.Datum),
@@ -1353,6 +1363,7 @@ Public Class ClsGenDB
                     OR tblEreignis.tblEreignisArtID = 8
                     OR tblEreignis.tblEreignisArtID IS NULL
                 )
+                AND tblFamilie.active = True
             ORDER BY
                 tblFamilie.tblFamilieID,
                 tblEreignis.Datum,
@@ -1924,7 +1935,7 @@ Public Class ClsGenDB
             FROM
                 tblFamilie
             WHERE
-                tblFamilie.tblFamilieID = ?;"
+                tblFamilie.tblFamilieID = ? AND tblFamilie.active = True;"
 
         Dim dt As New DataTable()
         Using conn As New OleDbConnection(connectionString)

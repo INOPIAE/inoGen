@@ -314,7 +314,7 @@ Namespace TestInoGen
         Public Sub TestStatisicsFamilien()
             Dim result As Integer = cGDB.StatisicsFamilien
 
-            Assert.That(result, NUnit.Framework.Is.EqualTo(68))
+            Assert.That(result, NUnit.Framework.Is.EqualTo(67))
 
         End Sub
 
@@ -830,7 +830,7 @@ Namespace TestInoGen
 
             Dim dt As DataTable = cGDB.GetGedcomFamilie
 
-            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(74))
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(73))
 
             'Assert.That(dt.Rows(0).Item("BUCH_H"), NUnit.Framework.Is.EqualTo("D"))
             'Assert.That(dt.Rows(0).Item("SEITE_H"), NUnit.Framework.Is.EqualTo(1))
