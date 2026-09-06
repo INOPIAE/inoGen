@@ -1157,6 +1157,34 @@ Public Class ClsGenDB
         Return dt
     End Function
 
+    Function GetFamiliesByPerson(PID As Integer) As DataTable
+        Dim strSQL As String =
+            "SELECT
+                tblFamilie.tblFamilieID,
+                tblFamilie.FS,
+                tblFamilie.tblPersonIDV,
+                tblFamilie.tblPersonIDM,
+                [qryPerson]![Vorname] & ' ' & UCase([qryPerson]![Nachname]) AS Vater, 
+                m.Vorname & ' ' & UCase(m.Nachname) AS Mutter
+            FROM qryPerson As m RIGHT Join (qryPerson RIGHT Join tblFamilie On qryPerson.tblPersonID = tblFamilie.tblPersonIDV) ON m.tblPersonID = tblFamilie.tblPersonIDM
+            WHERE
+                tblFamilie.active = True AND (tblFamilie.tblPersonIDV = ? OR tblFamilie.tblPersonIDM = ?)
+            ORDER BY FS;"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblPersonIDV", PID)
+                cmd.Parameters.AddWithValue("@tblPersonIDM", PID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
     Public Function GetVKH_Table(Optional Book As String = "") As DataTable
         Dim SQLFilter As String = ""
 

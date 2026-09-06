@@ -224,7 +224,7 @@ Namespace TestInoGen
         End Sub
 
         <Test>
-        Public Sub TestGetFamilies()
+        Public Sub TestGetFamiliesFD()
             Dim FL As New List(Of clsAhnentafelDaten.FamilyData)
             FL = cGDB.GetFamilies(2)
 
@@ -1240,5 +1240,24 @@ Namespace TestInoGen
 
         End Sub
 
+        <Test>
+        Public Sub TestGetFamilies()
+            Dim dt As DataTable = cGDB.GetFamilies()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(67))
+        End Sub
+
+        <Test>
+        Public Sub TestGetFamiliesByPerson()
+            Dim dt As DataTable = cGDB.GetFamiliesByPerson(90)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("FS"), NUnit.Framework.Is.EqualTo("ERBEHERM1535"))
+
+            dt = cGDB.GetFamiliesByPerson(91)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("FS"), NUnit.Framework.Is.EqualTo("ERBEHERM1535"))
+        End Sub
     End Class
 End Namespace

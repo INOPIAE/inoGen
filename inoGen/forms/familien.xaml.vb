@@ -313,6 +313,7 @@ Public Class familien
 
     Private Sub OnDatenGespeichert(sender As Object, e As EventArgs)
         LoadEventData()
+        LoadQuellzitate()
         FSSpeichern()
     End Sub
 
