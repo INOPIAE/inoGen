@@ -3,6 +3,7 @@ Imports System.Data.OleDb
 Imports System.Globalization
 Imports System.Text.RegularExpressions
 Imports ADODB
+Imports iText.Commons.Bouncycastle
 Imports iText.StyledXmlParser.Jsoup.Select.Evaluator
 
 Public Class ClsGenDB
@@ -1490,7 +1491,8 @@ Public Class ClsGenDB
 
     Public Function DeleteQuelle(ID As Integer) As Boolean
         Dim strSQL As String =
-            "DELETE FROM tblQuelle
+            "UPDATE tblQuelle
+             SET active = False
              WHERE tblQuelleID = ?"
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
@@ -1618,7 +1620,8 @@ Public Class ClsGenDB
 
     Public Function DeleteQuellZitat(ID As Integer) As Boolean
         Dim strSQL As String =
-            "DELETE FROM tblQuellZitat
+            "UPDATE tblQuellZitat
+             SET active = False 
              WHERE tblQuellZitatID = ?"
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
@@ -1690,8 +1693,9 @@ Public Class ClsGenDB
 
     Public Function DeleteEreignisZitat(ID As Integer) As Boolean
         Dim strSQL As String =
-            "DELETE FROM tblEreignisZitat
-             WHERE tblEreignisZitatID = ?"
+            "UPDATE tblEreignisZitat
+                 SET active = False
+                 WHERE tblEreignisZitatID = ?"
         Using conn As New OleDbConnection(connectionString)
             conn.Open()
             Using cmd As New OleDbCommand(strSQL, conn)
@@ -1895,7 +1899,10 @@ Public Class ClsGenDB
                     ) ON tblEventTag.Tag = tblEreignisZitat.EventTag
                 ) ON tblEreignisArt_1.tblEreignisArtID = tblEreignis.tblEreignisArtID
             WHERE
-                tblEreignisZitat.active = True AND tblEreignisZitat.tblPersonID = ?;"
+                tblEreignisZitat.active = True AND tblEreignisZitat.tblPersonID = ?
+            ORDER BY tblEreignis.Datum;"
+
+
 
 
         Dim dt As New DataTable()
@@ -2095,5 +2102,178 @@ Public Class ClsGenDB
             End Using
         End Using
         Return dt
+    End Function
+
+    Public Function DeleteEreignis(ID As Integer) As Integer
+        Dim strSQL As String =
+            "UPDATE tblEreignis
+             SET active = False
+             WHERE tblEreignisID = ?"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblEreignisID", ID)
+                Dim rowsAffected As Integer = cmd.ExecuteNonQuery()
+                If rowsAffected > 0 = False Then
+                    Return 0
+                End If
+
+            End Using
+        End Using
+
+        strSQL =
+            "SELECT COUNT(*) AS Anzahl
+             FROM tblEreignisZitat
+             WHERE tblEreignisID = ?
+               AND active = True"
+
+        Dim anzahl As Integer
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmd As New OleDbCommand(strSQL, conn)
+
+                cmd.Parameters.AddWithValue("@tblEreignisID", ID)
+
+                anzahl = Convert.ToInt32(cmd.ExecuteScalar())
+
+            End Using
+        End Using
+
+        If anzahl = 0 Then
+            Return 2
+        End If
+
+        strSQL =
+             "UPDATE tblEreignisZitat
+                 SET active = False
+                 WHERE tblEreignisID = ?"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblEreignisID", ID)
+                Dim rowsAffected As Integer = cmd.ExecuteNonQuery()
+                If rowsAffected > 0 = False Then
+                    Return 1
+                Else
+                    Return 2
+                End If
+            End Using
+        End Using
+    End Function
+
+    Public Function GetEreignisByID(ID As Integer, isFamily As Boolean) As DataTable
+        Dim personFilter As String = If(isFamily, "tblPersonID = 0 AND tblFamilieID = ?", "tblPersonID = ? AND tblFamilieID = 0")
+        Dim strSQL As String = String.Format("SELECT
+                tblEreignis.tblEreignisID,
+                tblEreignisArt.EreignisArt AS Ereignis,
+                tblEreignis.DatumText AS Datum,
+                tblEreignis.Datum AS HDatum,
+                IIf([tblKreis]![Kreis]<>"""",[tblOrt]![Ort] & "" ("" & [tblKreis]![Kreis] & "")"",[tblOrt]![Ort]) AS Ort,
+                tblKonfession.Konfessionkurz AS Konfession,
+                tblEreignis.Zusatz,
+                tblEreignis.Referenz,
+                tblEreignis.FSID,
+                tblEreignis.Info
+            FROM
+                (
+                    (
+                        (
+                            tblEreignis
+                            INNER JOIN tblEreignisArt ON tblEreignis.tblEreignisArtID = tblEreignisArt.tblEreignisArtID
+                        )
+                        INNER JOIN tblKonfession ON tblEreignis.tblKonfessionID = tblKonfession.tblKonfessionID
+                    )
+                    INNER JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
+                )
+                LEFT JOIN tblKreis ON tblOrt.tblKreisID = tblKreis.tblKreisID
+            WHERE {0} AND tblEreignis.active = True
+            ORDER BY
+                tblEreignisArt.Reihenfolge,
+                tblEreignis.Datum;", personFilter)
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@ID", ID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function SetEreignis(ereignisArtID As Integer, datumText As String, datum As Nullable(Of Date), bisDatumText As String, bisDatum As Nullable(Of Date), ortID As Integer, konfessionID As Integer, zusatz As String, referenz As String, fsid As String, info As String, personID As Integer, familieID As Integer) As Integer
+        Dim ID As Long
+        Dim strSQL As String =
+            "INSERT INTO tblEreignis (tblEreignisArtID, DatumText, Datum, BisDatumText, BisDatum, tblOrtID, tblKonfessionID, Zusatz, Referenz, FSID, Info, tblPersonID, tblFamilieID, active)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, True)"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblEreignisArtID", ereignisArtID)
+                cmd.Parameters.AddWithValue("@DatumText", datumText)
+                If IsDate(datum) Then
+                    cmd.Parameters.AddWithValue("@Datum", datum)
+                Else
+                    cmd.Parameters.AddWithValue("@Datum", DBNull.Value)
+                End If
+                cmd.Parameters.AddWithValue("@BisDatumText", bisDatumText)
+                If IsDate(bisDatum) Then
+                    cmd.Parameters.AddWithValue("@BisDatum", bisDatum)
+                Else
+                    cmd.Parameters.AddWithValue("@BisDatum", DBNull.Value)
+                End If
+                cmd.Parameters.AddWithValue("@tblOrtID", ortID)
+                cmd.Parameters.AddWithValue("@tblKonfessionID", konfessionID)
+                cmd.Parameters.AddWithValue("@Zusatz", zusatz)
+                cmd.Parameters.AddWithValue("@Referenz", referenz)
+                cmd.Parameters.AddWithValue("@FSID", fsid)
+                cmd.Parameters.AddWithValue("@Info", info)
+                cmd.Parameters.AddWithValue("@tblPersonID", personID)
+                cmd.Parameters.AddWithValue("@tblFamilieID", familieID)
+                cmd.ExecuteNonQuery()
+            End Using
+            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
+                ID = Convert.ToInt32(cmdId.ExecuteScalar())
+            End Using
+        End Using
+        Return ID
+    End Function
+
+    Public Function UpdateEreignis(ID As Integer, ereignisArtID As Integer, datumText As String, datum As Nullable(Of Date), bisDatumText As String, bisDatum As Nullable(Of Date), ortID As Integer, konfessionID As Integer, zusatz As String, referenz As String, fsid As String, info As String) As Boolean
+        Dim strSQL As String =
+            "UPDATE tblEreignis
+             SET tblEreignisArtID = ?, DatumText = ?, Datum = ?, BisDatumText = ?, BisDatum = ?, tblOrtID = ?, tblKonfessionID = ?, Zusatz = ?, Referenz = ?, FSID = ?, Info = ?
+             WHERE tblEreignisID = ?"
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblEreignisArtID", ereignisArtID)
+                cmd.Parameters.AddWithValue("@DatumText", datumText)
+                If IsDate(datum) Then
+                    cmd.Parameters.AddWithValue("@Datum", datum)
+                Else
+                    cmd.Parameters.AddWithValue("@Datum", DBNull.Value)
+                End If
+                cmd.Parameters.AddWithValue("@BisDatumText", bisDatumText)
+                If IsDate(bisDatum) Then
+                    cmd.Parameters.AddWithValue("@BisDatum", bisDatum)
+                Else
+                    cmd.Parameters.AddWithValue("@BisDatum", DBNull.Value)
+                End If
+                cmd.Parameters.AddWithValue("@tblOrtID", ortID)
+                cmd.Parameters.AddWithValue("@tblKonfessionID", konfessionID)
+                cmd.Parameters.AddWithValue("@Zusatz", zusatz)
+                cmd.Parameters.AddWithValue("@Referenz", referenz)
+                cmd.Parameters.AddWithValue("@FSID", fsid)
+                cmd.Parameters.AddWithValue("@Info", info)
+                cmd.Parameters.AddWithValue("@tblEreignisID", ID)
+                Dim rowsAffected As Integer = cmd.ExecuteNonQuery()
+                Return rowsAffected > 0
+            End Using
+        End Using
     End Function
 End Class

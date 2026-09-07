@@ -1259,5 +1259,145 @@ Namespace TestInoGen
             Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
             Assert.That(dt.Rows(0).Item("FS"), NUnit.Framework.Is.EqualTo("ERBEHERM1535"))
         End Sub
+
+        <Test>
+        Public Sub TestDeleteEreignis()
+
+            Dim dt As DataTable = cGDB.GetEreignisByID(1, False)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+
+            Dim datumText As String = "10.11.2020"
+            Dim datumTest As Nullable(Of Date) = cGDB.CalculateDatum(datumText)
+            Dim bisdatumText As String = "11.11.2020"
+            Dim bisdatumTest As Nullable(Of Date) = cGDB.CalculateDatum(bisdatumText)
+            Dim ID As Integer = cGDB.SetEreignis(1, datumText, datumTest, bisdatumText, bisdatumTest, 1, 1, "Zusatz", "Referenz", "FSID", "Info", 1, 0)
+
+            dt = cGDB.GetEreignisByID(1, False)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(7))
+
+
+
+            dt = cGDB.GetEreignisZitat()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+
+            Dim eID As Integer = cGDB.SetEreignisZitat(1, ID, 1, "WIFE")
+
+            dt = cGDB.GetEreignisZitat
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+
+            eID = cGDB.SetEreignisZitat(1, ID, 1, "HUSB")
+
+            dt = cGDB.GetEreignisZitat
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(7))
+
+            Dim check As Integer = cGDB.DeleteEreignis(ID)
+
+            Assert.That(check, NUnit.Framework.Is.EqualTo(2))
+
+            dt = cGDB.GetEreignisByID(1, False)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+            dt = cGDB.GetEreignisZitat
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+
+
+            datumText = "< 11.2020"
+            datumTest = cGDB.CalculateDatum(datumText)
+            bisdatumText = "> 2020"
+            bisdatumTest = cGDB.CalculateDatum(bisdatumText)
+            ID = cGDB.SetEreignis(1, datumText, datumTest, bisdatumText, bisdatumTest, 1, 1, "Zusatz", "Referenz", "FSID", "Info", 1, 0)
+
+            dt = cGDB.GetEreignisByID(1, False)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(7))
+
+
+
+            dt = cGDB.GetEreignisZitat()
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+
+            check = cGDB.DeleteEreignis(ID)
+
+            Assert.That(check, NUnit.Framework.Is.EqualTo(2))
+
+            dt = cGDB.GetEreignisByID(1, False)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+            dt = cGDB.GetEreignisZitat
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(5))
+        End Sub
+
+        <Test>
+        Public Sub TestGetEreignisByID()
+
+            Dim dt As DataTable = cGDB.GetEreignisByID(1, False)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(0).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(1).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(2))
+
+            dt = cGDB.GetEreignisByID(1, True)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(15))
+        End Sub
+
+        <Test>
+        Public Sub TestSetEreignis()
+
+            Dim dt As DataTable = cGDB.GetEreignisByID(1, False)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(0).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(1).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(2))
+
+            Dim datumText As String = "10.11.2020"
+            Dim datumTest As Nullable(Of Date) = cGDB.CalculateDatum(datumText)
+            Dim bisdatumText As String = "11.11.2020"
+            Dim bisdatumTest As Nullable(Of Date) = cGDB.CalculateDatum(bisdatumText)
+            Dim ID As Integer = cGDB.SetEreignis(1, datumText, datumTest, bisdatumText, bisdatumTest, 1, 1, "Zusatz", "Referenz", "FSID", "Info", 1, 0)
+
+            dt = cGDB.GetEreignisByID(1, False)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(7))
+            Assert.That(dt.Rows(0).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(ID))
+
+            datumText = "< 11.2020"
+            datumTest = cGDB.CalculateDatum(datumText)
+            bisdatumText = "> 2020"
+            bisdatumTest = cGDB.CalculateDatum(bisdatumText)
+            ID = cGDB.SetEreignis(1, datumText, datumTest, bisdatumText, bisdatumTest, 1, 1, "Zusatz", "Referenz", "FSID", "Info", 1, 0)
+
+
+            dt = cGDB.GetEreignisByID(1, False)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(8))
+            Assert.That(dt.Rows(0).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(ID))
+
+        End Sub
+
+        <Test>
+        Public Sub TestUpdateEreignis()
+
+            Dim dt As DataTable = cGDB.GetEreignisByID(1, False)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(0).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(1).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(2))
+
+            Dim datumText As String = "< 10.11.2020"
+            Dim datumTest As Nullable(Of Date) = cGDB.CalculateDatum(datumText)
+            Dim bisdatumText As String = "< 11.11.2020"
+            Dim bisdatumTest As Nullable(Of Date) = cGDB.CalculateDatum(bisdatumText)
+            Dim check As Boolean = cGDB.UpdateEreignis(1, 1, datumText, datumTest, bisdatumText, bisdatumTest, 1, 1, "Zusatz", "Referenz", "FSID", "Info")
+
+            dt = cGDB.GetEreignisByID(1, False)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+            Assert.That(dt.Rows(0).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("Datum"), NUnit.Framework.Is.EqualTo(datumText))
+            Assert.That(dt.Rows(0).Item("HDatum"), NUnit.Framework.Is.EqualTo(datumTest))
+        End Sub
     End Class
 End Namespace

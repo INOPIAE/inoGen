@@ -234,6 +234,7 @@ Public Class personen
         txtVorname.Focus()
         LoadEventData()
         LoadQuellzitate()
+        LoadSpouses()
         AdditionalContent.Content = Nothing
         Quellen.Content = Nothing
     End Sub
@@ -289,50 +290,10 @@ Public Class personen
 
 
     Private Sub LoadEventData()
-        Dim strSQL As String = "SELECT
-                tblEreignis.tblEreignisID,
-                tblEreignisArt.EreignisArt AS Ereignis,
-                tblEreignis.DatumText AS Datum,
-                tblEreignis.Datum AS HDatum,
-                IIf([tblKreis]![Kreis]<>"""",[tblOrt]![Ort] & "" ("" & [tblKreis]![Kreis] & "")"",[tblOrt]![Ort]) AS Ort,
-                tblKonfession.Konfessionkurz AS Konfession,
-                tblEreignis.Zusatz,
-                tblEreignis.Referenz,
-                tblEreignis.FSID,
-                tblEreignis.Info
-            FROM
-                (
-                    (
-                        (
-                            tblEreignis
-                            INNER JOIN tblEreignisArt ON tblEreignis.tblEreignisArtID = tblEreignisArt.tblEreignisArtID
-                        )
-                        INNER JOIN tblKonfession ON tblEreignis.tblKonfessionID = tblKonfession.tblKonfessionID
-                    )
-                    INNER JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
-                )
-                LEFT JOIN tblKreis ON tblOrt.tblKreisID = tblKreis.tblKreisID
-            WHERE tblPersonID = ? AND tblFamilieID = 0 AND tblEreignis.active = True
-            ORDER BY
-                tblEreignisArt.Reihenfolge,
-                tblEreignis.Datum;"
+        dtE = cGDB.GetEreignisByID(IIf(ID Is Nothing, 0, ID), False)
 
-
-        Try
-            Using conn As New OleDbConnection(connectionString)
-                conn.Open()
-                Dim cmd As New OleDbCommand(strSQL, conn)
-                cmd.Parameters.AddWithValue("@PersonID", IIf(ID Is Nothing, 0, ID))
-                Dim adapter As New OleDbDataAdapter(cmd)
-                dtE.Clear()
-                adapter.Fill(dtE)
-            End Using
-
-            dgEreignis.ItemsSource = dtE.DefaultView
-            btnNewEvent.IsEnabled = ID IsNot Nothing
-        Catch ex As Exception
-            MessageBox.Show("Fehler: " & ex.Message)
-        End Try
+        dgEreignis.ItemsSource = dtE.DefaultView
+        btnNewEvent.IsEnabled = ID IsNot Nothing
     End Sub
 
     Private Sub btnNewEvent_Click(sender As Object, e As RoutedEventArgs) Handles btnNewEvent.Click
@@ -403,7 +364,8 @@ Public Class personen
             WHERE
                 tblEreignisArt.Reihenfolge < 10
             GROUP BY
-                tblEreignis.tblPersonID
+                tblEreignis.tblPersonID,
+                tblEreignis.active
             HAVING
                 tblEreignis.tblPersonID = ? AND tblEreignis.active = True"
         Using conn As New OleDbConnection(connectionString)

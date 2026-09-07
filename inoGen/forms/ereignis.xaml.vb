@@ -84,12 +84,25 @@ Public Class ereignis
         SaveData()
     End Sub
 
+    Private Sub btnDelete_Click(sender As Object, e As RoutedEventArgs) Handles btnDelete.Click
+        If ID = 0 Or ID Is Nothing Then
+            MessageBox.Show("Kein Datensatz zum Löschen ausgewählt.")
+            Exit Sub
+        End If
+        If MessageBox.Show("Soll der Datensatz wirklich gelöscht werden?", "Datensatz löschen", MessageBoxButton.YesNo) = MessageBoxResult.No Then
+            Exit Sub
+        End If
+        Select Case cGenDB.DeleteEreignis(ID)
+            Case 0
+                MessageBox.Show("Datensatz wurde nicht gelöscht.")
+            Case 1
+                MessageBox.Show("Datensatz konnte nicht gelöscht werden.")
+            Case 2
+                MessageBox.Show("Datensatz wurde gelöscht.")
+                NewDataset()
+        End Select
+    End Sub
     Public Sub SaveData()
-        Dim sqlFind As String = "SELECT tblEreignisID FROM  tblEreignis WHERE tblEreignisArtID = ? AND  tblPersonID = ?"
-        Dim sqlFindF As String = "SELECT tblEreignisID FROM  tblEreignis  WHERE tblEreignisArtID = ? AND  tblFamilieID = ?"
-        Dim sqlInsert As String = "INSERT INTO tblEreignis (tblEreignisArtID, tblPersonID, tblFamilieID, Datum, DatumText, BisDatum, BisDatumText, tblOrtID, tblKonfessionID, Zusatz, Referenz, FSID, Info) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        Dim sqlUpdate As String = "UPDATE tblEreignis SET tblEreignisArtID = ?, tblPersonID = ?, tblFamilieID = ?, Datum = ?, DatumText = ?, BisDatum = ?, BisDatumText = ?, tblOrtID = ?, tblKonfessionID = ?, Zusatz = ?, Referenz = ?, FSID = ?, Info = ? WHERE tblEreignisID = ?"
-
         If cbEreignis.SelectedValue > 8 And txtZusatz.Text.Trim <> "" Then
             Dim ZID As Int16 = ZusatzID(txtZusatz.Text, CInt(cbEreignis.SelectedValue))
             If ZID = -1 Then Exit Sub
@@ -119,65 +132,9 @@ Public Class ereignis
             conn.Open()
 
             If ID = 0 Or ID Is Nothing Then
-
-                Using cmdInsert As New OleDbCommand(sqlInsert, conn)
-                    cmdInsert.Parameters.AddWithValue("@tblEreignisArtID", cbEreignis.SelectedValue)
-                    cmdInsert.Parameters.AddWithValue("@tblPersonID", PID)
-                    cmdInsert.Parameters.AddWithValue("@tblFamilieID", FID)
-                    Dim testdate As Nullable(Of Date) = cGenDB.CalculateDatum(txtDatum.Text)
-                    If IsDate(testdate) Then
-                        cmdInsert.Parameters.AddWithValue("@Datum", testdate)
-                    Else
-                        cmdInsert.Parameters.AddWithValue("@Datum", DBNull.Value)
-                    End If
-                    cmdInsert.Parameters.AddWithValue("@DatumText", txtDatum.Text)
-                    testdate = cGenDB.CalculateDatum(txtBisDatum.Text)
-                    If IsDate(testdate) Then
-                        cmdInsert.Parameters.AddWithValue("@BDatum", testdate)
-                    Else
-                        cmdInsert.Parameters.AddWithValue("@BDatum", DBNull.Value)
-                    End If
-                    cmdInsert.Parameters.AddWithValue("@BDatumText", txtBisDatum.Text)
-                    cmdInsert.Parameters.AddWithValue("@tblOrtID", cbOrt.SelectedValue)
-                    cmdInsert.Parameters.AddWithValue("@tblKonfessionID", cbKonfession.SelectedValue)
-                    cmdInsert.Parameters.AddWithValue("@Zusatz", txtZusatz.Text)
-                    cmdInsert.Parameters.AddWithValue("@Referenz", txtReferenz.Text)
-                    cmdInsert.Parameters.AddWithValue("@FSID", txtFSID.Text)
-                    cmdInsert.Parameters.AddWithValue("@Info", txtInfo.Text)
-                    cmdInsert.ExecuteNonQuery()
-                End Using
-
-                Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
-                    ID = Convert.ToInt32(cmdId.ExecuteScalar())
-                End Using
+                ID = cGenDB.SetEreignis(If(cbEreignis.SelectedValue IsNot Nothing, CInt(cbEreignis.SelectedValue), 0), txtDatum.Text, cGenDB.CalculateDatum(txtDatum.Text), txtBisDatum.Text, cGenDB.CalculateDatum(txtBisDatum.Text), If(cbOrt.SelectedValue IsNot Nothing, CInt(cbOrt.SelectedValue), 0), If(cbKonfession.SelectedValue IsNot Nothing, CInt(cbKonfession.SelectedValue), 0), txtZusatz.Text, txtReferenz.Text, txtFSID.Text, txtInfo.Text, PID, FID)
             Else
-                Using cmdUpdate As New OleDbCommand(sqlUpdate, conn)
-                    cmdUpdate.Parameters.AddWithValue("@tblEreignisArtID", cbEreignis.SelectedValue)
-                    cmdUpdate.Parameters.AddWithValue("@tblPersonID", PID)
-                    cmdUpdate.Parameters.AddWithValue("@tblFamilieID", FID)
-                    Dim testdate As Nullable(Of Date) = cGenDB.CalculateDatum(txtDatum.Text)
-                    If IsDate(testdate) Then
-                        cmdUpdate.Parameters.AddWithValue("@Datum", testdate)
-                    Else
-                        cmdUpdate.Parameters.AddWithValue("@Datum", DBNull.Value)
-                    End If
-                    cmdUpdate.Parameters.AddWithValue("@DatumText", txtDatum.Text)
-                    testdate = cGenDB.CalculateDatum(txtBisDatum.Text)
-                    If IsDate(testdate) Then
-                        cmdUpdate.Parameters.AddWithValue("@BDatum", testdate)
-                    Else
-                        cmdUpdate.Parameters.AddWithValue("@BDatum", DBNull.Value)
-                    End If
-                    cmdUpdate.Parameters.AddWithValue("@BDatumText", txtBisDatum.Text)
-                    cmdUpdate.Parameters.AddWithValue("@tblOrtID", cbOrt.SelectedValue)
-                    cmdUpdate.Parameters.AddWithValue("@tblKonfessionID", cbKonfession.SelectedValue)
-                    cmdUpdate.Parameters.AddWithValue("@Zusatz", txtZusatz.Text)
-                    cmdUpdate.Parameters.AddWithValue("@Referenz", txtReferenz.Text)
-                    cmdUpdate.Parameters.AddWithValue("@FSID", txtFSID.Text)
-                    cmdUpdate.Parameters.AddWithValue("@Info", txtInfo.Text)
-                    cmdUpdate.Parameters.AddWithValue("@ID", ID)
-                    cmdUpdate.ExecuteNonQuery()
-                End Using
+                cGenDB.UpdateEreignis(ID, If(cbEreignis.SelectedValue IsNot Nothing, CInt(cbEreignis.SelectedValue), 0), txtDatum.Text, cGenDB.CalculateDatum(txtDatum.Text), txtBisDatum.Text, cGenDB.CalculateDatum(txtBisDatum.Text), If(cbOrt.SelectedValue IsNot Nothing, CInt(cbOrt.SelectedValue), 0), If(cbKonfession.SelectedValue IsNot Nothing, CInt(cbKonfession.SelectedValue), 0), txtZusatz.Text, txtReferenz.Text, txtFSID.Text, txtInfo.Text)
                 If PID > 0 Then
                     My.Settings.LastPID = PID
                     My.Settings.Save()
