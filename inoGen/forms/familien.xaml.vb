@@ -352,7 +352,7 @@ Public Class familien
             Success = False
             Exit Sub
         End If
-        Dim win As New SuchePerson(VT)
+        Dim win As New SuchePerson(VT, If(VID, 0), If(MID, 0))
         AddHandler win.PersonSelected, Sub(pid, persontext)
                                            SaveNewChild(pid, persontext)
                                        End Sub

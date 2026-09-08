@@ -16,6 +16,9 @@ Public Class SuchePerson
         String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
     Private dt As New DataTable()
     Private cGDB As New ClsGenDB(My.Settings.DBPath)
+
+    Private VID As Integer? = Nothing
+    Private MID As Integer? = Nothing
     Public Sub New()
         InitializeComponent()
         LoadData()
@@ -27,6 +30,19 @@ Public Class SuchePerson
         LoadData()
         txtNachname.Text = VPart
         ckbKind.IsChecked = True
+
+        blnStart = False
+        FilterSetzen()
+    End Sub
+
+    Public Sub New(VPart As String, VID As Integer, MID As Integer)
+        InitializeComponent()
+        LoadData()
+        txtNachname.Text = VPart
+        ckbKind.IsChecked = True
+        Me.VID = VID
+        Me.MID = MID
+
 
         blnStart = False
         FilterSetzen()
@@ -77,6 +93,7 @@ Public Class SuchePerson
     Private Sub FilterSetzen()
         If blnStart Then Exit Sub
         Dim filter As String = vbNullString
+        Dim pFilter As String = vbNullString
         Dim sep As String = vbNullString
         If txtNachname.Text.Trim() <> vbNullString Then
             filter = String.Format("Nachname LIKE '%{0}%'", txtNachname.Text.Trim())
@@ -92,7 +109,23 @@ Public Class SuchePerson
         End If
         If ckbKind.IsChecked.Value Then
             filter &= sep & " Kind <> 'X'"
+            sep = ""
         End If
+        If VID > 0 Then
+            pFilter = String.Format("tblPersonID <> {0}", VID)
+            sep = " AND "
+        End If
+        If MID > 0 Then
+            pFilter &= sep & String.Format(" tblPersonID <> {0}", MID)
+        End If
+        If pFilter <> vbNullString Then
+            If filter <> vbNullString Then
+                filter &= String.Format(" AND ({0})", pFilter)
+            Else
+                filter = String.Format("({0})", pFilter)
+            End If
+        End If
+
         If Not String.IsNullOrEmpty(filter) Then
             Dim dv As New DataView(dt)
             dv.RowFilter = filter
