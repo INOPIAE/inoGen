@@ -419,6 +419,8 @@ Public Class familien
 
             dgPersonen.ItemsSource = dtP.DefaultView
 
+            lblCountPerson.Text = "Anzahl Kinder: " & dtP.Rows.Count.ToString()
+
         Catch ex As Exception
             MessageBox.Show("Fehler: " & ex.Message)
         End Try
