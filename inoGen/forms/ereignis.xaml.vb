@@ -462,17 +462,30 @@ Public Class ereignis
     Public Sub setQuellZitatID(QuellZitatID As Integer)
         If isPers Then
             txtQuellZitat.Text = QuellZitatID.ToString()
+            If cbEreignis.SelectedValue < 8 Then
+                cbEventTag.SelectedValue = "_PROB"
+            End If
         Else
             If VID <> "" Then
                 txtQuellZitatV.Text = QuellZitatID.ToString()
+                If cbEreignis.SelectedValue < 5 Then
+                    cbEventTagV.SelectedValue = "_BRIDEGROOM"
+                End If
             End If
-            If MID <> "" Then
+                If MID <> "" Then
                 txtQuellZitatM.Text = QuellZitatID.ToString()
+                If cbEreignis.SelectedValue < 5 Then
+                    cbEventTagM.SelectedValue = "_BRIDE"
+                End If
             End If
         End If
     End Sub
 
     Private Sub btnSaveSource_Click(sender As Object, e As RoutedEventArgs) Handles btnSaveSource.Click
+        If IsNothing(ID) Then
+            MessageBox.Show("Bitte zuerst den Datensatz speichern.")
+            Exit Sub
+        End If
         If isPers Then
             If IsNumeric(txtQuellZitat.Text) = False Then
                 MessageBox.Show("Bitte eine gültige Quell-Zitat-ID eingeben.")
@@ -488,6 +501,10 @@ Public Class ereignis
     End Sub
 
     Private Sub btnSaveSource_ClickV(sender As Object, e As RoutedEventArgs) Handles btnSaveSourceV.Click
+        If IsNothing(ID) Then
+            MessageBox.Show("Bitte zuerst den Datensatz speichern.")
+            Exit Sub
+        End If
         If isPers = False And VID <> "" Then
             If IsNumeric(txtQuellZitatV.Text) = False Then
                 MessageBox.Show("Bitte eine gültige Quell-Zitat-ID eingeben.")
@@ -503,6 +520,10 @@ Public Class ereignis
     End Sub
 
     Private Sub btnSaveSource_ClickM(sender As Object, e As RoutedEventArgs) Handles btnSaveSourceM.Click
+        If IsNothing(ID) Then
+            MessageBox.Show("Bitte zuerst den Datensatz speichern.")
+            Exit Sub
+        End If
         If isPers = False And MID <> "" Then
             If IsNumeric(txtQuellZitatM.Text) = False Then
                 MessageBox.Show("Bitte eine gültige Quell-Zitat-ID eingeben.")
