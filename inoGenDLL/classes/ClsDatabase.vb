@@ -10,7 +10,7 @@ Public Class ClsDatabase
 
     Private sqlPath As String = IIf(AppDomain.CurrentDomain.BaseDirectory.Contains("Release"), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Release\net9.0-windows7.0\", ""), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Debug\net9.0-windows7.0\", "")) & "\inoGenDLL\SQL\"
 
-    Private currentVersion As Long = 10
+    Private currentVersion As Long = 11
 
     Public Sub New(dbFileString As String)
         connString = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";Persist Security Info=True", dbFileString)

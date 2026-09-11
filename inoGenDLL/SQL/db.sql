@@ -287,6 +287,7 @@ INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis)
 INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis) VALUES ('Begräbnis', '', 7, True);
 INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis) VALUES ('Verlobung', '', 8, False);
 INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis) VALUES ('Beruf', '', 10, True);
+INSERT INTO tblEreignisArt (EreignisArt, Zeichen, Reihenfolge, PersonenEreignis) VALUES ('Sonstiges', '', 11, True);
 
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Taufpate');
 INSERT INTO tblEreignisPersonArt (EreignisPersonArt) VALUES ('Trauzeuge');
@@ -323,4 +324,4 @@ INSERT INTO tblEventTag (Tag, TagD) VALUES ('_BRIDEGROOM', 'Bräutigam');
 INSERT INTO tblEventTag (Tag, TagD) VALUES ('_BRIDE', 'Braut');
 INSERT INTO tblEventTag (Tag, TagD) VALUES ('_TWIN', 'Zwilling');
 
-UPDATE tblVersion SET Version = 10;
+UPDATE tblVersion SET Version = 11;
