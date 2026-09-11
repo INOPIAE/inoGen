@@ -491,6 +491,10 @@ Public Class ereignis
                 MessageBox.Show("Bitte eine gültige Quell-Zitat-ID eingeben.")
                 Exit Sub
             End If
+            If cbEventTag.SelectedValue = "-" Then
+                MessageBox.Show("Bitte einen Event-Tag auswählen.")
+                Exit Sub
+            End If
             If QuellZitatEreignisID = 0 Then
                 QuellZitatEreignisID = cGenDB.SetEreignisZitat(CInt(txtQuellZitat.Text), ID, PID, IIf(cbEventTag.SelectedValue.ToString() = "-", "", cbEventTag.SelectedValue))
             Else
@@ -510,6 +514,10 @@ Public Class ereignis
                 MessageBox.Show("Bitte eine gültige Quell-Zitat-ID eingeben.")
                 Exit Sub
             End If
+            If cbEventTagV.SelectedValue = "-" Then
+                MessageBox.Show("Bitte einen Event-Tag auswählen.")
+                Exit Sub
+            End If
             If QuellZitatEreignisVID = 0 Then
                 QuellZitatEreignisVID = cGenDB.SetEreignisZitat(CInt(txtQuellZitatV.Text), ID, CInt(VID), IIf(cbEventTagV.SelectedValue.ToString() = "-", "", cbEventTagV.SelectedValue))
             Else
@@ -527,6 +535,10 @@ Public Class ereignis
         If isPers = False And MID <> "" Then
             If IsNumeric(txtQuellZitatM.Text) = False Then
                 MessageBox.Show("Bitte eine gültige Quell-Zitat-ID eingeben.")
+                Exit Sub
+            End If
+            If cbEventTagM.SelectedValue = "-" Then
+                MessageBox.Show("Bitte einen Event-Tag auswählen.")
                 Exit Sub
             End If
             If QuellZitatEreignisMID = 0 Then
