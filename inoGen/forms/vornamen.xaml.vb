@@ -3,6 +3,7 @@ Imports inoGenDLL
 
 Public Class vornamen
     Private cGDB As New ClsGenDB(My.Settings.DBPath)
+    Private cPhonetic As New ClsPhonetic
 
     Private dtVorname As DataTable
     Private dvVorname As DataView
@@ -11,7 +12,11 @@ Public Class vornamen
         If dvVorname Is Nothing Then Exit Sub
 
         Dim filter = TxtSuche.Text.Replace("'", "''") ' Schutz
-        dvVorname.RowFilter = $"Vorname LIKE '%{filter}%'"
+        If ChkSoundex.IsChecked Then
+            dvVorname.RowFilter = $"SVorname LIKE '{cPhonetic.GetNameSoundex(filter)}'"
+        Else
+            dvVorname.RowFilter = $"Vorname LIKE '%{filter}%'"
+        End If
     End Sub
 
     Private Sub vornamen_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized

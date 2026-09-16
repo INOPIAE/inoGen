@@ -23,6 +23,18 @@
                  Width="200"
                  Margin="5,0,0,0"
                  TextChanged="TxtSuche_TextChanged"/>
+            <CheckBox x:Name="ChkSoundex" 
+                      Content="Soundex Suche" 
+                      Margin="5,0,0,0"
+                      VerticalAlignment="Center" 
+                      FlowDirection="RightToLeft" >
+                <CheckBox.Resources>
+                    <!-- Verhindert, dass der Text von rechts nach links geschrieben wird -->
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="FlowDirection" Value="LeftToRight"/>
+                    </Style>
+                </CheckBox.Resources>
+            </CheckBox>
         </StackPanel>
 
         <!-- 📋 Inhalt -->
