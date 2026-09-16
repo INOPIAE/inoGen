@@ -41,11 +41,15 @@ Class MainWindow
     End Sub
 
     Private Sub Orte_Click(sender As Object, e As RoutedEventArgs)
-        MainContent.Content = New orte()
+        Dim wnd As New allgemeinesFenster(New orte(), "Orte")
+
+        wnd.ShowDialog()
     End Sub
 
     Private Sub Kreise_Click(sender As Object, e As RoutedEventArgs)
-        MainContent.Content = New kreise()
+        Dim wnd As New allgemeinesFenster(New kreise(), "Kreise")
+
+        wnd.ShowDialog()
     End Sub
 
     Private Sub Person_Click(sender As Object, e As RoutedEventArgs)
@@ -61,7 +65,9 @@ Class MainWindow
     End Sub
 
     Private Sub Konfession_Click(sender As Object, e As RoutedEventArgs)
-        MainContent.Content = New konfession()
+        Dim wnd As New allgemeinesFenster(New konfession(), "Konfession")
+
+        wnd.ShowDialog()
     End Sub
 
     Private Sub Quit_Click(sender As Object, e As RoutedEventArgs)
@@ -154,7 +160,10 @@ Class MainWindow
     End Sub
 
     Private Sub Ereignisart_Click(sender As Object, e As RoutedEventArgs)
-        MainContent.Content = New ereignisart()
+        Dim wnd As New allgemeinesFenster(New ereignisart(), "Ereignisart")
+
+        wnd.ShowDialog()
+
     End Sub
 
     Private Sub New_Click(sender As Object, e As RoutedEventArgs)
