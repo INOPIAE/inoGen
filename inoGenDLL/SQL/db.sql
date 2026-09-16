@@ -60,6 +60,10 @@ DROP TABLE tblVorname;
 CREATE TABLE tblVorname(
     tblVornameID COUNTER,
     Vorname VARCHAR(255),
+    SVorname VARCHAR(4),
+    CPVorname VARCHAR(50),
+    CPStVorname VARCHAR(255),
+    CPSVorname VARCHAR(50),
 	CONSTRAINT PrimaryKey PRIMARY KEY (tblVornameID));
 
 DROP TABLE tblPVorname;
@@ -78,6 +82,10 @@ DROP TABLE tblNachname;
 CREATE TABLE tblNachname(
     tblNachnameID COUNTER,
     Nachname VARCHAR(255),
+    SNachname VARCHAR(4),
+    CPNachname VARCHAR(50),
+    CPStNachname VARCHAR(255),
+    CPSNachname VARCHAR(50),
 	CONSTRAINT PrimaryKey PRIMARY KEY (tblNachnameID));
 
 DROP TABLE tblFamilie;
@@ -324,4 +332,4 @@ INSERT INTO tblEventTag (Tag, TagD) VALUES ('_BRIDEGROOM', 'Bräutigam');
 INSERT INTO tblEventTag (Tag, TagD) VALUES ('_BRIDE', 'Braut');
 INSERT INTO tblEventTag (Tag, TagD) VALUES ('_TWIN', 'Zwilling');
 
-UPDATE tblVersion SET Version = 11;
+UPDATE tblVersion SET Version = 12;

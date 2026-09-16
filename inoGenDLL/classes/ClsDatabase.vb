@@ -10,7 +10,7 @@ Public Class ClsDatabase
 
     Private sqlPath As String = IIf(AppDomain.CurrentDomain.BaseDirectory.Contains("Release"), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Release\net9.0-windows7.0\", ""), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Debug\net9.0-windows7.0\", "")) & "\inoGenDLL\SQL\"
 
-    Private currentVersion As Long = 11
+    Private currentVersion As Long = 12
 
     Public Sub New(dbFileString As String)
         connString = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";Persist Security Info=True", dbFileString)
@@ -71,11 +71,15 @@ Public Class ClsDatabase
             FillDatabase(strSQLFile)
         Else
             Dim dbVersion As Long = ReadDBVersion()
-            
+            Dim cGDB As New inoGenDLL.ClsGenDB(dbFile)
             For updateVersion = 2 To currentVersion
                 If dbVersion < updateVersion Then
                     strSQLFile = sqlPath & "from_" & (updateVersion - 1).ToString() & ".sql"
                     FillDatabase(strSQLFile)
+                    If updateVersion = 12 Then
+                        cGDB.FillVornamenPhonetic()
+                        cGDB.FillNachnamenPhonetic()
+                    End If
                 End If
             Next
         End If

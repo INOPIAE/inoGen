@@ -4,12 +4,13 @@ Imports System.Globalization
 Imports System.Text.RegularExpressions
 Imports ADODB
 Imports iText.Commons.Bouncycastle
+Imports iText.Kernel.XMP.Impl
 Imports iText.StyledXmlParser.Jsoup.Select.Evaluator
 
 Public Class ClsGenDB
 
     Public connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "")
-
+    Private cPhon As New ClsPhonetic
 
 
     Public Sub New(dbFileString As String)
@@ -861,23 +862,23 @@ Public Class ClsGenDB
         Return dt
     End Function
 
-    Public Function UpdateNachname(ID As Integer, Nachname As String) As DataTable
-        Dim strSQL As String =
-            "UPDATE tblNachname SET Nachname = ? WHERE tblNachnameID = ?"
+    'Public Function UpdateNachname(ID As Integer, Nachname As String) As DataTable
+    '    Dim strSQL As String =
+    '        "UPDATE tblNachname SET Nachname = ? WHERE tblNachnameID = ?"
 
-        Dim dt As New DataTable()
-        Using conn As New OleDbConnection(connectionString)
-            conn.Open()
-            Using cmd As New OleDbCommand(strSQL, conn)
+    '    Dim dt As New DataTable()
+    '    Using conn As New OleDbConnection(connectionString)
+    '        conn.Open()
+    '        Using cmd As New OleDbCommand(strSQL, conn)
 
-                cmd.Parameters.AddWithValue("@Nachname", Nachname)
-                cmd.Parameters.AddWithValue("@ID", ID)
-                cmd.ExecuteNonQuery()
+    '            cmd.Parameters.AddWithValue("@Nachname", Nachname)
+    '            cmd.Parameters.AddWithValue("@ID", ID)
+    '            cmd.ExecuteNonQuery()
 
-            End Using
-        End Using
-        Return dt
-    End Function
+    '        End Using
+    '    End Using
+    '    Return dt
+    'End Function
 
     Public Function CleanDate(ByRef dateString As String) As Boolean
         dateString = dateString.Trim.Replace(",", ".")
@@ -2276,4 +2277,290 @@ Public Class ClsGenDB
             End Using
         End Using
     End Function
+
+#Region "Vorname"
+    Public Function GetVorname(Vorname As String) As Int16
+        Dim id As Integer = -1
+        Dim sqlSelect As String = "SELECT tblVornameID FROM tblVorname WHERE Vorname = ?"
+        If Trim(Vorname) = "" Then
+            Return 0
+        End If
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmd As New OleDbCommand(sqlSelect, conn)
+                cmd.Parameters.AddWithValue("@Vorname", Vorname)
+
+                Dim result = cmd.ExecuteScalar()
+                If result IsNot Nothing AndAlso Not IsDBNull(result) Then
+                    id = Convert.ToInt32(result)
+                    Return id
+                End If
+            End Using
+        End Using
+        Return id
+    End Function
+
+    Public Function GetVornamen() As DataTable
+        Dim strSQL As String =
+            "SELECT * FROM tblVorname ORDER BY Vorname"
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function SetVorname(Vorname As String, Optional StVorname As String = "") As Int16
+        Dim id As Integer = -1
+        Dim sqlInsert As String = "INSERT INTO tblVorname (Vorname, SVorname, CPVorname, CPStVorname, CPSVorname) VALUES (?, ?, ?, ?, ?)"
+        If Trim(Vorname) = "" Then
+            Return 0
+        End If
+        If StVorname = "" Then StVorname = Vorname
+        Dim SVorname As String = cPhon.GetNameSoundex(Vorname)
+        Dim CPVorname As String = cPhon.GetNameCPhonetik(Vorname)
+        Dim CPSVorname As String = cPhon.GetNameCPhonetik(StVorname)
+
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmdInsert As New OleDbCommand(sqlInsert, conn)
+                cmdInsert.Parameters.AddWithValue("@Vorname", Vorname)
+                cmdInsert.Parameters.AddWithValue("@SVorname", SVorname)
+                cmdInsert.Parameters.AddWithValue("@CPVorname", CPVorname)
+                cmdInsert.Parameters.AddWithValue("@CPStVorname", StVorname)
+                cmdInsert.Parameters.AddWithValue("@CPSVorname", CPSVorname)
+                cmdInsert.ExecuteNonQuery()
+            End Using
+
+            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
+                id = Convert.ToInt32(cmdId.ExecuteScalar())
+            End Using
+        End Using
+        Return id
+    End Function
+
+    Public Function GetVornameByID(ID As Integer) As DataTable
+        Dim strSQL As String = "SELECT * FROM tblVorname WHERE tblVornameID = ?"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@ID", ID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function GetVornameBySoundex(sName As String) As DataTable
+        Dim strSQL As String = "SELECT * FROM tblVorname WHERE SVorname = ?"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@SVorname", sName)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function UpdateVorname(ID As Int16, Vorname As String, Optional StVorname As String = "") As Boolean
+
+        Dim sql As String = "UPDATE tblVorname SET Vorname = ?, SVorname = ?, CPVorname = ?, CPStVorname = ?, CPSVorname = ? WHERE tblVornameID = ?"
+        If Trim(Vorname) = "" Then
+            Return 0
+        End If
+        If StVorname = "" Then StVorname = Vorname
+        Dim SVorname As String = cPhon.GetNameSoundex(Vorname)
+        Dim CPVorname As String = cPhon.GetNameCPhonetik(Vorname)
+        Dim CPSVorname As String = cPhon.GetNameCPhonetik(StVorname)
+
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmdUpdate As New OleDbCommand(sql, conn)
+                cmdUpdate.Parameters.AddWithValue("@Vorname", Vorname)
+                cmdUpdate.Parameters.AddWithValue("@SVorname", SVorname)
+                cmdUpdate.Parameters.AddWithValue("@CPVorname", CPVorname)
+                cmdUpdate.Parameters.AddWithValue("@CPStVorname", StVorname)
+                cmdUpdate.Parameters.AddWithValue("@CPSVorname", CPSVorname)
+                cmdUpdate.Parameters.AddWithValue("@tblVornameID", ID)
+                cmdUpdate.ExecuteNonQuery()
+            End Using
+
+        End Using
+        Return True
+    End Function
+
+    Public Function FillVornamenPhonetic() As Boolean
+        Dim strSQL As String = "SELECT * FROM tblVorname WHERE SVorname IS NULL"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        For Each row As DataRow In dt.Rows
+            Dim ID As Integer = row("tblVornameID")
+            Dim Vorname As String = row("Vorname").ToString()
+            UpdateVorname(ID, Vorname)
+        Next
+        Return True
+    End Function
+#End Region
+
+
+#Region "Nachname"
+    Public Function GetNachname(Nachname As String) As Int16
+        Dim id As Integer = -1
+        Dim sqlSelect As String = "SELECT tblNachnameID FROM tblNachname WHERE Nachname = ?"
+        If Trim(Nachname) = "" Then
+            Return 0
+        End If
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmd As New OleDbCommand(sqlSelect, conn)
+                cmd.Parameters.AddWithValue("@Nachname", Nachname)
+
+                Dim result = cmd.ExecuteScalar()
+                If result IsNot Nothing AndAlso Not IsDBNull(result) Then
+                    id = Convert.ToInt32(result)
+                    Return id
+                End If
+            End Using
+        End Using
+        Return id
+    End Function
+
+    Public Function SetNachname(Nachname As String, Optional StNachname As String = "") As Int16
+        Dim id As Integer = -1
+        Dim sqlInsert As String = "INSERT INTO tblNachname (Nachname, SNachname, CPNachname, CPStNachname, CPSNachname) VALUES (?, ?, ?, ?, ?)"
+        If Trim(Nachname) = "" Then
+            Return 0
+        End If
+        If StNachname = "" Then StNachname = Nachname
+        Dim SNachname As String = cPhon.GetNameSoundex(Nachname)
+        Dim CPNachname As String = cPhon.GetNameCPhonetik(Nachname)
+        Dim CPSNachname As String = cPhon.GetNameCPhonetik(StNachname)
+
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmdInsert As New OleDbCommand(sqlInsert, conn)
+                cmdInsert.Parameters.AddWithValue("@Nachname", Nachname)
+                cmdInsert.Parameters.AddWithValue("@SNachname", SNachname)
+                cmdInsert.Parameters.AddWithValue("@CPNachname", CPNachname)
+                cmdInsert.Parameters.AddWithValue("@CPStNachname", StNachname)
+                cmdInsert.Parameters.AddWithValue("@CPSNachname", CPSNachname)
+                cmdInsert.ExecuteNonQuery()
+            End Using
+
+            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
+                id = Convert.ToInt32(cmdId.ExecuteScalar())
+            End Using
+        End Using
+        Return id
+    End Function
+
+    Public Function GetNachnameByID(ID As Integer) As DataTable
+        Dim strSQL As String = "SELECT * FROM tblNachname WHERE tblNachnameID = ?"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@ID", ID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function GetNachnameBySoundex(sName As String) As DataTable
+        Dim strSQL As String = "SELECT * FROM tblNachname WHERE SNachname = ?"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@SNachname", sName)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    Public Function UpdateNachname(ID As Integer, Nachname As String, Optional StNachname As String = "") As Boolean
+
+        Dim sql As String = "UPDATE tblNachname SET Nachname = ?, SNachname = ?, CPNachname = ?, CPStNachname = ?, CPSNachname = ? WHERE tblNachnameID = ?"
+        If Trim(Nachname) = "" Then
+            Return 0
+        End If
+        If StNachname = "" Then StNachname = Nachname
+        Dim SNachname As String = cPhon.GetNameSoundex(Nachname)
+        Dim CPNachname As String = cPhon.GetNameCPhonetik(Nachname)
+        Dim CPSNachname As String = cPhon.GetNameCPhonetik(StNachname)
+
+
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+
+            Using cmdUpdate As New OleDbCommand(sql, conn)
+                cmdUpdate.Parameters.AddWithValue("@Nachname", Nachname)
+                cmdUpdate.Parameters.AddWithValue("@SNachname", SNachname)
+                cmdUpdate.Parameters.AddWithValue("@CPNachname", CPNachname)
+                cmdUpdate.Parameters.AddWithValue("@CPStNachname", StNachname)
+                cmdUpdate.Parameters.AddWithValue("@CPSNachname", CPSNachname)
+                cmdUpdate.Parameters.AddWithValue("@tblNachnameID", ID)
+                cmdUpdate.ExecuteNonQuery()
+            End Using
+
+        End Using
+        Return True
+    End Function
+
+    Public Function FillNachnamenPhonetic() As Boolean
+        Dim strSQL As String = "SELECT * FROM tblNachname WHERE SNachname IS NULL"
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        For Each row As DataRow In dt.Rows
+            Dim ID As Integer = row("tblNachnameID")
+            Dim Nachname As String = row("Nachname").ToString()
+            UpdateNachname(ID, Nachname)
+        Next
+        Return True
+    End Function
+#End Region
+
+
+
 End Class

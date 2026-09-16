@@ -11,6 +11,7 @@ Namespace TestInoGen
         Private cGDB As inoGenDLL.ClsGenDB
         Private cHelper As New ClsHelper
         Private testFolder As String
+        Private cPhon As New ClsPhonetic
 
 
         <SetUp>
@@ -23,6 +24,8 @@ Namespace TestInoGen
             cGDB = New inoGenDLL.ClsGenDB(DBFileTest)
             DBFileTest = testFolder & "\TestVK.inoGdb"
             File.Copy(testPath & "\TestVK.inoGdb", DBFileTest)
+            DBFileTest = testFolder & "\TestVKv12.inoGdb"
+            File.Copy(testPath & "\TestVKv12.inoGdb", DBFileTest)
         End Sub
 
         <TearDown>
@@ -517,8 +520,8 @@ Namespace TestInoGen
         End Sub
 
         <Test>
-        Public Sub TestUpdateNachname()
-            Dim DBFileT As String = testFolder & "\TestVK.inoGdb"
+        Public Sub TestUpdateNachnamen()
+            Dim DBFileT As String = testFolder & "\TestVKv12.inoGdb"
             cGDB = New inoGenDLL.ClsGenDB(DBFileT)
 
             Dim dt As DataTable = cGDB.GetNachname()
@@ -1399,5 +1402,264 @@ Namespace TestInoGen
             Assert.That(dt.Rows(0).Item("Datum"), NUnit.Framework.Is.EqualTo(datumText))
             Assert.That(dt.Rows(0).Item("HDatum"), NUnit.Framework.Is.EqualTo(datumTest))
         End Sub
+
+#Region "Vornamen"
+        <Test>
+        Public Sub TestGetVornameID()
+
+            Dim ID As Int16 = cGDB.GetVorname("Ludwig")
+
+
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(1))
+
+            ID = cGDB.GetVorname("Lutwig")
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(-1))
+
+            ID = cGDB.GetVorname("")
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(0))
+
+        End Sub
+
+        <Test>
+        Public Sub TestSetVorname()
+
+            Dim VName As String = "Lutwig"
+            Dim ID As Int16 = cGDB.SetVorname(VName)
+
+
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(80))
+            Dim dt As DataTable =  cGDB.GetVornameByID(ID)
+
+            Assert.That(dt.Rows(0).Item("Vorname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("CPStVorname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("SVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(0).Item("CPVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(0).Item("CPSVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+
+            Dim sSoundex As String = cPhon.GetNameSoundex(VName)
+
+            dt = cGDB.GetVornameBySoundex(sSoundex)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+        End Sub
+
+        <Test>
+        Public Sub TestGetVornameBySoundex()
+
+            Dim VName As String = "Ludwig"
+            Dim sSoundex As String = cPhon.GetNameSoundex(VName)
+
+            Dim dt As DataTable = cGDB.GetVornameBySoundex(sSoundex)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item("Vorname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("CPStVorname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("SVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(0).Item("CPVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(0).Item("CPSVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+
+
+        End Sub
+
+        <Test>
+        Public Sub TestUpdateVorname()
+            Dim VStamm As String = "Ludwig"
+            Dim VName As String = "Lutwig"
+            Dim ID As Int16 = cGDB.SetVorname(VName)
+
+
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(80))
+            Dim dt As DataTable = cGDB.GetVornameByID(ID)
+
+            Assert.That(dt.Rows(0).Item("Vorname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("CPStVorname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("SVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(0).Item("CPVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(0).Item("CPSVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+
+            Dim sSoundex As String = cPhon.GetNameSoundex(VName)
+
+            dt = cGDB.GetVornameBySoundex(sSoundex)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            VName = "Ludwigo"
+            Dim check As Boolean = cGDB.UpdateVorname(ID, VName)
+
+            Assert.That(check, NUnit.Framework.Is.EqualTo(True))
+
+            dt = cGDB.GetVornameBySoundex(sSoundex)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            Assert.That(dt.Rows(0).Item("Vorname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(0).Item("CPStVorname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(0).Item("SVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VStamm)))
+            Assert.That(dt.Rows(0).Item("CPVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+            Assert.That(dt.Rows(0).Item("CPSVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+
+            Assert.That(dt.Rows(1).Item("Vorname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(1).Item("CPStVorname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(1).Item("SVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(1).Item("CPVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(1).Item("CPSVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+
+            VName = "Lutwig"
+            check = cGDB.UpdateVorname(ID, VName, VStamm)
+
+            Assert.That(check, NUnit.Framework.Is.EqualTo(True))
+
+            dt = cGDB.GetVornameBySoundex(sSoundex)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            Assert.That(dt.Rows(0).Item("Vorname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(0).Item("CPStVorname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(0).Item("SVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VStamm)))
+            Assert.That(dt.Rows(0).Item("CPVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+            Assert.That(dt.Rows(0).Item("CPSVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+
+            Assert.That(dt.Rows(1).Item("Vorname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(1).Item("CPStVorname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(1).Item("SVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(1).Item("CPVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(1).Item("CPSVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+        End Sub
+#End Region
+
+
+#Region "Nachnamen"
+        <Test>
+        Public Sub TestGetNachnameID()
+
+            Dim ID As Int16 = cGDB.GetNachname("Ludwig")
+
+
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(56))
+
+            ID = cGDB.GetNachname("Lutwig")
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(-1))
+
+            ID = cGDB.GetNachname("")
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(0))
+
+        End Sub
+
+        <Test>
+        Public Sub TestSetNachname()
+
+            Dim dt As DataTable = cGDB.GetNachname
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(64))
+
+            Dim VName As String = "Lutwig"
+            Dim ID As Int16 = cGDB.SetNachname(VName)
+
+
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(65))
+
+            dt = cGDB.GetNachname
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(65))
+
+            dt = cGDB.GetNachnameByID(ID)
+
+            Assert.That(dt.Rows(0).Item("Nachname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("CPStNachname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("SNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(0).Item("CPNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(0).Item("CPSNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+
+            Dim sSoundex As String = cPhon.GetNameSoundex(VName)
+
+            dt = cGDB.GetNachnameBySoundex(sSoundex)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+        End Sub
+
+        <Test>
+        Public Sub TestGetNachnameBySoundex()
+
+            Dim VName As String = "Ball"
+            Dim sSoundex As String = cPhon.GetNameSoundex(VName)
+
+            Dim dt As DataTable = cGDB.GetNachnameBySoundex(sSoundex)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item("Nachname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("CPStNachname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("SNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(0).Item("CPNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(0).Item("CPSNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+
+
+        End Sub
+
+        <Test>
+        Public Sub TestUpdateNachname()
+            Dim VStamm As String = "Ludwig"
+            Dim VName As String = "Lutwig"
+            Dim ID As Int16 = cGDB.SetNachname(VName)
+
+
+            Assert.That(ID, NUnit.Framework.Is.EqualTo(65))
+            Dim dt As DataTable = cGDB.GetNachnameByID(ID)
+
+            Assert.That(dt.Rows(0).Item("Nachname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("CPStNachname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(0).Item("SNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(0).Item("CPNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(0).Item("CPSNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+
+            Dim sSoundex As String = cPhon.GetNameSoundex(VName)
+
+            dt = cGDB.GetNachnameBySoundex(sSoundex)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            VName = "Ludwigo"
+            Dim check As Boolean = cGDB.UpdateNachname(ID, VName)
+
+            Assert.That(check, NUnit.Framework.Is.EqualTo(True))
+
+            dt = cGDB.GetNachnameBySoundex(sSoundex)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            Assert.That(dt.Rows(0).Item("Nachname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(0).Item("CPStNachname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(0).Item("SNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VStamm)))
+            Assert.That(dt.Rows(0).Item("CPNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+            Assert.That(dt.Rows(0).Item("CPSNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+
+            Assert.That(dt.Rows(1).Item("Nachname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(1).Item("CPStNachname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(1).Item("SNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(1).Item("CPNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(1).Item("CPSNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+
+            VName = "Lutwig"
+            check = cGDB.UpdateNachname(ID, VName, VStamm)
+
+            Assert.That(check, NUnit.Framework.Is.EqualTo(True))
+
+            dt = cGDB.GetNachnameBySoundex(sSoundex)
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+
+            Assert.That(dt.Rows(0).Item("Nachname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(0).Item("CPStNachname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(0).Item("SNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VStamm)))
+            Assert.That(dt.Rows(0).Item("CPNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+            Assert.That(dt.Rows(0).Item("CPSNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+
+            Assert.That(dt.Rows(1).Item("Nachname"), NUnit.Framework.Is.EqualTo(VName))
+            Assert.That(dt.Rows(1).Item("CPStNachname"), NUnit.Framework.Is.EqualTo(VStamm))
+            Assert.That(dt.Rows(1).Item("SNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameSoundex(VName)))
+            Assert.That(dt.Rows(1).Item("CPNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
+            Assert.That(dt.Rows(1).Item("CPSNachname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VStamm)))
+        End Sub
+#End Region
+
+
     End Class
 End Namespace

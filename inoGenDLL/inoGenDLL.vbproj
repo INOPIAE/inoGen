@@ -33,8 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ColognePhoneticsSharp" Version="1.1.0" />
     <PackageReference Include="itext" Version="9.3.0" />
     <PackageReference Include="System.Data.OleDb" Version="9.0.8" />
+    <PackageReference Include="XSoundex" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

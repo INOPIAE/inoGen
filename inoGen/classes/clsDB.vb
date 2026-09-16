@@ -1,48 +1,36 @@
 ﻿Imports System.Data.OleDb
 Imports System.Text.RegularExpressions
+Imports inoGenDLL
 
 Public Class clsDB
 
     Public connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "")
 
+    Private cGDB As inoGenDLL.ClsGenDB
 
     Public Sub New(dbFileString As String)
         connectionString = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";Persist Security Info=True", dbFileString)
+        cGDB = New ClsGenDB(dbFileString)
         ' Constructor logic if needed
     End Sub
 
     Private Function VornamenID(Vorname As String) As Int16
         Dim id As Integer = -1
-        Dim sqlSelect As String = "SELECT tblVornameID FROM tblVorname WHERE Vorname = ?"
-        Dim sqlInsert As String = "INSERT INTO tblVorname (Vorname) VALUES (?)"
         If Trim(Vorname) = "" Then
             Return 0
         End If
-        Using conn As New OleDbConnection(connectionString)
-            conn.Open()
+        id = cGDB.GetVorname(Vorname)
+        If id > 0 Then
+            Return id
+        End If
 
-            Using cmd As New OleDbCommand(sqlSelect, conn)
-                cmd.Parameters.AddWithValue("@Vorname", Vorname)
 
-                Dim result = cmd.ExecuteScalar()
-                If result IsNot Nothing AndAlso Not IsDBNull(result) Then
-                    id = Convert.ToInt32(result)
-                    Return id
-                End If
-            End Using
+        If MessageBox.Show(String.Format("Soll der Vorname '{0}' angelegt werden?", Vorname), "Vorname anlegen", MessageBoxButton.YesNo) = MessageBoxResult.No Then
+            Return -1
+        End If
 
-            If MessageBox.Show(String.Format("Soll der Vorname '{0}' angelegt werden?", Vorname), "Vorname anlegen", MessageBoxButton.YesNo) = MessageBoxResult.No Then
-                Return -1
-            End If
-            Using cmdInsert As New OleDbCommand(sqlInsert, conn)
-                cmdInsert.Parameters.AddWithValue("@Vorname", Vorname)
-                cmdInsert.ExecuteNonQuery()
-            End Using
-
-            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
-                id = Convert.ToInt32(cmdId.ExecuteScalar())
-            End Using
-        End Using
+        'TODO check Stammnamen
+        id = cGDB.SetVorname(Vorname)
         Return id
     End Function
 
@@ -143,32 +131,17 @@ Public Class clsDB
         If Trim(Nachname) = "" Then
             Return 0
         End If
-        Using conn As New OleDbConnection(connectionString)
-            conn.Open()
-
-            Using cmd As New OleDbCommand(sqlSelect, conn)
-                cmd.Parameters.AddWithValue("@Nachname", Nachname)
-
-                Dim result = cmd.ExecuteScalar()
-                If result IsNot Nothing AndAlso Not IsDBNull(result) Then
-                    id = Convert.ToInt32(result)
-                    Return id
-                End If
-            End Using
-
-            If MessageBox.Show(String.Format("Soll der Nachname '{0}' angelegt werden?", Nachname), "Nachname anlegen", MessageBoxButton.YesNo) = MessageBoxResult.No Then
-                Return -1
-            End If
-            Using cmdInsert As New OleDbCommand(sqlInsert, conn)
-                cmdInsert.Parameters.AddWithValue("@Nachname", Nachname)
-                cmdInsert.ExecuteNonQuery()
-            End Using
-
-            Using cmdId As New OleDbCommand("SELECT @@IDENTITY", conn)
-                id = Convert.ToInt32(cmdId.ExecuteScalar())
-            End Using
-        End Using
+        id = cGDB.GetNachname(Nachname)
+        If id > 0 Then
+            Return id
+        End If
+        If MessageBox.Show(String.Format("Soll der Nachname '{0}' angelegt werden?", Nachname), "Nachname anlegen", MessageBoxButton.YesNo) = MessageBoxResult.No Then
+            Return -1
+        End If
+        'TODO Check Stammname
+        id = cGDB.SetNachname(Nachname)
         Return id
+
     End Function
 
     Public Function OrtID(Ort As String) As Int16

@@ -24,6 +24,7 @@
                 <MenuItem Header="_Konfession" Click="Konfession_Click"/>
                 <MenuItem Header="_Ereignisart" Click="Ereignisart_Click"/>
                 <MenuItem Header="_Nachnamen" Click="Nachnamen_Click"/>
+                <MenuItem Header="_Vornamen" Click="Vornamen_Click"/>
                 <MenuItem Header="_Quellen" Click="Quellen_Click"/>
                 <MenuItem Header="_Quellzitate" Click="Quellzitate_Click"/>
             </MenuItem>

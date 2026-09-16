@@ -18,13 +18,24 @@ Class MainWindow
     Public CAutoCorrect As New ClsAutoCorrect
     Public Sub New()
 
-        InitializeComponent()
+        Try
+            InitializeComponent()
 
-        If My.Settings.RecentFiles IsNot Nothing Then
-            Start()
-        Else
-            New_Click(Nothing, New RoutedEventArgs())
-        End If
+            If My.Settings.RecentFiles IsNot Nothing Then
+                Start()
+            Else
+                New_Click(Nothing, New RoutedEventArgs())
+            End If
+
+
+        Catch ex As Exception
+
+            MessageBox.Show("Fehler beim Starten von inoGen:" & vbCrLf & vbCrLf & ex.ToString())
+
+            Throw
+
+        End Try
+
 
 
     End Sub
@@ -267,9 +278,16 @@ Class MainWindow
     End Sub
 
     Private Sub Nachnamen_Click(sender As Object, e As RoutedEventArgs)
-        MainContent.Content = New nachnamen()
+        Dim wnd As New allgemeinesFenster(New nachnamen(), "Nachnamen")
+
+        wnd.ShowDialog()
     End Sub
 
+    Private Sub Vornamen_Click(sender As Object, e As RoutedEventArgs)
+        Dim wnd As New allgemeinesFenster(New vornamen(), "Vornamen")
+
+        wnd.ShowDialog()
+    End Sub
     Private Sub AutoCorrect_Click(sender As Object, e As RoutedEventArgs)
         Dim Autocorrect as New AutoCorrection(Me)
         Autocorrect.Show()

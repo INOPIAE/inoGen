@@ -13,7 +13,7 @@ Namespace TestInoGen
         Private cDB As New ClsDatabase(DBFile)
         Private cHelper As New ClsHelper
         Private testFolder As String
-        Private currentDBVersion As Long = 11
+        Private currentDBVersion As Long = 12
 
         <SetUp>
         Public Sub Setup()
@@ -120,7 +120,36 @@ Namespace TestInoGen
             Assert.That(dt.Rows(0).Item("ANM_H"), NUnit.Framework.Is.EqualTo("NB"))
         End Sub
 
+        <Test>
+        Public Sub TestUpdateDBv11()
+            Dim DBFileT As String = testFolder & "\Beethoven_v11.inoGdb"
+            File.Copy(testPath & "\Beethoven_v11.inoGdb", DBFileT)
+            Dim cDBT As New ClsDatabase(DBFileT)
 
+
+            Dim version As Long = cDBT.ReadDBVersion
+
+            Assert.That(version, NUnit.Framework.Is.EqualTo(11))
+
+
+            Dim cGDB As New inoGenDLL.ClsGenDB(DBFileT)
+            'cGDB.FillVornamenPhonetic()
+
+
+
+            version = cDBT.CheckDBVersion
+
+            Dim dt As DataTable = cGDB.GetVornameBySoundex("L320")
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
+            Assert.That(version, NUnit.Framework.Is.EqualTo(currentDBVersion))
+
+            cGDB.FillVornamenPhonetic()
+            dt = cGDB.GetVornameBySoundex("L320")
+
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows(0).Item("SVorname"), NUnit.Framework.Is.EqualTo("L320"))
+        End Sub
     End Class
 
 End Namespace
