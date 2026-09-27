@@ -3,6 +3,7 @@ Imports System.Data.OleDb
 Imports inoGenDLL
 
 Class QuellenZitate
+    Implements IFormularClipboard
 
     Private connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
 
@@ -116,6 +117,9 @@ Class QuellenZitate
         LoadDataEreignis()
         LoadFilter()
         LoadData()
+
+        AddHandler Me.Loaded, AddressOf QuellenZitate_Loaded
+        AddHandler Me.GotFocus, AddressOf QuellenZitate_GotFocus
     End Sub
 
     Private Sub LoadDataQuellen()
@@ -358,7 +362,7 @@ Class QuellenZitate
                 ' =========================================================
             ElseIf String.Equals(header, "InternetAdresse", StringComparison.OrdinalIgnoreCase) And isUCLoaded = False Then
 
-                    Dim index As Integer = i
+                Dim index As Integer = i
 
                 dgQuellZitate.Columns.RemoveAt(i)
 
@@ -598,5 +602,45 @@ Class QuellenZitate
         txtSeite.Text = My.Settings.QZSeite
         txtNummer.Text = My.Settings.QZNummer
 
+    End Sub
+
+    Public Function CopyFormData() As ClsFormularDatenCopy Implements IFormularClipboard.CopyFormData
+        If dgQuellZitate.SelectedItem Is Nothing Then
+            MessageBox.Show("Bitte eine Zeile auswählen.")
+            Exit Function
+        End If
+        If EreignisControl IsNot Nothing Then
+            EreignisControl.setQuellZitatID(CType(dgQuellZitate.SelectedItem, DataRowView)("tblQuellZitatID"))
+            My.Settings.LastQuellZitat = CType(dgQuellZitate.SelectedItem, DataRowView)("tblQuellZitatID")
+            My.Settings.Save()
+        End If
+
+        Dim daten As New ClsFormularDatenCopy()
+        daten.Datum = CType(dgQuellZitate.SelectedItem, DataRowView)("Datum")
+        daten.DatumBis = ""
+        daten.OrtID = Nothing
+
+        Return daten
+    End Function
+
+    Public Sub PasteFormData(daten As ClsFormularDatenCopy) Implements IFormularClipboard.PasteFormData
+        If daten Is Nothing Then
+            Return
+        End If
+        If dgQuellZitate.SelectedItem Is Nothing Then
+            MessageBox.Show("Bitte eine Zeile auswählen.")
+            Return
+        End If
+
+        CType(dgQuellZitate.SelectedItem, DataRowView)("Datum") = daten.Datum
+
+    End Sub
+
+    Private Sub QuellenZitate_Loaded(sender As Object, e As RoutedEventArgs)
+        ClsFormularClipboard.SetActiveForm(Me)
+    End Sub
+
+    Private Sub QuellenZitate_GotFocus(sender As Object, e As RoutedEventArgs)
+        ClsFormularClipboard.SetActiveForm(Me)
     End Sub
 End Class

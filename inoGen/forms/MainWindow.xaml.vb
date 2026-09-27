@@ -16,6 +16,9 @@ Class MainWindow
     Public Shared fsWindow As FamilySearchWeb = Nothing
 
     Public CAutoCorrect As New ClsAutoCorrect
+
+    Private AktivesUserControl As IFormularClipboard
+
     Public Sub New()
 
         Try
@@ -36,8 +39,11 @@ Class MainWindow
 
         End Try
 
+        ClsShortcutManager.Attach(Me)
+        ClsFormularClipboard.SetActiveForm(Nothing)
 
-
+        AddHandler ClsFormularClipboard.CopyCompleted,
+                   AddressOf FormularClipboard_CopyCompleted
     End Sub
 
     Private Sub Orte_Click(sender As Object, e As RoutedEventArgs)
@@ -298,7 +304,7 @@ Class MainWindow
         wnd.ShowDialog()
     End Sub
     Private Sub AutoCorrect_Click(sender As Object, e As RoutedEventArgs)
-        Dim Autocorrect as New AutoCorrection(Me)
+        Dim Autocorrect As New AutoCorrection(Me)
         Autocorrect.Show()
     End Sub
 
@@ -429,5 +435,16 @@ Class MainWindow
     Private Sub Quellzitate_Click(sender As Object, e As RoutedEventArgs)
         Dim QuellenZitate = New QuellenZitatDefinition
         QuellenZitate.Show()
+    End Sub
+
+    Public Sub CopyTextInfo(text As String)
+        CopyText.Text = text
+    End Sub
+
+    Private Sub FormularClipboard_CopyCompleted(
+    text As String)
+
+        CopyTextInfo(text)
+
     End Sub
 End Class

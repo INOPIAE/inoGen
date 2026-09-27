@@ -4,6 +4,8 @@ Imports System.Diagnostics.Metrics
 Imports inoGenDLL
 
 Public Class ereignis
+    Implements IFormularClipboard
+
     Private connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
 
 
@@ -76,6 +78,8 @@ Public Class ereignis
         LoadEventListe()
         LoadKonfessionListe()
         LoadEventTag()
+        AddHandler Me.Loaded, AddressOf Ereignis_Loaded
+        AddHandler Me.GotFocus, AddressOf Ereignis_GotFocus
     End Sub
 
     Public Event DataSaved(sender As Object, e As EventArgs)
@@ -472,7 +476,7 @@ Public Class ereignis
                     cbEventTagV.SelectedValue = "_BRIDEGROOM"
                 End If
             End If
-                If MID <> "" Then
+            If MID <> "" Then
                 txtQuellZitatM.Text = QuellZitatID.ToString()
                 If cbEreignis.SelectedValue < 5 Then
                     cbEventTagM.SelectedValue = "_BRIDE"
@@ -548,5 +552,31 @@ Public Class ereignis
             End If
             RaiseEvent DataSaved(Me, EventArgs.Empty)
         End If
+    End Sub
+
+    Public Function CopyFormData() As ClsFormularDatenCopy Implements IFormularClipboard.CopyFormData
+        Dim daten As New ClsFormularDatenCopy()
+        daten.Datum = txtDatum.Text
+        daten.DatumBis = txtBisDatum.Text
+        daten.OrtID = CInt(cbOrt.SelectedValue)
+
+        Return daten
+    End Function
+
+    Public Sub PasteFormData(daten As ClsFormularDatenCopy) Implements IFormularClipboard.PasteFormData
+        If daten Is Nothing Then
+            Return
+        End If
+        txtBisDatum.Text = daten.DatumBis
+        txtDatum.Text = daten.Datum
+        cbOrt.SelectedValue = daten.OrtID
+    End Sub
+
+    Private Sub Ereignis_Loaded(sender As Object, e As RoutedEventArgs)
+        ClsFormularClipboard.SetActiveForm(Me)
+    End Sub
+
+    Private Sub Ereignis_GotFocus(sender As Object, e As RoutedEventArgs)
+        ClsFormularClipboard.SetActiveForm(Me)
     End Sub
 End Class

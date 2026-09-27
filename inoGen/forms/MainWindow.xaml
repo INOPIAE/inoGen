@@ -59,6 +59,10 @@
             <StatusBarItem>
                 <TextBlock x:Name="StatusText" Text="Bereit" />
             </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock x:Name="CopyText" Text="(leer)" />
+            </StatusBarItem>
         </StatusBar>
         
         <ContentControl x:Name="MainContent"/>
