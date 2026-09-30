@@ -9,6 +9,8 @@ Imports inoGenDLL
 
 
 Public Class personen
+    Implements IRecordSelector
+
     Private connectionString As String =
         String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
 
@@ -51,6 +53,8 @@ Public Class personen
     Private _quellenZitateControl As QuellenZitate
     Private isUCLoaded As Boolean = False
 
+    Private ReadOnly _navigation As INavigationService
+
     Public Property Vorname As String
         Get
             Return txtVorname.Text
@@ -79,9 +83,10 @@ Public Class personen
     End Property
 
 
-    Public Sub New(main As MainWindow)
+    Public Sub New(main As MainWindow, navigation As INavigationService)
         InitializeComponent()
         _main = main
+        _navigation = navigation
 
         LoadKonfessionListe()
 
@@ -313,7 +318,7 @@ Public Class personen
 
         AdditionalContent.Content = _details
 
-        _quellenZitateControl = New QuellenZitate()
+        _quellenZitateControl = New QuellenZitate(_navigation)
         _quellenZitateControl.EreignisControl = _details
         Quellen.Content = _quellenZitateControl
     End Sub
@@ -341,7 +346,7 @@ Public Class personen
             AddHandler _details.DataSaved, AddressOf OnDatenGespeichert
             AdditionalContent.Content = _details
 
-            _quellenZitateControl = New QuellenZitate()
+            _quellenZitateControl = New QuellenZitate(_navigation)
             _quellenZitateControl.EreignisControl = _details
             Quellen.Content = _quellenZitateControl
 
@@ -401,7 +406,7 @@ Public Class personen
         My.Settings.Save()
         Dim mw = TryCast(Application.Current.MainWindow, MainWindow)
         If mw IsNot Nothing Then
-            mw.ShowContent(New familien(_main))
+            mw.ShowContent(New familien(_main, _navigation))
         End If
     End Sub
 
@@ -556,7 +561,7 @@ Public Class personen
         ' Optional anzeigen
         AdditionalContent.Content = _details
 
-        _quellenZitateControl = New QuellenZitate()
+        _quellenZitateControl = New QuellenZitate(_navigation)
         _quellenZitateControl.EreignisControl = _details
         Quellen.Content = _quellenZitateControl
 
@@ -836,4 +841,12 @@ Public Class personen
             btnSpouse.IsEnabled = False
         End If
     End Sub
+
+    Public Sub SelectRecord(recordID As Integer) Implements IRecordSelector.SelectRecord
+        ID = recordID
+        FillPerson(ID)
+    End Sub
+
+
+
 End Class

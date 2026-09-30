@@ -4,6 +4,8 @@ Imports System.Security.Cryptography
 Imports inoGenDLL
 
 Public Class familien
+    Implements IRecordSelector
+
     Private cGenDB As New ClsGenDB(My.Settings.DBPath)
     Private connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", My.Settings.DBPath)
 
@@ -30,9 +32,12 @@ Public Class familien
     Private _quellenZitate As QuellenZitate
     Private isUCLoaded As Boolean = False
 
-    Public Sub New(main As MainWindow)
+    Private ReadOnly _navigation As INavigationService
+
+    Public Sub New(main As MainWindow, navigation As INavigationService)
         InitializeComponent()
         _main = main
+        _navigation = navigation
 
         isNewRecord = True
         If My.Settings.LastFID > 0 Then
@@ -235,7 +240,7 @@ Public Class familien
         AddHandler _details.DataSaved, AddressOf OnDatenGespeichert
         AdditionalContent.Content = _details
 
-        _quellenZitate = New QuellenZitate()
+        _quellenZitate = New QuellenZitate(_navigation)
         _quellenZitate.EreignisControl = _details
         Quellen.Content = _quellenZitate
     End Sub
@@ -263,7 +268,7 @@ Public Class familien
             AddHandler _details.DataSaved, AddressOf OnDatenGespeichert
             AdditionalContent.Content = _details
 
-            _quellenZitate = New QuellenZitate()
+            _quellenZitate = New QuellenZitate(_navigation)
             _quellenZitate.EreignisControl = _details
             Quellen.Content = _quellenZitate
         End If
@@ -448,7 +453,7 @@ Public Class familien
             My.Settings.Save()
             Dim mw = TryCast(Window.GetWindow(Me), MainWindow)
             If mw IsNot Nothing Then
-                mw.ShowContent(New personen(_main))
+                mw.ShowContent(New personen(_main, _navigation))
             End If
         End If
     End Sub
@@ -488,7 +493,7 @@ Public Class familien
             My.Settings.Save()
             Dim mw = TryCast(Window.GetWindow(Me), MainWindow)
             If mw IsNot Nothing Then
-                mw.ShowContent(New personen(_main))
+                mw.ShowContent(New personen(_main, _navigation))
             End If
         End If
     End Sub
@@ -499,7 +504,7 @@ Public Class familien
             My.Settings.Save()
             Dim mw = TryCast(Window.GetWindow(Me), MainWindow)
             If mw IsNot Nothing Then
-                mw.ShowContent(New personen(_main))
+                mw.ShowContent(New personen(_main, _navigation))
             End If
         End If
     End Sub
@@ -511,7 +516,7 @@ Public Class familien
             My.Settings.Save()
             Dim mw = TryCast(Window.GetWindow(Me), MainWindow)
             If mw IsNot Nothing Then
-                mw.ShowContent(New personen(_main))
+                mw.ShowContent(New personen(_main, _navigation))
             End If
         End If
     End Sub
@@ -561,7 +566,7 @@ Public Class familien
         ' Optional anzeigen
         AdditionalContent.Content = _details
 
-        _quellenZitate = New QuellenZitate()
+        _quellenZitate = New QuellenZitate(_navigation)
         _quellenZitate.EreignisControl = _details
         Quellen.Content = _quellenZitate
 
@@ -741,5 +746,14 @@ Public Class familien
         Catch ex As Exception
             MessageBox.Show("Fehler: " & ex.Message)
         End Try
+    End Sub
+
+    Public Sub SelectRecord(recordID As Integer) Implements IRecordSelector.SelectRecord
+        ID = recordID
+
+        FindFamilieByID(ID)
+        LoadFamily()
+
+        LoadData()
     End Sub
 End Class

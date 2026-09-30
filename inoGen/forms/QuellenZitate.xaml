@@ -172,6 +172,13 @@
                         Height="30"
                         Margin="5"/>
 
+                <Button x:Name="btnUsage"
+                        Content="Verwendung"
+                        Width="100"
+                        Height="30"
+                        Margin="5"
+                        Click="btnUsage_Click" />
+
                 <Button x:Name="btnSpeichern"
                         Content="Speichern"
                         Width="100"

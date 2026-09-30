@@ -6,7 +6,8 @@ Imports Microsoft.Win32
 Imports OpenFileDialog = System.Windows.Forms.OpenFileDialog
 Imports SaveFileDialog = System.Windows.Forms.SaveFileDialog
 
-Class MainWindow
+Public Class MainWindow
+    Implements INavigationService
 
     Private VKH_Übernahme As VKH_Übernahme
 
@@ -47,31 +48,33 @@ Class MainWindow
     End Sub
 
     Private Sub Orte_Click(sender As Object, e As RoutedEventArgs)
-        Dim wnd As New allgemeinesFenster(New orte(), "Orte")
+        Dim wnd As New allgemeinesFenster(New orte(), Me, "Orte")
 
         wnd.ShowDialog()
     End Sub
 
     Private Sub Kreise_Click(sender As Object, e As RoutedEventArgs)
-        Dim wnd As New allgemeinesFenster(New kreise(), "Kreise")
+        Dim wnd As New allgemeinesFenster(New kreise(), Me, "Kreise")
 
         wnd.ShowDialog()
     End Sub
 
     Private Sub Person_Click(sender As Object, e As RoutedEventArgs)
-        MainContent.Content = New personen(Me)
+        MainContent.Content = New personen(Me, Me)
         My.Settings.LastContent = "Person"
         My.Settings.Save()
+        ' Alternativ
+        ' NavigateTo(eNavigationType.Person, 0)
     End Sub
 
     Private Sub Familie_Click(sender As Object, e As RoutedEventArgs)
-        MainContent.Content = New familien(Me)
+        MainContent.Content = New familien(Me, Me)
         My.Settings.LastContent = "Familie"
         My.Settings.Save()
     End Sub
 
     Private Sub Konfession_Click(sender As Object, e As RoutedEventArgs)
-        Dim wnd As New allgemeinesFenster(New konfession(), "Konfession")
+        Dim wnd As New allgemeinesFenster(New konfession(), Me, "Konfession")
 
         wnd.ShowDialog()
     End Sub
@@ -166,7 +169,7 @@ Class MainWindow
     End Sub
 
     Private Sub Ereignisart_Click(sender As Object, e As RoutedEventArgs)
-        Dim wnd As New allgemeinesFenster(New ereignisart(), "Ereignisart")
+        Dim wnd As New allgemeinesFenster(New ereignisart(), Me, "Ereignisart")
 
         wnd.ShowDialog()
 
@@ -293,13 +296,13 @@ Class MainWindow
     End Sub
 
     Private Sub Nachnamen_Click(sender As Object, e As RoutedEventArgs)
-        Dim wnd As New allgemeinesFenster(New nachnamen(), "Nachnamen")
+        Dim wnd As New allgemeinesFenster(New nachnamen(), Me, "Nachnamen")
 
         wnd.ShowDialog()
     End Sub
 
     Private Sub Vornamen_Click(sender As Object, e As RoutedEventArgs)
-        Dim wnd As New allgemeinesFenster(New vornamen(), "Vornamen")
+        Dim wnd As New allgemeinesFenster(New vornamen(), Me, "Vornamen")
 
         wnd.ShowDialog()
     End Sub
@@ -323,7 +326,7 @@ Class MainWindow
         If TypeOf MainContent.Content Is personen Then
             personenCtrl = DirectCast(MainContent.Content, personen)
         Else
-            personenCtrl = New personen(Me)
+            personenCtrl = New personen(Me, Me)
             MainContent.Content = personenCtrl
         End If
 
@@ -354,7 +357,7 @@ Class MainWindow
         If TypeOf MainContent.Content Is personen Then
             personenCtrl = DirectCast(MainContent.Content, personen)
         Else
-            personenCtrl = New personen(Me)
+            personenCtrl = New personen(Me, Me)
             MainContent.Content = personenCtrl
         End If
 
@@ -379,7 +382,7 @@ Class MainWindow
         If TypeOf MainContent.Content Is familien Then
             familieCtrl = DirectCast(MainContent.Content, familien)
         Else
-            familieCtrl = New familien(Me)
+            familieCtrl = New familien(Me, Me)
             MainContent.Content = familieCtrl
         End If
         familieCtrl.Success = True
@@ -433,8 +436,9 @@ Class MainWindow
     End Sub
 
     Private Sub Quellzitate_Click(sender As Object, e As RoutedEventArgs)
-        Dim QuellenZitate = New QuellenZitatDefinition
-        QuellenZitate.Show()
+        Dim wnd As New allgemeinesFenster(New QuellenZitate(Me), Me, "Vornamen")
+
+        wnd.ShowDialog()
     End Sub
 
     Public Sub CopyTextInfo(text As String)
@@ -445,6 +449,82 @@ Class MainWindow
     text As String)
 
         CopyTextInfo(text)
+
+    End Sub
+
+    Private Sub ShowPerson(personID As Integer)
+
+        Dim uc As New personen(Me, Me)
+
+        MainContent.Content = uc
+
+        My.Settings.LastContent = "Person"
+        My.Settings.Save()
+
+
+        If personID > 0 Then
+
+            uc.SelectRecord(personID)
+
+        End If
+
+    End Sub
+
+    Private Sub ShowFamilie(familienID As Integer)
+
+        Dim uc As New familien(Me, Me)
+
+        MainContent.Content = uc
+
+        My.Settings.LastContent = "Familie"
+        My.Settings.Save()
+
+
+        If familienID > 0 Then
+
+            uc.SelectRecord(familienID)
+
+        End If
+
+    End Sub
+
+    Public Sub NavigateTo(
+        navigationType As eNavigationType,
+        recordID As Integer) _
+        Implements INavigationService.NavigateTo
+
+        Select Case navigationType
+
+            Case eNavigationType.Person
+
+                ShowPerson(recordID)
+
+
+            Case eNavigationType.Familie
+
+                ShowFamilie(recordID)
+
+
+            Case eNavigationType.Quelle
+
+                'ShowQuelle(recordID)
+
+
+            Case eNavigationType.QuellenZitat
+
+                'ShowQuellenZitat(recordID)
+
+
+            Case eNavigationType.Ort
+
+                'ShowOrt(recordID)
+
+
+            Case eNavigationType.Ereignis
+
+                'ShowEreignis(recordID)
+
+        End Select
 
     End Sub
 End Class

@@ -1919,6 +1919,71 @@ Public Class ClsGenDB
         Return dt
     End Function
 
+    Public Function GetQuelleZitateEvents(QID As Integer) As DataTable
+        Dim strSQL As String =
+            "SELECT
+                tblQuellZitat.tblQuellZitatID,
+                tblQuellZitat.tblQuelleID,
+                tblQuellZitat.tblEreignisArtID,
+                tblQuellZitat.Jahr,
+                tblQuellZitat.Seite,
+                tblQuellZitat.Bd,
+                tblQuellZitat.Nummer,
+                tblQuellZitat.Datum as QDatum,
+                tblQuellZitat.InternetAdresse,
+                tblQuellZitat.URLBeschreibung,
+                tblQuellZitat.ZitatBeschreibung,
+                tblEreignisArt.EreignisArt as QEreignis,
+                qryPerson.PS,
+                qryPerson.Nachname,
+                qryPerson.Vorname,
+                tblEventTag.TagD,
+                tblEreignisArt_1.EreignisArt as EEreignis,
+                tblEreignis.Datum as EDatum,
+                tblEreignis.Zusatz,
+                tblEreignis.tblEreignisID,
+                tblEreignis.tblFamilieID,
+                tblEreignisZitat.tblPersonID
+            FROM
+                qryPerson
+                INNER JOIN (
+                    tblEventTag
+                    INNER JOIN (
+                        tblEreignisArt AS tblEreignisArt_1
+                        INNER JOIN (
+                            (
+                                (
+                                    tblQuellZitat
+                                    INNER JOIN tblEreignisZitat ON tblQuellZitat.tblQuellZitatID = tblEreignisZitat.tblQuellZitatID
+                                )
+                                INNER JOIN tblEreignis ON tblEreignisZitat.tblEreignisID = tblEreignis.tblEreignisID
+                            )
+                            INNER JOIN tblEreignisArt ON tblQuellZitat.tblEreignisArtID = tblEreignisArt.tblEreignisArtID
+                        ) ON tblEreignisArt_1.tblEreignisArtID = tblEreignis.tblEreignisArtID
+                    ) ON tblEventTag.Tag = tblEreignisZitat.EventTag
+                ) ON qryPerson.tblPersonID = tblEreignisZitat.tblPersonID
+            WHERE
+                tblQuellZitat.tblQuellZitatID = ?
+                AND tblQuellZitat.active = True
+                AND tblEreignisZitat.active = True;"
+
+
+
+
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblQuellZitatID", QID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
+
+
     Public Function GetEventTag() As DataTable
         Dim strSQL As String =
             "SELECT *

@@ -1660,6 +1660,33 @@ Namespace TestInoGen
         End Sub
 #End Region
 
+        <Test>
+        Public Sub TestGetQuelleZitateEvents()
 
+            Dim dt As DataTable = cGDB.GetQuelleZitateEvents(2)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(16))
+            Assert.That(dt.Rows(1).Item("tblEreignisID"), NUnit.Framework.Is.EqualTo(16))
+
+            Assert.That(dt.Rows(0).Item("tblPersonID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(1).Item("tblPersonID"), NUnit.Framework.Is.EqualTo(7))
+
+            Assert.That(dt.Rows(0).Item("tblFamilieID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(1).Item("tblFamilieID"), NUnit.Framework.Is.EqualTo(2))
+
+            Assert.That(dt.Rows(0).Item("QEreignis"), NUnit.Framework.Is.EqualTo("Heirat K"))
+            Assert.That(dt.Rows(1).Item("QEreignis"), NUnit.Framework.Is.EqualTo("Heirat K"))
+
+            Assert.That(dt.Rows(0).Item("EEreignis"), NUnit.Framework.Is.EqualTo("Heirat K"))
+            Assert.That(dt.Rows(1).Item("EEreignis"), NUnit.Framework.Is.EqualTo("Heirat K"))
+
+            Assert.That(dt.Rows(0).Item("PS"), NUnit.Framework.Is.EqualTo("VAN JOHA1740"))
+            Assert.That(dt.Rows(1).Item("PS"), NUnit.Framework.Is.EqualTo("KEVEMARI1746"))
+
+            Assert.That(dt.Rows(0).Item("TagD"), NUnit.Framework.Is.EqualTo("Ehemann"))
+            Assert.That(dt.Rows(1).Item("TagD"), NUnit.Framework.Is.EqualTo("Ehefrau"))
+
+        End Sub
     End Class
 End Namespace

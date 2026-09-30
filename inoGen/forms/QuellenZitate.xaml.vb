@@ -18,6 +18,8 @@ Class QuellenZitate
 
     Private cGenDB As New ClsGenDB(My.Settings.DBPath)
 
+    Private ReadOnly _navigation As INavigationService
+
     Public Property EreignisControl As ereignis
 
     Private Sub btnFilter_Click(sender As Object, e As RoutedEventArgs)
@@ -48,6 +50,18 @@ Class QuellenZitate
         If EreignisControl IsNot Nothing Then
             EreignisControl.setQuellZitatID(My.Settings.LastQuellZitat)
         End If
+    End Sub
+
+    Private Sub btnUsage_Click(sender As Object, e As RoutedEventArgs)
+        If dgQuellZitate.SelectedItem Is Nothing Then
+            MessageBox.Show("Bitte eine Zeile auswählen.")
+            Return
+        End If
+
+        Dim wnd As New allgemeinesFenster(
+            New QuellenZitatEreignis(CType(dgQuellZitate.SelectedItem, DataRowView)("tblQuellZitatID"), _navigation), _navigation, "Verwendung")
+        wnd.ShowDialog()
+
     End Sub
 
     Private Sub LoadData()
@@ -108,10 +122,10 @@ Class QuellenZitate
 
     End Sub
 
-    Public Sub New()
+    Public Sub New(navigation As INavigationService)
         InitializeComponent()
 
-
+        _navigation = navigation
         LoadData()
         LoadDataQuellen()
         LoadDataEreignis()
