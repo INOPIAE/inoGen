@@ -263,15 +263,19 @@ Public Class familien
         Dim rowView As DataRowView = CType(dgEreignis.SelectedItem, DataRowView)
         If rowView IsNot Nothing Then
 
-            _details = New ereignis(False, _main)
-            _details.EintragId = Convert.ToInt32(rowView("tblEreignisID"))
-            AddHandler _details.DataSaved, AddressOf OnDatenGespeichert
-            AdditionalContent.Content = _details
-
-            _quellenZitate = New QuellenZitate(_navigation)
-            _quellenZitate.EreignisControl = _details
-            Quellen.Content = _quellenZitate
+            SelectEreignis(rowView)
         End If
+    End Sub
+
+    Private Sub SelectEreignis(rowView As DataRowView)
+        _details = New ereignis(False, _main)
+        _details.EintragId = Convert.ToInt32(rowView("tblEreignisID"))
+        AddHandler _details.DataSaved, AddressOf OnDatenGespeichert
+        AdditionalContent.Content = _details
+
+        _quellenZitate = New QuellenZitate(_navigation)
+        _quellenZitate.EreignisControl = _details
+        Quellen.Content = _quellenZitate
     End Sub
 
     Private Sub OnDatenGespeichert(sender As Object, e As EventArgs)
@@ -755,5 +759,14 @@ Public Class familien
         LoadFamily()
 
         LoadData()
+    End Sub
+
+    Private Sub dgQuellZitate_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs) Handles dgQuellZitate.MouseDoubleClick
+        Dim rowView As DataRowView = CType(dgQuellZitate.SelectedItem, DataRowView)
+        If rowView IsNot Nothing Then
+            If rowView("PersonenEreignis") = False Then
+                SelectEreignis(rowView)
+            End If
+        End If
     End Sub
 End Class
