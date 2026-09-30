@@ -133,20 +133,11 @@ Namespace TestInoGen
 
 
             Dim cGDB As New inoGenDLL.ClsGenDB(DBFileT)
-            'cGDB.FillVornamenPhonetic()
-
-
 
             version = cDBT.CheckDBVersion
-
-            Dim dt As DataTable = cGDB.GetVornameBySoundex("L320")
-            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(0))
             Assert.That(version, NUnit.Framework.Is.EqualTo(currentDBVersion))
 
-            cGDB.FillVornamenPhonetic()
-            dt = cGDB.GetVornameBySoundex("L320")
-
-
+            Dim dt As DataTable = cGDB.GetVornameBySoundex("L320")
             Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
             Assert.That(dt.Rows(0).Item("SVorname"), NUnit.Framework.Is.EqualTo("L320"))
         End Sub

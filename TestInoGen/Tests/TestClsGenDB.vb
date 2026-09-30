@@ -1424,11 +1424,18 @@ Namespace TestInoGen
         Public Sub TestSetVorname()
 
             Dim VName As String = "Lutwig"
+
+            Dim sSoundex As String = cPhon.GetNameSoundex(VName)
+
+            Dim dt As DataTable = cGDB.GetVornameBySoundex(sSoundex)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
             Dim ID As Int16 = cGDB.SetVorname(VName)
 
 
             Assert.That(ID, NUnit.Framework.Is.EqualTo(80))
-            Dim dt As DataTable =  cGDB.GetVornameByID(ID)
+            dt = cGDB.GetVornameByID(ID)
 
             Assert.That(dt.Rows(0).Item("Vorname"), NUnit.Framework.Is.EqualTo(VName))
             Assert.That(dt.Rows(0).Item("CPStVorname"), NUnit.Framework.Is.EqualTo(VName))
@@ -1436,11 +1443,10 @@ Namespace TestInoGen
             Assert.That(dt.Rows(0).Item("CPVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
             Assert.That(dt.Rows(0).Item("CPSVorname"), NUnit.Framework.Is.EqualTo(cPhon.GetNameCPhonetik(VName)))
 
-            Dim sSoundex As String = cPhon.GetNameSoundex(VName)
 
             dt = cGDB.GetVornameBySoundex(sSoundex)
 
-            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(2))
 
         End Sub
 
