@@ -1,6 +1,8 @@
-﻿Imports System.IO
-Imports NUnit.Framework
+﻿Imports System.Data
+Imports System.IO
 Imports inoGenDLL
+Imports iText.Kernel.XMP.Impl
+Imports NUnit.Framework
 
 Namespace TestInoGen
     Public Class TestClsAhnenTafelDaten
@@ -427,5 +429,50 @@ Namespace TestInoGen
             Assert.That(c, [Is].EqualTo(1), $"Name: {p.Vorname} {p.Nachname} Pos: {p.Pos}")
 
         End Sub
+
+        <Test>
+        Public Sub TestEreignisse()
+
+            Dim dt As DataTable = cAT.Ereignisse(1)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(6))
+
+            Assert.That(dt.Rows(0).Item("EreignisArt"), NUnit.Framework.Is.EqualTo("Taufe"))
+            Assert.That(dt.Rows(0).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(2))
+            Assert.That(dt.Rows(0).Item("Quelle"), NUnit.Framework.Is.EqualTo("Bonn St. Remigius"))
+            Assert.That(dt.Rows(0).Item("Jahr"), NUnit.Framework.Is.EqualTo(1770))
+            Assert.That(dt.Rows(0).Item("Seite"), NUnit.Framework.Is.EqualTo("166"))
+            Assert.That(dt.Rows(0).Item("Nummer"), NUnit.Framework.Is.EqualTo("4"))
+            Assert.That(dt.Rows(0).Item("InternetAdresse"), NUnit.Framework.Is.EqualTo("https://www.bonn.de/bonn-erleben/beethoven/beethovens-taufeintrag.php"))
+
+
+
+            Assert.That(dt.Rows(1).Item("EreignisArt"), NUnit.Framework.Is.EqualTo("Sterbe"))
+            Assert.That(dt.Rows(2).Item("EreignisArt"), NUnit.Framework.Is.EqualTo("Begräbnis"))
+
+            Assert.That(dt.Rows(3).Item("EreignisArt"), NUnit.Framework.Is.EqualTo("Beruf"))
+            Assert.That(dt.Rows(3).Item("Zusatz"), NUnit.Framework.Is.EqualTo("Bratschist"))
+
+            Assert.That(dt.Rows(4).Item("EreignisArt"), NUnit.Framework.Is.EqualTo("Beruf"))
+            Assert.That(dt.Rows(4).Item("Zusatz"), NUnit.Framework.Is.EqualTo("Organist"))
+
+            Assert.That(dt.Rows(5).Item("EreignisArt"), NUnit.Framework.Is.EqualTo("Beruf"))
+            Assert.That(dt.Rows(5).Item("Zusatz"), NUnit.Framework.Is.EqualTo("Komponist"))
+
+
+            dt = cAT.Ereignisse(2, True)
+
+            Assert.That(dt.Rows.Count, NUnit.Framework.Is.EqualTo(1))
+
+            Assert.That(dt.Rows(0).Item("EreignisArt"), NUnit.Framework.Is.EqualTo("Heirat K"))
+            Assert.That(dt.Rows(0).Item("tblEreignisArtID"), NUnit.Framework.Is.EqualTo(4))
+            Assert.That(dt.Rows(0).Item("Quelle"), NUnit.Framework.Is.EqualTo("Bonn St. Remigius"))
+            Assert.That(dt.Rows(0).Item("Jahr"), NUnit.Framework.Is.EqualTo(1767))
+            Assert.That(dt.Rows(0).Item("Seite"), NUnit.Framework.Is.EqualTo(DBNull.Value))
+            Assert.That(dt.Rows(0).Item("Nummer"), NUnit.Framework.Is.EqualTo(DBNull.Value))
+            Assert.That(dt.Rows(0).Item("InternetAdresse"), NUnit.Framework.Is.EqualTo(DBNull.Value))
+
+        End Sub
+
     End Class
 End Namespace

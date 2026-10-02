@@ -1,4 +1,5 @@
-﻿Imports System.Data.OleDb
+﻿Imports System.Data
+Imports System.Data.OleDb
 Imports System.Diagnostics.Eventing.Reader
 Imports System.IO
 Imports System.Reflection.Emit
@@ -7,7 +8,7 @@ Imports inoGenDLL.ClsOSMKarte
 
 Public Class clsAhnentafelDaten
 
-    Public DBPath As String =""
+    Public DBPath As String = ""
     Public connectionString As String = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "")
 
     Public cGenDB As inoGenDLL.ClsGenDB
@@ -64,14 +65,22 @@ Public Class clsAhnentafelDaten
         Public MID As Integer?
     End Structure
 
+    Public Structure SourceExport
+        Public ID As Integer
+        Public SourceID As Integer
+        Public SourceData As String
+    End Structure
+
     Public Persons As New List(Of PersonData)
     Public Kinder As New List(Of PersonData)
     Public Ehe As New List(Of Integer)
     Public LocationList As New List(Of ClsOSMKarte.marker)
     Public EventList As New List(Of EventData)
     Public FamilyList As New List(Of FamilyData)
+    Public SourceList As New List(Of SourceExport)
 
     Public Property RootPersonID As Integer = 0
+    Public SID As Integer = 1
 
     Public Sub New(dbFileString As String)
         DBPath = dbFileString
@@ -151,7 +160,7 @@ Public Class clsAhnentafelDaten
         Next
     End Sub
 
-    Public Sub WriteTreeToFile(filePath As String)
+    Public Sub WriteTreeToFile(filePath As String, source As Boolean)
         Ehe.Clear()
         Dim Generation As Integer = 0
         Using writer As New StreamWriter(filePath, False, System.Text.Encoding.UTF8)
@@ -162,35 +171,59 @@ Public Class clsAhnentafelDaten
                 End If
                 writer.WriteLine("# " & p.Pos & ". " & OutputVorname(p.Vorname) & " " & p.Nachname.ToUpper & " " & FamilySearchLinkPerson(p.FSID))
 
-                AusgabePersDetails(writer, p)
+                If source = False Then
+                    AusgabePersDetails(writer, p)
+                Else
+                    AusgabePersDetailsErweitert(writer, p)
+                End If
+
 
                 If p.EID > 0 And Ehe.Contains(p.EID) = False Then
-                    If IsNothing(p.Verlobungsdatum) = False Or IsNothing(p.Verlobungsort) = False Then
-                        writer.WriteLine("⚬ " & If(IsNothing(p.Verlobungsdatum), "    ", p.Verlobungsdatum) & " " & If(IsNothing(p.Verlobungsort), "", p.Verlobungsort) & vbCrLf)
+                    If source = False Then
+                        AusgabeFamilienDetails(writer, p)
+                    Else
+                        AusgabePersDetailsErweitert(writer, p, True)
                     End If
-                    If IsNothing(p.Heiratdatum) = False Or IsNothing(p.Heiratort) = False Then
-                        writer.WriteLine("⚭ " & If(IsNothing(p.Heiratdatum), "    ", p.Heiratdatum) & " " & If(IsNothing(p.KHeiratort), "", p.KHeiratort) & vbCrLf)
-                    End If
-                    If IsNothing(p.KHeiratdatum) = False Or IsNothing(p.KHeiratort) = False Then
-                        writer.WriteLine("♁⚭ " & If(IsNothing(p.KHeiratdatum), "    ", p.KHeiratdatum) & " " & If(IsNothing(p.KHeiratort), "", p.KHeiratort) & vbCrLf)
-                    End If
-                    If IsNothing(p.Scheidungsdatum) = False Or IsNothing(p.Scheidungsort) = False Then
-                        writer.WriteLine("⚮ " & If(IsNothing(p.Scheidungsdatum), "    ", p.Scheidungsdatum) & " " & If(IsNothing(p.Scheidungsort), "", p.Scheidungsort) & vbCrLf)
-                    End If
+
                     writer.WriteLine("## Kinder")
                     AddChildren(p.EID)
                     For Each k In Kinder.OrderBy(Function(x) x.Pos)
                         writer.WriteLine("## " & k.Pos & " " & OutputVorname(k.Vorname) & " " & k.Nachname.ToUpper)
                         If GetPersonByID(k.ID) Is Nothing Then
-                            AusgabePersDetails(writer, k)
+                            If source = False Then
+                                AusgabePersDetails(writer, k)
+                            Else
+                                AusgabePersDetailsErweitert(writer, k)
+                            End If
                         Else
                             writer.WriteLine("siehe oben" & vbCrLf)
                         End If
                         Ehe.Add(p.EID)
                     Next
                 End If
+
+                For Each se In SourceList
+                    writer.WriteLine($"[{se.ID}] {se.SourceData}" & vbCrLf)
+                Next
+                SourceList.Clear()
+                SID = 1
             Next
         End Using
+    End Sub
+
+    Private Shared Sub AusgabeFamilienDetails(writer As StreamWriter, p As PersonData)
+        If IsNothing(p.Verlobungsdatum) = False Or IsNothing(p.Verlobungsort) = False Then
+            writer.WriteLine("⚬ " & If(IsNothing(p.Verlobungsdatum), "    ", p.Verlobungsdatum) & " " & If(IsNothing(p.Verlobungsort), "", p.Verlobungsort) & vbCrLf)
+        End If
+        If IsNothing(p.Heiratdatum) = False Or IsNothing(p.Heiratort) = False Then
+            writer.WriteLine("⚭ " & If(IsNothing(p.Heiratdatum), "    ", p.Heiratdatum) & " " & If(IsNothing(p.KHeiratort), "", p.KHeiratort) & vbCrLf)
+        End If
+        If IsNothing(p.KHeiratdatum) = False Or IsNothing(p.KHeiratort) = False Then
+            writer.WriteLine("♁⚭ " & If(IsNothing(p.KHeiratdatum), "    ", p.KHeiratdatum) & " " & If(IsNothing(p.KHeiratort), "", p.KHeiratort) & vbCrLf)
+        End If
+        If IsNothing(p.Scheidungsdatum) = False Or IsNothing(p.Scheidungsort) = False Then
+            writer.WriteLine("⚮ " & If(IsNothing(p.Scheidungsdatum), "    ", p.Scheidungsdatum) & " " & If(IsNothing(p.Scheidungsort), "", p.Scheidungsort) & vbCrLf)
+        End If
     End Sub
 
     Public Sub WriteCompTreeToFile(filePath As String)
@@ -230,6 +263,92 @@ Public Class clsAhnentafelDaten
         If IsNothing(p.Begräbnisdatum) = False Or IsNothing(p.Begräbnisort) = False Then
             writer.WriteLine("⚰ " & If(IsNothing(p.Begräbnisdatum), "    ", p.Begräbnisdatum) & " " & If(IsNothing(p.Begräbnisort), "", p.Begräbnisort) & vbCrLf)
         End If
+    End Sub
+
+    Public Sub AusgabePersDetailsErweitert(writer As StreamWriter, p As PersonData, Optional family As Boolean = False)
+        Dim dt As DataTable
+        If family = False Then
+            dt = Ereignisse(p.ID)
+        Else
+            dt = Ereignisse(p.EID, family)
+        End If
+
+        For Each row As DataRow In dt.Rows
+            Dim eventArt As String = row("EreignisArt").ToString()
+            Dim ereignisArtID As Integer = Convert.ToInt32(row("tblEreignisArtID"))
+            Dim datum As String = If(IsDBNull(row("DatumText")), "", row("DatumText").ToString())
+            Dim bisdatum As String = If(IsDBNull(row("BisDatumText")), "", row("BisDatumText").ToString())
+            Dim ort As String = If(IsDBNull(row("Ort")), "", " " & row("Ort").ToString())
+            Dim zusatz As String = If(IsDBNull(row("Zusatz")), "", " " & row("Zusatz").ToString())
+            Dim referenz As String = If(IsDBNull(row("Referenz")), "", " " & row("Referenz").ToString())
+            Dim info As String = If(IsDBNull(row("Info")), "", " " & row("Info").ToString())
+            Dim quellzitatID As String = If(IsDBNull(row("tblQuellZitatID")), "", " [" & row("tblQuellZitatID") & "]")
+
+            If Not IsDBNull(row("tblQuellZitatID")) Then
+                Dim source As SourceExport = SourceList.FirstOrDefault(Function(x) x.SourceID = row("tblQuellZitatID"))
+
+                If source.SourceID <> 0 Then
+                    quellzitatID = " [" & source.ID & "]"
+
+                Else
+                    quellzitatID = " [" & SID & "]"
+                    Dim zitat As New SourceExport
+                    zitat.ID = SID
+                    zitat.SourceID = row("tblQuellZitatID")
+                    zitat.SourceData = row("Quelle").ToString()
+                    If Not IsDBNull(row("Bd")) And row("Bd").ToString() <> "" Then
+                        zitat.SourceData &= " Bd. " & row("Bd").ToString()
+                    End If
+                    If Not IsDBNull(row("Jahr")) Then
+                        zitat.SourceData &= " " & row("Jahr").ToString()
+                    End If
+                    If Not IsDBNull(row("Seite")) And row("Seite").ToString() <> "" Then
+                        zitat.SourceData &= " S. " & row("Seite").ToString()
+                    End If
+                    If Not IsDBNull(row("Nummer")) And row("Nummer").ToString() <> "" Then
+                        zitat.SourceData &= " Nr. " & row("Nummer").ToString()
+                    End If
+                    If Not IsDBNull(row("InternetAdresse")) Then
+                        zitat.SourceData &= " " & GeneralLink(row("InternetAdresse").ToString())
+                    End If
+                    SourceList.Add(zitat)
+                    SID += 1
+                End If
+            End If
+
+            If datum = "" And bisdatum <> "" Then
+                datum = bisdatum
+            ElseIf datum <> "" And bisdatum <> "" Then
+                datum &= " bis " & bisdatum
+            End If
+
+            Select Case ereignisArtID
+                Case 1 'Geburt
+                    writer.WriteLine($"∗ {datum}{ort}{quellzitatID}" & vbCrLf)
+                Case 2
+                    writer.WriteLine($"~ {datum}{ort}{quellzitatID}" & vbCrLf)
+                Case 3
+                    writer.WriteLine($"⚭ {datum}{ort}{quellzitatID}" & vbCrLf)
+                Case 4
+                    writer.WriteLine($"♁⚭ {datum}{ort}{quellzitatID}" & vbCrLf)
+                Case 5
+                    writer.WriteLine($"⚮ {datum}{ort}{quellzitatID}" & vbCrLf)
+                Case 6
+                    writer.WriteLine($"† {datum}{ort}{quellzitatID}" & vbCrLf)
+                Case 7
+                    writer.WriteLine($"⚰ {datum}{ort}{quellzitatID}" & vbCrLf)
+                Case 8
+                    writer.WriteLine($"⚬ {datum}{ort}{quellzitatID}" & vbCrLf)
+                Case 9
+                    writer.WriteLine($"Beruf: {datum}{ort}{zusatz}{quellzitatID}" & vbCrLf)
+                Case 10
+                    writer.WriteLine($"Wohnort: {datum}{ort}{quellzitatID}" & vbCrLf)
+                Case 11
+                    writer.WriteLine($"Sonstiges: {datum}{ort}{quellzitatID}" & vbCrLf)
+            End Select
+        Next
+
+
     End Sub
 
     Public Sub AusgabePersCompDetails(writer As StreamWriter, p As PersonData)
@@ -380,6 +499,14 @@ Public Class clsAhnentafelDaten
         End If
     End Function
 
+    Public Function GeneralLink(URL As String) As String
+        If IsNothing(URL) Or URL = "" Then
+            Return ""
+        Else
+            Return String.Format("[{0}]({0})", URL)
+        End If
+    End Function
+
     Public Sub ErstelleLocationList()
         LocationList = New List(Of ClsOSMKarte.marker)
         Dim strSql As String = "SELECT
@@ -479,6 +606,81 @@ Public Class clsAhnentafelDaten
         Return childPos
     End Function
 
+    Public Function Ereignisse(ID As Integer, Optional family As Boolean = False) As DataTable
+        Dim filter As String = If(family, "tblFamilieID", "tblPersonID")
+        Dim strSQL As String = String.Format("SELECT
+                    tblEreignis.tblPersonID,
+                    tblEreignis.tblFamilieID,
+                    tblEreignis.tblEreignisArtID,
+                    tblEreignis.DatumText,
+                    tblEreignis.BisDatumText,
+                    tblEreignis.Zusatz,
+                    tblEreignis.Referenz,
+                    tblEreignis.Info,
+                    tblOrt.Ort,
+                    tblEreignisArt.EreignisArt,
+                    tblQuellZitat.tblQuellZitatID,
+                    tblQuellZitat.Jahr,
+                    tblQuellZitat.Seite,
+                    tblQuellZitat.Bd,
+                    tblQuellZitat.Nummer,
+                    tblQuellZitat.InternetAdresse,
+                    tblQuelle.Quelle
+                FROM
+                    (
+                        (
+                            (
+                                (
+                                    tblEreignis
+                                    INNER JOIN tblOrt ON tblEreignis.tblOrtID = tblOrt.tblOrtID
+                                )
+                                INNER JOIN tblEreignisArt ON tblEreignis.tblEreignisArtID = tblEreignisArt.tblEreignisArtID
+                            )
+                            LEFT JOIN tblEreignisZitat ON tblEreignis.tblEreignisID = tblEreignisZitat.tblEreignisID
+                        )
+                        LEFT JOIN tblQuellZitat ON tblEreignisZitat.tblQuellZitatID = tblQuellZitat.tblQuellZitatID
+                    )
+                    LEFT JOIN tblQuelle ON tblQuellZitat.tblQuelleID = tblQuelle.tblQuelleID
+                GROUP BY
+                    tblEreignis.tblPersonID,
+                    tblEreignis.tblFamilieID,
+                    tblEreignis.tblEreignisArtID,
+                    tblEreignis.DatumText,
+                    tblEreignis.BisDatumText,
+                    tblEreignis.Zusatz,
+                    tblEreignis.Referenz,
+                    tblEreignis.Info,
+                    tblOrt.Ort,
+                    tblEreignisArt.EreignisArt,
+                    tblQuellZitat.tblQuellZitatID,
+                    tblQuellZitat.Jahr,
+                    tblQuellZitat.Seite,
+                    tblQuellZitat.Bd,
+                    tblQuellZitat.Nummer,
+                    tblQuellZitat.InternetAdresse,
+                    tblEreignisArt.Reihenfolge,
+                    tblEreignis.Datum,
+                    tblEreignis.Zusatz,
+                    tblQuelle.Quelle
+                HAVING
+                    tblEreignis.{0} = ?
+                ORDER BY
+                    tblEreignisArt.Reihenfolge,
+                    tblEreignis.Datum,
+                    tblEreignis.Zusatz,
+                    tblOrt.Ort;", filter)
 
+        Dim dt As New DataTable()
+        Using conn As New OleDbConnection(connectionString)
+            conn.Open()
+            Using cmd As New OleDbCommand(strSQL, conn)
+                cmd.Parameters.AddWithValue("@tblPersonID", ID)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        End Using
+        Return dt
+    End Function
 
 End Class

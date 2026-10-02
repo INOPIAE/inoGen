@@ -22,13 +22,15 @@
             <TextBox x:Name="txtPerson" Width="200" Margin="0,0,10,0"/>
             <TextBlock Text="Komprimiert:" Width="90" VerticalAlignment="Center"/>
             <CheckBox x:Name="ckbCompress" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBlock Text="Mit Quellen:" Width="90" VerticalAlignment="Center"/>
+            <CheckBox x:Name="ckbWithSources" VerticalAlignment="Center" Margin="0,0,10,0"/>
             <Button x:Name="btnSearch" Content="Suchen" Width="80" Margin="5" Click="btnSearch_Click"/>
             <Button x:Name="btnOK" Content="OK" Width="80" Margin="5" Click="btnOK_Click"/>
             <Button x:Name="btnCSV" Content="CSV" Width="80" Margin="5" Click="btnCSV_Click"/>
             <Button x:Name="btnReport" Content="Bericht" Width="80" Margin="5" Click="btnReport_Click"/>
             <Button x:Name="btnChart" Content="Ahnentafel" Width="80" Margin="5" Click="btnChart_Click"/>
             <Button x:Name="btnMap" Content="Karte" Width="80" Margin="5" Click="btnMap_Click"/>
-            <Button x:Name="btnCancel" Content="Abbrechen" Width="80" Margin="5" IsCancel="True"/>
+            <Button x:Name="btnCancel" Content="Abbrechen" Width="80" Margin="5" Click="btnCancel_Click"/>
         </StackPanel>
 
         <!-- Zeile 1: Content mit Columns -->
@@ -93,7 +95,7 @@
 
                         <Expander Header="Darstellung" IsExpanded="True" Margin="0,5">
                             <StackPanel Margin="10,5">
-                                <RadioButton x:Name="rbGen4" Content="4 Generationen (Din A4)" IsChecked="True" Margin="0,3"/>
+                                <RadioButton x:Name="rbGen4" Content="4 Generationen (DIN A4)" IsChecked="True" Margin="0,3"/>
                                 <RadioButton x:Name="rbGen7" Content="7 Genrationen" Margin="0,3"/>
                             </StackPanel>
                         </Expander>

@@ -1,4 +1,5 @@
-﻿Imports System.IO
+﻿Imports System.ComponentModel
+Imports System.IO
 Imports System.Windows.Forms
 
 Public Class AhnenTafel
@@ -17,9 +18,11 @@ Public Class AhnenTafel
         btnChart.IsEnabled = False
         btnMap.IsEnabled = False
     End Sub
+
     Private Async Sub btnOK_Click(sender As Object, e As RoutedEventArgs)
         btnOK.IsEnabled = False
         Dim blnCheck As Boolean = ckbCompress.IsChecked
+        Dim blnSource As Boolean = ckbWithSources.IsChecked
         ShowProgress("Daten werden zusammengestellt...", True)
         Await Task.Run(Sub()
                            cAT.RootPersonID = PID
@@ -28,7 +31,7 @@ Public Class AhnenTafel
                            If blnCheck Then
                                cAT.WriteCompTreeToFile(mdFilePath)
                            Else
-                               cAT.WriteTreeToFile(mdFilePath)
+                               cAT.WriteTreeToFile(mdFilePath, blnSource)
                            End If
                        End Sub)
         HideProgress()
@@ -68,6 +71,10 @@ Public Class AhnenTafel
         Dim win As New OSMKarte(cAT.LocationList, cAT.Persons)
         win.Show()
 
+    End Sub
+
+    Private Sub btnCancel_Click(sender As Object, e As RoutedEventArgs)
+        Me.Close()
     End Sub
 
     Private Sub btnChart_Click(sender As Object, e As RoutedEventArgs)
@@ -172,6 +179,9 @@ Public Class AhnenTafel
             Case Else
                 rbFO.IsChecked = True
         End Select
+
+        ckbCompress.IsChecked = My.Settings.ATCompressed
+        ckbWithSources.IsChecked = My.Settings.ATDetails
     End Sub
     ' Code-Behind: Steuert Anzeige und Inhalt der Fortschrittsanzeige
 
@@ -201,4 +211,10 @@ Public Class AhnenTafel
                           End Sub)
     End Sub
 
+    Private Sub AhnenTafel_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        My.Settings.ATCompressed = ckbCompress.IsChecked
+        My.Settings.ATDetails = ckbWithSources.IsChecked
+        My.Settings.Save()
+        MyBase.Finalize()
+    End Sub
 End Class

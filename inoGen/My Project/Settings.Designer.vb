@@ -435,6 +435,30 @@ Namespace My
                 Me("LastQuellZitat") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property ATDetails() As Boolean
+            Get
+                Return CType(Me("ATDetails"),Boolean)
+            End Get
+            Set
+                Me("ATDetails") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property ATCompressed() As Boolean
+            Get
+                Return CType(Me("ATCompressed"),Boolean)
+            End Get
+            Set
+                Me("ATCompressed") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
