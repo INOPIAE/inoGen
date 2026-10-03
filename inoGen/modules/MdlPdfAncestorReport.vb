@@ -64,6 +64,7 @@ Module MdlPdfAncestorReport
         'Dim dest As String = "output.pdf"
         'PdfFonts.InitFonts()
 
+
         Using writer As New PdfWriter(dest)
             Using pdfDoc As New PdfDocument(writer)
                 Using document As New Document(pdfDoc)
@@ -75,6 +76,7 @@ Module MdlPdfAncestorReport
                     Dim normalFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA)
                     Dim boldFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD)
                     Dim italicFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_OBLIQUE)
+
                     'Dim fontDir As String = IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "liberation-fonts-ttf-2.1.5")
 
                     'Dim normalFont As PdfFont = PdfFontFactory.CreateFont(IO.Path.Combine(fontDir, "LiberationSans-Regular.ttf"), PdfEncodings.IDENTITY_H, True)
@@ -174,6 +176,180 @@ Module MdlPdfAncestorReport
                                 Dim outlineTitle As String = Regex.Replace(beforeText, "\*(.*?)\*", "*$1")
                                 rootOutline.AddOutline(outlineTitle).AddDestination(PdfExplicitDestination.CreateFit(page))
                             End If
+                        ElseIf line.Trim().StartsWith("[") Then
+                            Dim sourceText As String = line
+
+                            Dim fSize As Integer = 8
+                            Dim sourcepattern As String = "^(.*?)\s*\[([^\]]+)\]\(([^)]+)\)\s*$"
+                            Dim matches = Regex.Matches(sourceText, sourcepattern)
+
+                            Dim beforeText As String = ""
+
+                            Dim para As New Paragraph()
+                            para.SetFontSize(fSize)
+                            If matches.Count = 0 Then
+                                ' Kein Link → nur Kursiv-Markup verarbeiten
+                                para.Add(sourceText)
+                                beforeText = sourceText
+                            Else
+                                'Dim lastIndex As Integer = 0
+                                'For Each m As Match In matches
+                                '    ' Text vor Link (mit Kursiv-Erkennung)
+                                '    If m.Index > lastIndex Then
+                                '        beforeText = sourceText.Substring(lastIndex, m.Index - lastIndex)
+                                '        para.Add(beforeText)
+
+                                '    End If
+
+                                '    ' Linktext evtl. mit Kursiv-Markup
+                                '    Dim linkText As String = m.Groups(1).Value
+                                '    Dim url As String = m.Groups(2).Value
+
+                                '    Dim linkParts = linkText.Split("*"c)
+                                '    For i As Integer = 0 To linkParts.Length - 1
+                                '        If linkParts(i).Length > 0 Then
+                                '            Dim pdfLinkAnnot As New PdfLinkAnnotation(New iText.Kernel.Geom.Rectangle(0, 0, 0, 0))
+                                '            pdfLinkAnnot.SetAction(PdfAction.CreateURI(url))
+
+                                '            ' Border-Array [0 0 0] entfernt den sichtbaren Rahmen der Annotation
+                                '            Dim borderArr As New iText.Kernel.Pdf.PdfArray()
+                                '            borderArr.Add(New iText.Kernel.Pdf.PdfNumber(0))
+                                '            borderArr.Add(New iText.Kernel.Pdf.PdfNumber(0))
+                                '            borderArr.Add(New iText.Kernel.Pdf.PdfNumber(0))
+                                '            pdfLinkAnnot.SetBorder(borderArr)
+
+                                '            ' Erzeuge das Link-Element mit der Annotation
+                                '            Dim linkElem As New Link(linkParts(i), pdfLinkAnnot)
+
+                                '            ' Schriftart (kursiv oder normal)
+                                '            If i Mod 2 = 1 Then
+                                '                linkElem.SetFont(italicFont)
+                                '            Else
+                                '                linkElem.SetFont(normalFont)
+                                '            End If
+
+                                '            ' Einheitliche Größe (optional, oder Paragraph hat die Größe)
+                                '            linkElem.SetFontSize(8)
+
+                                '            ' Farbe auf schwarz setzen, damit kein blau/unterstrichenes Aussehen
+                                '            linkElem.SetFontColor(iText.Kernel.Colors.ColorConstants.BLACK)
+
+                                '            para.Add(linkElem)
+
+                                '        End If
+                                '    Next
+
+                                '    lastIndex = m.Index + m.Length + 2
+                                'Next
+
+                                Dim lastIndex As Integer = 0
+
+                                For Each m As Match In matches
+
+                                    '==================================================
+                                    ' Group 1 = Text vor dem Link
+                                    '==================================================
+
+                                    beforeText = m.Groups(1).Value & " "
+
+                                    If beforeText.Length > 0 Then
+                                        para.Add(beforeText)
+                                    End If
+
+
+                                    '==================================================
+                                    ' Group 2 = sichtbarer Linktext
+                                    ' Group 3 = URL
+                                    '==================================================
+
+                                    Dim linkText As String = m.Groups(2).Value
+                                    Dim url As String = m.Groups(3).Value
+
+
+                                    '==================================================
+                                    ' Linktext evtl. mit Kursiv-Markup
+                                    '==================================================
+
+                                    Dim linkParts = linkText.Split("*"c)
+
+                                    For i As Integer = 0 To linkParts.Length - 1
+
+                                        If linkParts(i).Length > 0 Then
+
+                                            Dim pdfLinkAnnot As New PdfLinkAnnotation(New iText.Kernel.Geom.Rectangle(0, 0, 0, 0))
+
+                                            pdfLinkAnnot.SetAction(PdfAction.CreateURI(url))
+
+
+                                            '------------------------------------------
+                                            ' Kein sichtbarer Rahmen
+                                            '------------------------------------------
+
+                                            Dim borderArr As New iText.Kernel.Pdf.PdfArray()
+
+                                            borderArr.Add(New iText.Kernel.Pdf.PdfNumber(0))
+
+                                            borderArr.Add(New iText.Kernel.Pdf.PdfNumber(0))
+
+                                            borderArr.Add(New iText.Kernel.Pdf.PdfNumber(0))
+
+                                            pdfLinkAnnot.SetBorder(borderArr)
+
+
+                                            '------------------------------------------
+                                            ' Link erzeugen
+                                            '------------------------------------------
+
+                                            Dim linkElem As New Link(linkParts(i), pdfLinkAnnot)
+
+
+                                            '------------------------------------------
+                                            ' Schriftart
+                                            '------------------------------------------
+
+                                            If i Mod 2 = 1 Then
+                                                linkElem.SetFont(italicFont)
+                                            Else
+                                                linkElem.SetFont(normalFont)
+                                            End If
+
+
+                                            '------------------------------------------
+                                            ' Schriftgröße
+                                            '------------------------------------------
+
+                                            linkElem.SetFontSize(8)
+
+
+                                            '------------------------------------------
+                                            ' Schwarze Schrift
+                                            '------------------------------------------
+
+                                            linkElem.SetFontColor(iText.Kernel.Colors.ColorConstants.BLACK)
+
+
+                                            para.Add(linkElem)
+
+                                        End If
+
+                                    Next
+
+
+                                    '==================================================
+                                    ' Position im Originaltext aktualisieren
+                                    '==================================================
+
+                                    lastIndex = m.Index + m.Length
+
+                                Next
+                                ' Rest nach letztem Link
+                                If lastIndex < line.Length Then
+                                    Dim afterText As String = line.Substring(lastIndex)
+                                    AddItalicAndNormalParts(para, afterText, normalFont, italicFont)
+                                End If
+                            End If
+
+                            document.Add(para)
                         Else
                             Dim para As New Paragraph()
 
