@@ -29,12 +29,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="itext" Version="9.3.0" />
-    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.3.0" />
-    <PackageReference Include="Mapsui.Wpf" Version="5.0.2" />
+    <PackageReference Include="itext" Version="9.8.0" />
+    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.8.0" />
+    <PackageReference Include="Mapsui.Wpf" Version="5.1.0" />
     <PackageReference Include="MdXaml" Version="1.27.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3405.78" />
-    <PackageReference Include="System.Data.OleDb" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
+    <PackageReference Include="System.Data.OleDb" Version="9.0.20" />
   </ItemGroup>
 
   <ItemGroup>

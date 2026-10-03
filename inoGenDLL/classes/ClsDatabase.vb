@@ -17,9 +17,9 @@ Public Class ClsDatabase
         dbFile = dbFileString
         If AppDomain.CurrentDomain.BaseDirectory.Contains("TestInoGen") Then
             If AppDomain.CurrentDomain.BaseDirectory.Contains("Release") Then
-                sqlPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\TestInoGen\bin\Release\net9.0\", "") & "\inoGenDLL\SQL\"
+                sqlPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\TestInoGen\bin\Release\net9.0-windows", "") & "\inoGenDLL\SQL\"
             Else
-                sqlPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\TestInoGen\bin\Debug\net9.0\", "") & "\inoGenDLL\SQL\"
+                sqlPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\TestInoGen\bin\Debug\net9.0-windows", "") & "\inoGenDLL\SQL\"
             End If
 
         End If
@@ -34,32 +34,49 @@ Public Class ClsDatabase
         Return "Database Created Successfully"
     End Function
 
-    Public Function FillDatabase(strSQLFile As String)
-        Dim conn As New OleDbConnection(connString)
-        conn.Open()
-        Dim cmd As New OleDb.OleDbCommand("", conn)
+    Public Function FillDatabase(strSQLFile As String) As String
 
-        Dim strSQL As String = ""
-        Using r As StreamReader = New StreamReader(strSQLFile)
+        Using conn As New OleDbConnection(connString)
 
-            Dim line As String
-            line = r.ReadLine
+            conn.Open()
 
-            Do While (Not line Is Nothing)
-                If line.Trim <> "" And line.StartsWith("DROP") = False Then
-                    strSQL &= line
-                    If line.EndsWith(";") Then
-                        cmd.CommandText = strSQL
-                        cmd.ExecuteNonQuery()
-                        strSQL = ""
-                    End If
+            Using cmd As New OleDbCommand("", conn)
 
-                End If
-                line = r.ReadLine
-            Loop
+                Using r As New StreamReader(strSQLFile)
+
+                    Dim strSQL As String = ""
+                    Dim line As String = r.ReadLine()
+
+                    Do While line IsNot Nothing
+
+                        If line.Trim <> "" AndAlso
+                       Not line.StartsWith("DROP") Then
+
+                            strSQL &= line
+
+                            If line.EndsWith(";") Then
+
+                                cmd.CommandText = strSQL
+                                cmd.ExecuteNonQuery()
+
+                                strSQL = ""
+
+                            End If
+
+                        End If
+
+                        line = r.ReadLine()
+
+                    Loop
+
+                End Using
+
+            End Using
+
         End Using
-        conn.Close()
+
         Return "SQL processed"
+
     End Function
 
     Public Function CheckDBVersion() As Long
@@ -88,23 +105,28 @@ Public Class ClsDatabase
     End Function
 
     Public Function ReadDBVersion() As Long
-        Dim conn As New OleDbConnection(connString)
-        conn.Open()
 
         Dim strSQL As String = "SELECT Version FROM tblVersion"
-        Dim Version As Long
 
-        Using comm As OleDbCommand = New OleDbCommand(strSQL, conn)
+        Using conn As New OleDbConnection(connString)
 
-            Using reader As OleDbDataReader = comm.ExecuteReader()
+            conn.Open()
 
-                While reader.Read()
-                    Version = reader.GetValue(0).ToString()
-                End While
+            Using comm As New OleDbCommand(strSQL, conn)
+
+                Using reader As OleDbDataReader = comm.ExecuteReader()
+
+                    If reader.Read() Then
+                        Return Convert.ToInt64(reader.GetValue(0))
+                    End If
+
+                End Using
             End Using
+
         End Using
-        conn.Close()
-        Return Version
+
+        Return 0
+
     End Function
 
     Private Function ReleaseComObject(ByVal objCom As Object) As Boolean
