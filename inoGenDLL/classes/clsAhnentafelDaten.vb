@@ -5,6 +5,7 @@ Imports System.IO
 Imports System.Reflection.Emit
 Imports System.Security.Cryptography
 Imports inoGenDLL.ClsOSMKarte
+Imports System.Linq
 
 Public Class clsAhnentafelDaten
 
@@ -71,6 +72,12 @@ Public Class clsAhnentafelDaten
         Public SourceData As String
     End Structure
 
+    Public Structure Statistics
+        Public Persons As Integer
+        Public Ancestors As Integer
+        Public Locations As String
+    End Structure
+
     Public Persons As New List(Of PersonData)
     Public Kinder As New List(Of PersonData)
     Public Ehe As New List(Of Integer)
@@ -78,6 +85,7 @@ Public Class clsAhnentafelDaten
     Public EventList As New List(Of EventData)
     Public FamilyList As New List(Of FamilyData)
     Public SourceList As New List(Of SourceExport)
+    Public Statistic As New Statistics
 
     Public Property RootPersonID As Integer = 0
     Public SID As Integer = 1
@@ -139,6 +147,7 @@ Public Class clsAhnentafelDaten
             End If
         End While
         ErstelleLocationList()
+        ErstelleStatistik
     End Sub
 
     Public Function NewPerson(ID As Long, Pos As Long) As PersonData
@@ -683,4 +692,19 @@ Public Class clsAhnentafelDaten
         Return dt
     End Function
 
+    Public Sub ErstelleStatistik()
+        Statistic.Persons = Persons.Count
+        Statistic.Locations = LocationList.Count
+
+        Dim anzahl As Integer = 0
+
+        For Each person As PersonData In Persons
+
+            If person.Gen > 1 Then
+                anzahl += 1
+            End If
+
+        Next
+        Statistic.Ancestors = anzahl
+    End Sub
 End Class

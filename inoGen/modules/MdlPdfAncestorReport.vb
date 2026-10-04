@@ -1,5 +1,6 @@
 ﻿Imports System.IO
 Imports System.Text.RegularExpressions
+Imports inoGenDLL
 Imports iText.IO.Font
 Imports iText.IO.Font.Constants
 Imports iText.Kernel.Events
@@ -17,7 +18,7 @@ Module MdlPdfAncestorReport
 
     Private cPdfText As New ClsPdfTextFormatter()
 
-    Sub GenerateReport(src As String, dest As String, person As String)
+    Sub GenerateReport(src As String, dest As String, person As String, statistic As clsAhnentafelDaten.Statistics)
         Dim fontSizeHeader As Integer = 14
         Dim fontSizeNormal As Integer = 10
         Dim fontSizeSource As Integer = 8
@@ -127,11 +128,16 @@ Module MdlPdfAncestorReport
                         End If
                     Next
 
+                    'Statistik
+                    document.Add(cPdfText.CreateParagraphWithLinks("Statistik", fontSizeNormal, 8, 0))
+                    document.Add(cPdfText.CreateParagraphWithLinks($"Die Ahnenliste enthält {statistic.Persons} Personen davon sind {statistic.Ancestors} Vorfahren von {person}.", fontSizeNormal, 0, 0))
+                    document.Add(cPdfText.CreateParagraphWithLinks($"In der Ahnenliste wird auf {statistic.Locations} Orte verwiesen.", fontSizeNormal, 0, 0))
+
                     'Hinweise
                     document.Add(cPdfText.CreateParagraphWithLinks("Hinweise", fontSizeNormal, 8, 0))
                     document.Add(cPdfText.CreateParagraphWithLinks("Es werden diese genealogischen Zeichen für die Ereignisse verwendet:", fontSizeSource, 0, 0))
-                    document.Add(cPdfText.CreateParagraphWithLinks("* - Geburt", fontSizeSource, 0, 0))
-                    document.Add(cPdfText.CreateParagraphWithLinks("* - Taufe", fontSizeSource, 0, 0))
+                    document.Add(cPdfText.CreateParagraphWithLinks("∗ - Geburt", fontSizeSource, 0, 0))
+                    document.Add(cPdfText.CreateParagraphWithLinks("~ - Taufe", fontSizeSource, 0, 0))
                     document.Add(cPdfText.CreateParagraphWithLinks("† - Tod", fontSizeSource, 0, 0))
                     document.Add(cPdfText.CreateParagraphWithLinks("⚰ - Begräbnis", fontSizeSource, 0, 0))
                     document.Add(cPdfText.CreateParagraphWithLinks("⚭ - Heirat", fontSizeSource, 0, 0))
