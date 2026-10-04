@@ -31,6 +31,7 @@
   <ItemGroup>
     <PackageReference Include="itext" Version="9.8.0" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.8.0" />
+    <PackageReference Include="itext.font-asian" Version="9.8.0" />
     <PackageReference Include="Mapsui.Wpf" Version="5.1.0" />
     <PackageReference Include="MdXaml" Version="1.27.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />

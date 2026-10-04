@@ -495,7 +495,7 @@ Public Class clsAhnentafelDaten
         If IsNothing(FSID) Or FSID = "" Then
             Return ""
         Else
-            Return String.Format("[{0}](https://www.familysearch.org/tree/person/details/{0})", FSID)
+            Return String.Format("[({0})](https://www.familysearch.org/tree/person/details/{0})", FSID)
         End If
     End Function
 

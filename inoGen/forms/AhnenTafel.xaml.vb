@@ -124,7 +124,7 @@ Public Class AhnenTafel
                     MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 End If
             Catch ex As Exception
-                MessageBox.Show("Fehler beim Speichern der PDF: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show("Fehler beim Speichern der PDF: " & vbCrLf & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End If
 
@@ -140,7 +140,7 @@ Public Class AhnenTafel
 
         If saveFileDialog.ShowDialog() = Forms.DialogResult.OK Then
             Try
-                MdlPdfAncestorReport.GenerateReport(mdFilePath, saveFileDialog.FileName)
+                MdlPdfAncestorReport.GenerateReport(mdFilePath, saveFileDialog.FileName, $"{cAT.Persons(0).Vorname} {cAT.Persons(0).Nachname}")
                 MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Catch ex As Exception
                 MessageBox.Show("Fehler beim Speichern der PDF: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
