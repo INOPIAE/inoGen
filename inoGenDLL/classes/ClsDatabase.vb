@@ -8,7 +8,8 @@ Public Class ClsDatabase
     Private connString As String
     Private dbFile As String
 
-    Private sqlPath As String = IIf(AppDomain.CurrentDomain.BaseDirectory.Contains("Release"), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Release\net9.0-windows7.0\", ""), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Debug\net9.0-windows7.0\", "")) & "\inoGenDLL\SQL\"
+    'Private sqlPath As String = IIf(AppDomain.CurrentDomain.BaseDirectory.Contains("Release"), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Release\net9.0-windows7.0\", ""), AppDomain.CurrentDomain.BaseDirectory.Replace("\inoGen\bin\Debug\net9.0-windows7.0\", "")) & "\inoGenDLL\SQL\"
+    Private sqlPath As String = AppDomain.CurrentDomain.BaseDirectory.Replace("inoGen\inoGen", "inoGen\inoGenDLL").Replace("net9.0-windows7.0", "net9.0-windows") & "SQL\"
 
     Private currentVersion As Long = 12
 

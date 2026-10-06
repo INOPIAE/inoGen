@@ -12,7 +12,7 @@ Public Class MainWindow
     Private VKH_Übernahme As VKH_Übernahme
 
     Public connectionString As String =
-        String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "D:\Daten\programierung neu\inoGen\Daten\Drews.accdb")
+        String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=""{0}"";", "")
 
     Public Shared fsWindow As FamilySearchWeb = Nothing
 
