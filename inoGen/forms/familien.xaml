@@ -184,10 +184,10 @@
 
                         <ContextMenu x:Key="RowContextMenu">
 
-                            <MenuItem Header="Eintrag Öffnen"
+                            <MenuItem Header="Eintrag öffnen"
                                       Click="CMenuItemOpen_Click"/>
 
-                            <MenuItem Header="Eintrag Löschen"
+                            <MenuItem Header="Eintrag entfernen"
                                       Click="CMenuItemDelete_Click"/>
 
                         </ContextMenu>
