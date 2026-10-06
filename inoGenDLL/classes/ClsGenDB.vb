@@ -1875,7 +1875,7 @@ Public Class ClsGenDB
                 tblEreignis.Datum as EreignisDatum,
                 tblQuelle.QuelleKurz,
                 tblEreignisArt.EreignisArt as EreignisArt,
-                tblEreignisArt.PersonenEreignis,
+                tblEreignisArt_1.PersonenEreignis,
                 tblQuellZitat.Jahr,
                 tblQuellZitat.Bd,
                 tblQuellZitat.Seite,
