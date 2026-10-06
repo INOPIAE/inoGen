@@ -16,8 +16,6 @@ Imports iText.Layout
 Imports iText.Layout.Element
 Module MdlPdfAncestorReport
 
-    Private cPdfText As New ClsPdfTextFormatter()
-
     Sub GenerateReport(src As String, dest As String, person As String, statistic As clsAhnentafelDaten.Statistics)
         Dim fontSizeHeader As Integer = 14
         Dim fontSizeNormal As Integer = 10
@@ -26,6 +24,8 @@ Module MdlPdfAncestorReport
         Using writer As New PdfWriter(dest)
             Using pdfDoc As New PdfDocument(writer)
                 Using document As New Document(pdfDoc)
+
+                    Dim cPdfText As New ClsPdfTextFormatter()
 
                     '==========================================================
                     ' Kopf-/Fußzeile

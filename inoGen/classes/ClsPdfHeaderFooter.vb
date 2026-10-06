@@ -69,206 +69,114 @@ Public Class ClsPdfHeaderFooter
         End Sub
 
 
-        '==============================================================
-        ' Seitenende
-        '==============================================================
+    '==============================================================
+    ' Seitenende
+    '==============================================================
 
-        Protected Overrides Sub OnAcceptedEvent(
-        pdfEvent As AbstractPdfDocumentEvent)
+    Protected Overrides Sub OnAcceptedEvent(
+    pdfEvent As AbstractPdfDocumentEvent)
 
+        Dim documentEvent As PdfDocumentEvent =
+        CType(pdfEvent, PdfDocumentEvent)
 
-            Dim documentEvent As PdfDocumentEvent =
-            CType(pdfEvent, PdfDocumentEvent)
+        Dim pdfDoc As PdfDocument =
+        documentEvent.GetDocument()
 
-            Dim pdfDoc As PdfDocument =
-            documentEvent.GetDocument()
+        Dim page As PdfPage =
+        documentEvent.GetPage()
 
-            Dim page As PdfPage =
-            documentEvent.GetPage()
+        If page Is Nothing Then
+            Return
+        End If
 
+        Dim pageSize As Rectangle =
+        page.GetPageSize()
 
-            If page Is Nothing Then
-                Return
-            End If
+        Dim pageNumber As Integer =
+        pdfDoc.GetPageNumber(page)
 
 
-            Dim pageSize As Rectangle =
-            page.GetPageSize()
+        Dim pdfCanvas As New PdfCanvas(
+        page.GetLastContentStream(),
+        page.GetResources(),
+        pdfDoc)
 
+        Dim canvas As New Canvas(
+        pdfCanvas,
+        pageSize)
 
-            Dim pageNumber As Integer =
-            pdfDoc.GetPageNumber(page)
 
+        ' ... Kopfzeile ...
 
-            '==========================================================
-            ' Canvas
-            '==========================================================
 
-            Dim pdfCanvas As New PdfCanvas(
-            page.NewContentStreamAfter(),
-            page.GetResources(),
-            pdfDoc)
+        Dim p As New Paragraph(
+        "Seite " & pageNumber.ToString() & " von")
 
-            Dim canvas As New Canvas(
-            pdfCanvas,
-            pageSize)
+        p.SetFont(_font)
+        p.SetFontSize(8)
+        p.SetMargin(0)
 
+        canvas.ShowTextAligned(
+        p,
+        pageSize.GetRight() - 45,
+        pageSize.GetBottom() + 20,
+        TextAlignment.RIGHT)
 
-            '==========================================================
-            ' Kopfzeile
-            '==========================================================
 
-            If _headerLeft <> "" Then
+        '==========================================================
+        ' Placeholder für Gesamtseitenzahl
+        '==========================================================
 
-                AddText(
-                canvas,
-                _headerLeft,
-                pageSize.GetLeft() + 40,
-                pageSize.GetTop() - 25,
-                TextAlignment.LEFT)
+        pdfCanvas.AddXObjectAt(
+        _totalPagesPlaceholder,
+        pageSize.GetRight() - 40,
+        pageSize.GetBottom() + 17)
 
-            End If
 
+        canvas.Close()
 
-            If _headerCenter <> "" Then
+    End Sub
 
-                AddText(
-                canvas,
-                _headerCenter,
-                pageSize.GetWidth() / 2,
-                pageSize.GetTop() - 25,
-                TextAlignment.CENTER)
+    '==============================================================
+    ' Gesamtseitenzahl in den Platzhalter schreiben
+    '==============================================================
 
-            End If
+    Public Sub WriteTotalPages(pdfDoc As PdfDocument)
 
+        If pdfDoc Is Nothing Then
+            Return
+        End If
 
-            If _headerRight <> "" Then
+        If _totalPagesPlaceholder Is Nothing Then
+            Return
+        End If
 
-                AddText(
-                canvas,
-                _headerRight,
-                pageSize.GetRight() - 40,
-                pageSize.GetTop() - 25,
-                TextAlignment.RIGHT)
+        Dim p As Integer =
+        pdfDoc.GetNumberOfPages()
 
-            End If
+        If p <= 0 Then
+            Return
+        End If
 
+        Dim canvas As New Canvas(
+        _totalPagesPlaceholder,
+        pdfDoc)
 
-            '==========================================================
-            ' Fußzeile links
-            '==========================================================
+        canvas.ShowTextAligned(
+        p.ToString(),
+        0,
+        3,
+        TextAlignment.LEFT)
 
-            If _footerLeft <> "" Then
+        canvas.Close()
 
-                AddText(
-                canvas,
-                _footerLeft,
-                pageSize.GetLeft() + 40,
-                pageSize.GetBottom() + 20,
-                TextAlignment.LEFT)
+    End Sub
 
-            End If
+    '==============================================================
+    ' Text ausgeben
+    '==============================================================
 
-
-            '==========================================================
-            ' Fußzeile Mitte
-            '==========================================================
-
-            If _footerCenter <> "" Then
-
-                AddText(
-                canvas,
-                _footerCenter,
-                pageSize.GetWidth() / 2,
-                pageSize.GetBottom() + 20,
-                TextAlignment.CENTER)
-
-            End If
-
-
-            '==========================================================
-            ' Seite X von Y
-            '==========================================================
-
-            Dim pageText As New Paragraph(
-            "Seite " & pageNumber.ToString() & " von")
-
-            pageText.SetFont(_font)
-            pageText.SetFontSize(8)
-            pageText.SetMargin(0)
-
-
-            Dim x As Single =
-            pageSize.GetRight() - 40
-
-            Dim y As Single =
-            pageSize.GetBottom() + 20
-
-
-            ' "Seite X von" rechtsbündig ausgeben
-            canvas.ShowTextAligned(
-            pageText,
-            x - 25,
-            y,
-            TextAlignment.RIGHT)
-
-
-            '==========================================================
-            ' Platzhalter für Y
-            '==========================================================
-
-            pdfCanvas.AddXObjectAt(
-            _totalPagesPlaceholder,
-            x - 20,
-            y - 3)
-
-
-            canvas.Close()
-
-        End Sub
-
-
-        '==============================================================
-        ' Gesamtseitenzahl in den Platzhalter schreiben
-        '==============================================================
-
-        Public Sub WriteTotalPages(
-        pdfDoc As PdfDocument)
-
-
-            Dim canvas As New Canvas(
-            _totalPagesPlaceholder,
-            pdfDoc)
-
-
-            Dim totalPages As String =
-            pdfDoc.GetNumberOfPages().ToString()
-
-
-            Dim p As New Paragraph(totalPages)
-
-            p.SetFont(_font)
-            p.SetFontSize(8)
-            p.SetMargin(0)
-
-
-            canvas.ShowTextAligned(
-            p,
-            0,
-            3,
-            TextAlignment.LEFT)
-
-
-            canvas.Close()
-
-        End Sub
-
-
-        '==============================================================
-        ' Text ausgeben
-        '==============================================================
-
-        Private Sub AddText(
+    Private Sub AddText(
         canvas As Canvas,
         text As String,
         x As Single,
