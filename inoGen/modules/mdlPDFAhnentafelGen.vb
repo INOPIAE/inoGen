@@ -24,6 +24,8 @@ Imports iText.Layout.Properties
 Module mdlPDFAhnentafelGen
     Private cAP As New ClsAhnentafelPDF
     Private dinFormat As DinFormat
+
+    Private cPdfText As New ClsPdfTextFormatter()
     Public Sub PrintAhnentafelBlankoAll()
         ' Layout für A4 erstellen
         Dim layout As New ClsAhnentafelLayout(PdfPageSizes.sizes(DinFormat.A1), True)
@@ -209,7 +211,7 @@ Module mdlPDFAhnentafelGen
         MessageBox.Show("fertig")
     End Sub
 
-    Public Function PrintAhnentafelGen7(Persons As List(Of clsAhnentafelDaten.PersonData), pdfFilename As String) As Boolean
+    Public Function PrintAhnentafelGen7(Persons As List(Of clsAhnentafelDaten.PersonData), pdfFilename As String, statistic As clsAhnentafelDaten.Statistics) As Boolean
 
 
         Select Case My.Settings.LastGenPapersize
@@ -226,7 +228,6 @@ Module mdlPDFAhnentafelGen
         End Select
 
         Dim layout As New ClsAhnentafelLayout(PdfPageSizes.sizes(dinFormat), True)
-        'Dim layout As New ClsAhnentafelLayout((2384, 1684))
 
         layout.PrintLayout()
 
@@ -243,48 +244,20 @@ Module mdlPDFAhnentafelGen
         ' PDF erstellen
         Using writer As New PdfWriter(pdfFilename)
             Using pdfDoc As New PdfDocument(writer)
+
+
                 pdfDoc.SetDefaultPageSize(New PageSize(layout.PageWidth, layout.PageHeight))
 
                 Dim Canvas As New PdfCanvas(pdfDoc.AddNewPage())
-                Dim font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA)
+
 
                 ' Titelblock zeichnen
                 Dim titleBlock = layout.TitleBlockArea
                 Dim titleCanvas As New Canvas(Canvas, titleBlock)
 
-                ' Haupttitel
-                'titleCanvas.Add(New Paragraph("Ahnentafel").
-                '    SetFont(font).
-                '    SetFontSize(18).
-                '    SetFontColor(ColorConstants.BLACK).
-                '    SetTextAlignment(TextAlignment.CENTER).
-                '    SetMarginTop(10).
-                '    SetMarginBottom(2))
+                titleCanvas.Add(cPdfText.CreateParagraph("Ahnentafel für " & Persons(0).Vorname & " " & Persons(0).Nachname, 50, 0, 2, TextAlignment.CENTER))
+                titleCanvas.Add(cPdfText.CreateParagraph($"Diese Tafel wurde am {DateTime.Now:dd.MM.yyyy} erstellt. Von den {statistic.Ancestors} bekannten Ahnen in {statistic.AncestorsMax} Generationen können hier {statistic.Ancestors7} abgebildet werden.", 8, 5, 0, TextAlignment.CENTER))
 
-                '' Name
-                'titleCanvas.Add(New Paragraph("für " & Persons(0).Vorname & " " & Persons(0).Nachname).
-                '    SetFont(font).
-                '    SetFontSize(14).
-                '    SetFontColor(ColorConstants.BLACK).
-                '    SetTextAlignment(TextAlignment.CENTER).
-                '    SetMarginTop(0).
-                '    SetMarginBottom(2))
-
-                titleCanvas.Add(New Paragraph("Ahnentafel für " & Persons(0).Vorname & " " & Persons(0).Nachname).
-                    SetFont(font).
-                    SetFontSize(50).
-                    SetFontColor(ColorConstants.BLACK).
-                    SetTextAlignment(TextAlignment.CENTER).
-                    SetMarginTop(0).
-                    SetMarginBottom(2))
-
-                ' Datum (optional)
-                titleCanvas.Add(New Paragraph($"Erstellt am {DateTime.Now:dd.MM.yyyy}").
-                    SetFont(font).
-                    SetFontSize(8).
-                    SetFontColor(ColorConstants.GRAY).
-                    SetTextAlignment(TextAlignment.CENTER).
-                    SetMarginTop(5))
 
                 titleCanvas.Close()
 
@@ -314,12 +287,10 @@ Module mdlPDFAhnentafelGen
                         Dim koord = AhnenBox(kekule)
                         Dim box = layout.GetBox(koord.KZeile - 1, koord.KSpalte - 1)
 
-                        '            File.AppendAllText(filename, kekule & Environment.NewLine)
                         ' Person in Box zeichnen
-                        DrawPerson(Canvas, font, personData,
+                        DrawPerson(Canvas, personData,
                            box.GetX(), box.GetY(),
                            box.GetWidth(), box.GetHeight())
-                        '            File.AppendAllText(filename, personData.Vorname & " " & personData.Nachname & Environment.NewLine)
 
                     End If
                 Next
@@ -329,7 +300,7 @@ Module mdlPDFAhnentafelGen
         Return True
     End Function
 
-    Private Function DrawPerson(canvas As PdfCanvas, font As PdfFont, person As clsAhnentafelDaten.PersonData, x As Single, y As Single, w As Single, h As Single) As Rectangle
+    Private Function DrawPerson(canvas As PdfCanvas, person As clsAhnentafelDaten.PersonData, x As Single, y As Single, w As Single, h As Single) As Rectangle
         ' Füllfarbe nach Geschlecht
 
         Dim isInZweig4 As Boolean = IsInAhnenZweig(person.Pos, 5)
@@ -384,14 +355,14 @@ Module mdlPDFAhnentafelGen
                 DinFaktor = 1.0F
         End Select
         ' Name
-        AddCenteredText(docCanvas, font, person.Vorname, 9 * DinFaktor, 2)
-        AddCenteredText(docCanvas, font, person.Nachname.ToUpper, 10 * DinFaktor, 0)
+        AddCenteredText(docCanvas, person.Vorname, 9 * DinFaktor, 2)
+        AddCenteredText(docCanvas, person.Nachname.ToUpper, 10 * DinFaktor, 0)
 
         ' Lebensdaten
-        AddLifeEvent(docCanvas, font, "*", person.Geburtsdatum, person.Geburtsort)
-        AddLifeEvent(docCanvas, font, "~", person.Taufdatum, person.Taufort)
-        AddLifeEvent(docCanvas, font, "+", person.Sterbedatum, person.Sterbeort)
-        AddLifeEvent(docCanvas, font, "✝", person.Begräbnisdatum, person.Begräbnisort)
+        AddLifeEvent(docCanvas, "∗", person.Geburtsdatum, person.Geburtsort)
+        AddLifeEvent(docCanvas, "~", person.Taufdatum, person.Taufort)
+        AddLifeEvent(docCanvas, "†", person.Sterbedatum, person.Sterbeort)
+        AddLifeEvent(docCanvas, "⚰", person.Begräbnisdatum, person.Begräbnisort)
 
         docCanvas.Close()
         Return box
@@ -408,30 +379,15 @@ Module mdlPDFAhnentafelGen
         End Select
     End Function
 
-    Private Sub AddCenteredText(canvas As Canvas, font As PdfFont, text As String, fontSize As Single, marginTop As Single)
+    Private Sub AddCenteredText(canvas As Canvas, text As String, fontSize As Single, marginTop As Single)
         If Not String.IsNullOrEmpty(text) Then
-            canvas.Add(New Paragraph(text).
-                SetFont(font).
-                SetFontSize(fontSize).
-                SetFontColor(ColorConstants.BLACK).
-                SetTextAlignment(TextAlignment.CENTER).
-                SetMarginTop(marginTop).
-                SetMarginBottom(0).
-                SetMultipliedLeading(1))
+            canvas.Add(cPdfText.CreateParagraph(text, fontSize, marginTop, 0, TextAlignment.CENTER))
         End If
     End Sub
 
-    Private Sub AddLifeEvent(canvas As Canvas, font As PdfFont, symbol As String, datum As String, ort As String)
+    Private Sub AddLifeEvent(canvas As Canvas, symbol As String, datum As String, ort As String)
         If Not String.IsNullOrEmpty(datum) Then
-            canvas.Add(New Paragraph(symbol & " " & datum & " " & ort).
-                SetFont(font).
-                SetFontSize(6).
-                SetFontColor(ColorConstants.BLACK).
-                SetTextAlignment(TextAlignment.LEFT).
-                SetMarginTop(0).
-                SetMarginLeft(3).
-                SetMarginBottom(0).
-                SetMultipliedLeading(1))
+            canvas.Add(cPdfText.CreateEventParagraph(symbol, datum, ort, 7, 5))
         End If
     End Sub
 

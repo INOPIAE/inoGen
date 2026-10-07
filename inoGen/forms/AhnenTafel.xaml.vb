@@ -117,7 +117,7 @@ Public Class AhnenTafel
                 If rbGen4.IsChecked = True Then
                     MdlPdfAhnentafel.AT(cAT.Persons, saveFileDialog.FileName)
                 Else
-                    Ergebnis = mdlPDFAhnentafelGen.PrintAhnentafelGen7(cAT.Persons, saveFileDialog.FileName)
+                    Ergebnis = mdlPDFAhnentafelGen.PrintAhnentafelGen7(cAT.Persons, saveFileDialog.FileName, cAT.Statistic)
                 End If
 
                 If Ergebnis = True Then

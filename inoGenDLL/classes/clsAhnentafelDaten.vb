@@ -75,6 +75,8 @@ Public Class clsAhnentafelDaten
     Public Structure Statistics
         Public Persons As Integer
         Public Ancestors As Integer
+        Public Ancestors7 As Integer
+        Public AncestorsMax As Integer
         Public Locations As String
     End Structure
 
@@ -695,16 +697,23 @@ Public Class clsAhnentafelDaten
     Public Sub ErstelleStatistik()
         Statistic.Persons = Persons.Count
         Statistic.Locations = LocationList.Count
+        Statistic.AncestorsMax = 0
 
         Dim anzahl As Integer = 0
-
+        Dim anzahl7 As Integer = 0
         For Each person As PersonData In Persons
 
             If person.Gen > 1 Then
                 anzahl += 1
+                If person.Gen <= 7 Then
+                    anzahl7 += 1
+                End If
+                If person.Gen > Statistic.AncestorsMax Then
+                    Statistic.AncestorsMax = person.Gen
+                End If
             End If
-
         Next
         Statistic.Ancestors = anzahl
+        Statistic.Ancestors7 = anzahl7
     End Sub
 End Class

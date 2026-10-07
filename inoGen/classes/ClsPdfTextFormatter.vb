@@ -45,32 +45,45 @@ Public Class ClsPdfTextFormatter
         End Sub
 
 
-        '==========================================================
-        ' Normaler Paragraph
-        '==========================================================
+    '==========================================================
+    ' Normaler Paragraph
+    '==========================================================
+    Public Function CreateParagraph(
+    text As String,
+    Optional fontSize As Single = 10,
+    Optional marginTop As Single = 0,
+    Optional marginBottom As Single = 0,
+    Optional alignment As TextAlignment = TextAlignment.Left) As Paragraph
 
-        Public Function CreateParagraph(
-        text As String,
-        Optional fontSize As Single = 10) As Paragraph
+        Dim para As New Paragraph()
 
-            Dim para As New Paragraph()
+        para.SetFontColor(ColorConstants.BLACK)
+        para.SetTextAlignment(alignment)
 
-            Dim parts = SplitItalicText(text)
+        para.SetMarginTop(marginTop)
+        para.SetMarginBottom(marginBottom)
 
-            For Each part In parts
+        para.SetMultipliedLeading(1)
 
-                AddText(
-                para,
-                part.Text,
-                part.Italic,
-                fontSize)
+        '==============================================================
+        ' Text mit Kursiv-Markup und Symbolen
+        '==============================================================
 
-            Next
+        Dim parts = SplitItalicText(text)
 
-            Return para
+        For Each part In parts
 
-        End Function
+            AddText(
+            para,
+            part.Text,
+            part.Italic,
+            fontSize)
 
+        Next
+
+        Return para
+
+    End Function
 
     '==========================================================
     ' Paragraph mit Markdown-Links
@@ -591,5 +604,66 @@ Public Class ClsPdfTextFormatter
 
         End Class
 
-    End Class
+    Public Function CreateEventParagraph(symbol As String, datum As String, ort As String, Optional fontSize As Single = 6, Optional marginLeft As Single = 3) As Paragraph
+
+        Dim para As New Paragraph()
+
+        para.SetTextAlignment(TextAlignment.Left)
+        para.SetMarginTop(0)
+        para.SetMarginLeft(marginLeft)
+        para.SetMarginBottom(0)
+        para.SetMultipliedLeading(1)
+
+        '==============================================================
+        ' Symbol
+        '==============================================================
+
+        If Not String.IsNullOrEmpty(symbol) Then
+
+            Dim symbolText As New Text(
+                symbol & " ")
+
+            symbolText.SetFont(_symbolFont)
+            symbolText.SetFontSize(fontSize)
+            symbolText.SetFontColor(ColorConstants.BLACK)
+
+            para.Add(symbolText)
+
+        End If
+
+
+        '==============================================================
+        ' Datum und Ort
+        '==============================================================
+
+        Dim normalText As String =
+            datum
+
+        If Not String.IsNullOrEmpty(ort) Then
+
+            If Not String.IsNullOrEmpty(normalText) Then
+                normalText &= " "
+            End If
+
+            normalText &= ort
+
+        End If
+
+        If Not String.IsNullOrEmpty(normalText) Then
+
+            Dim textPart As New Text(
+                normalText)
+
+            textPart.SetFont(_normalFont)
+            textPart.SetFontSize(fontSize)
+            textPart.SetFontColor(ColorConstants.BLACK)
+
+            para.Add(textPart)
+
+        End If
+
+        Return para
+
+    End Function
+End Class
 
