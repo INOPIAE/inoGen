@@ -8,6 +8,7 @@ Public Class VKH_Ausgabe
 
     Private cGeoD As New ClsGeoDaten(My.Settings.DBPath)
     Private cGen As New inoGenDLL.ClsGenDB(My.Settings.DBPath)
+    Private cFH As New ClsFileHandling
     Private Sub btnClose_Click(sender As Object, e As RoutedEventArgs) Handles btnClose.Click
         Close()
     End Sub
@@ -35,11 +36,17 @@ Public Class VKH_Ausgabe
 
         ' Dialog anzeigen
         If saveFileDialog.ShowDialog() = Forms.DialogResult.OK Then
+            Dim strFileName As String = saveFileDialog.FileName
             My.Settings.LastPlace = txtOrt.Text.Trim
             My.Settings.Save()
             Try
                 MdlPDFVKHReport.GenerateReport(saveFileDialog.FileName, chkCheck.IsChecked, txtOrt.Text.Trim, cmbBuch.Text)
-                MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                If MessageBox.Show("PDF erfolgreich gespeichert!: " & vbCrLf & "Datei öffnen?", "Hinweis", MessageBoxButtons.YesNo) = System.Windows.MessageBoxResult.Yes Then
+                    Dim strReturn As String = cFH.OpenPdfFile(strFileName)
+                    If strReturn <> "" Then
+                        MessageBox.Show(strReturn, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    End If
+                End If
             Catch ex As Exception
                 MessageBox.Show("Fehler beim Speichern der PDF: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try

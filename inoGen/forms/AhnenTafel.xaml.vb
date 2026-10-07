@@ -1,10 +1,12 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.Windows.Forms
+Imports inoGenDLL
 
 Public Class AhnenTafel
     Private cAT As New inoGenDLL.clsAhnentafelDaten(My.Settings.DBPath)
     Private cGenDB As New inoGenDLL.ClsGenDB(My.Settings.DBPath)
+    Private cFH As New ClsFileHandling
     Private PID As Integer = 1
 
     Private mdFilePath As String = IO.Path.Combine(Application.MyAppFolder, "Ahnenbericht.md")
@@ -64,7 +66,7 @@ Public Class AhnenTafel
         cAT.NewList()
 
         cAT.WriteToCSV(mdFilePath)
-        MessageBox.Show("abgeschlossen")
+        MessageBox.Show("CSV erfolgreich gespeichert!")
     End Sub
     Private Sub btnMap_Click(sender As Object, e As RoutedEventArgs)
 
@@ -91,6 +93,7 @@ Public Class AhnenTafel
 
         ' Dialog anzeigen
         If saveFileDialog.ShowDialog() = Forms.DialogResult.OK Then
+            Dim filename As String = saveFileDialog.FileName
             If rbA1.IsChecked = True Then
                 My.Settings.LastGenPapersize = "A1"
             ElseIf rbA2.IsChecked = True Then
@@ -115,13 +118,19 @@ Public Class AhnenTafel
             My.Settings.Save()
             Try
                 If rbGen4.IsChecked = True Then
-                    MdlPdfAhnentafel.AT(cAT.Persons, saveFileDialog.FileName)
+                    MdlPdfAhnentafel.AT(cAT.Persons, filename)
+                    Ergebnis = True
                 Else
-                    Ergebnis = mdlPDFAhnentafelGen.PrintAhnentafelGen7(cAT.Persons, saveFileDialog.FileName, cAT.Statistic)
+                    Ergebnis = mdlPDFAhnentafelGen.PrintAhnentafelGen7(cAT.Persons, filename, cAT.Statistic)
                 End If
 
                 If Ergebnis = True Then
-                    MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    If MessageBox.Show("PDF erfolgreich gespeichert! " & vbCrLf & "Datei öffnen?", "Erfolg", MessageBoxButtons.YesNo) = System.Windows.MessageBoxResult.Yes Then
+                        Dim strReturn As String = cFH.OpenPdfFile(filename)
+                        If strReturn <> "" Then
+                            MessageBox.Show(strReturn, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        End If
+                    End If
                 End If
             Catch ex As Exception
                 MessageBox.Show("Fehler beim Speichern der PDF: " & vbCrLf & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -139,9 +148,15 @@ Public Class AhnenTafel
         saveFileDialog.AddExtension = True
 
         If saveFileDialog.ShowDialog() = Forms.DialogResult.OK Then
+            Dim filename As String = saveFileDialog.FileName
             Try
-                MdlPdfAncestorReport.GenerateReport(mdFilePath, saveFileDialog.FileName, $"{cAT.Persons(0).Vorname} {cAT.Persons(0).Nachname}", cAT.Statistic)
-                MessageBox.Show("PDF erfolgreich gespeichert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                MdlPdfAncestorReport.GenerateReport(mdFilePath, filename, $"{cAT.Persons(0).Vorname} {cAT.Persons(0).Nachname}", cAT.Statistic)
+                If MessageBox.Show("PDF erfolgreich gespeichert! " & vbCrLf & "Datei öffnen?", "Erfolg", MessageBoxButtons.YesNo) = System.Windows.MessageBoxResult.Yes Then
+                    Dim strReturn As String = cFH.OpenPdfFile(filename)
+                    If strReturn <> "" Then
+                        MessageBox.Show(strReturn, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    End If
+                End If
             Catch ex As Exception
                 MessageBox.Show("Fehler beim Speichern der PDF: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try

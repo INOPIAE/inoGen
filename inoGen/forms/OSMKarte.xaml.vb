@@ -1,24 +1,4 @@
-﻿'Imports System.IO
-'Imports System.Windows.Forms
-'Imports System.Windows.Media.Imaging
-'Imports inoGenDLL
-'Imports inoGenDLL.clsAhnentafelDaten
-'Imports iText.IO.Font.Constants
-'Imports iText.IO.Image
-'Imports iText.Kernel.Font
-'Imports iText.Kernel.Pdf
-'Imports iText.Layout
-'Imports iText.Layout.Element
-'Imports Mapsui
-'Imports Mapsui.Layers
-'Imports Mapsui.Nts
-'Imports Mapsui.Projections
-'Imports Mapsui.Providers
-'Imports Mapsui.Styles
-'Imports Mapsui.Tiling
-'Imports Mapsui.UI.Wpf
-
-Imports System.IO
+﻿Imports System.IO
 Imports System.Reflection
 Imports System.Windows.Forms
 Imports System.Windows.Media.Imaging
@@ -44,6 +24,7 @@ Public Class OSMKarte
 
     Private Persons As List(Of clsAhnentafelDaten.PersonData)
     Private PLocations As List(Of ClsOSMKarte.marker)
+    Private cFH As New ClsFileHandling
 
     Public Sub New()
         InitializeComponent()
@@ -237,8 +218,11 @@ Public Class OSMKarte
             encoder.Save(stream)
         End Using
 
-        If MessageBox.Show("Karte als Bild gespeichert: " & filename & vbCrLf & "Daeti öffnen", "Hinweis", MessageBoxButtons.YesNo) = System.Windows.MessageBoxResult.Yes Then
-            OpenPdfFile(filename)
+        If MessageBox.Show("Karte als Bild gespeichert. " & vbCrLf & "Datei öffnen?", "Hinweis", MessageBoxButtons.YesNo) = System.Windows.MessageBoxResult.Yes Then
+            Dim strReturn As String = cFH.OpenPngFile(filename)
+            If strReturn <> "" Then
+                MessageBox.Show(strReturn, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End If
         End If
     End Sub
 
@@ -292,9 +276,11 @@ Public Class OSMKarte
             End Using
         End Using
 
-        MessageBox.Show($"PDF gespeichert unter {pdfFile}")
-        If MessageBox.Show("Karte als PDF gespeichert: " & pdfFile & vbCrLf & "Datei öffnen", "Hinweis", MessageBoxButtons.YesNo) = System.Windows.MessageBoxResult.Yes Then
-            OpenPdfFile(pdfFile)
+        If MessageBox.Show("Karte als PDF gespeichert: " & vbCrLf & "Datei öffnen?", "Hinweis", MessageBoxButtons.YesNo) = System.Windows.MessageBoxResult.Yes Then
+            Dim strReturn As String = cFH.OpenPdfFile(pdfFile)
+            If strReturn <> "" Then
+                MessageBox.Show(strReturn, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End If
         End If
     End Sub
 
@@ -309,17 +295,5 @@ Public Class OSMKarte
         End If
     End Sub
 
-    Public Sub OpenPdfFile(filePath As String)
-        Try
-            If IO.File.Exists(filePath) Then
-                Process.Start(New ProcessStartInfo(filePath) With {
-                    .UseShellExecute = True
-                })
-            Else
-                MessageBox.Show("Datei nicht gefunden: " & filePath)
-            End If
-        Catch ex As Exception
-            MessageBox.Show("Fehler beim Öffnen der PDF: " & ex.Message)
-        End Try
-    End Sub
+
 End Class
